@@ -35,14 +35,38 @@ const Profile = () => {
             <h2 className="mx-28 text-3xl text-gray-100 font-bold py-5">Your Profile</h2>
 
             <div className="rounded-md mx-auto max-w-screen-xl bg-white h-[60vh] p-2">
-                <h3>Username: Username</h3> 
-                <h3>Email: email@email.com</h3>
 
-                <h3>Date of Birth: 1/1/2000</h3>
-                <h3>First Name: fName</h3>
-                <h3>Last Name: lName</h3>
+                <form action="" className="flex flex-row justify-between">
+                    <fieldset>Username:</fieldset>
+                    <input type="text" placeholder="current username" className="bg-white h-[2.5rem]"/>
+                    <button type="submit" className="btn w-[8rem] text-black bg-white hover:scale-[1.025] transition-transform">Change Username</button>
+                </form>
 
-                <form action="">
+                <form action="" className="flex flex-row justify-between">
+                    <fieldset>Email:</fieldset>
+                    <input type="email" placeholder="email@email.com" className="bg-white h-[2.5rem]"/>
+                    <button type="submit" className="btn w-[8rem] text-black bg-white hover:scale-[1.025] transition-transform">Change Email</button>
+                </form>
+
+                <form action="" className="flex flex-row justify-between">
+                    <fieldset>Date of Birth:</fieldset>
+                    <input type="date" placeholder="" className="bg-white h-[2.5rem]"/>
+                    <button type="submit" className="btn w-[8rem] text-black bg-white hover:scale-[1.025] transition-transform">Change First Name</button>
+                </form>
+
+                <form action="" className="flex flex-row justify-between">
+                    <fieldset>First Name:</fieldset>
+                    <input type="text" placeholder="current fname" className="bg-white h-[2.5rem]"/>
+                    <button type="submit" className="btn w-[8rem] text-black bg-white hover:scale-[1.025] transition-transform">Change First Name</button>
+                </form>
+
+                <form action="" className="flex flex-row justify-between">
+                    <fieldset>Last Name:</fieldset>
+                    <input type="text" placeholder="current lname" className="bg-white h-[2.5rem]"/>
+                    <button type="submit" className="btn w-[8rem] text-black bg-white hover:scale-[1.025] transition-transform">Change Last Name</button>
+                </form>
+
+                <form action="" className="flex flex-row justify-between">
                     <fieldset>Password:</fieldset>
                     <button type="submit" className="btn w-[8rem] text-black bg-white hover:scale-[1.025] transition-transform">Change Password</button>
                 </form>
