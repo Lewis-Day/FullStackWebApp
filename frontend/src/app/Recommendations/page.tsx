@@ -1,22 +1,23 @@
 'use client';
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const gameRecommendations = [
-    {name:'Game 1', info:'Info', imgURL:'https://images.igdb.com/igdb/image/upload/t_cover_big/co8ok7.jpg'},
-    {name: 'Game 2', info:'Info', imgURL:'https://images.igdb.com/igdb/image/upload/t_cover_big/co1q1f.jpg'},
-    {name: 'Game 3', info:'Info', imgURL:'https://images.igdb.com/igdb/image/upload/t_cover_big/co8fu7.jpg'},
-]
+
+interface gameRecommendations{
+    name: string,
+    description: string, 
+    imgURL: string,
+}
 
 const Recommendations = () => {
 
-    const [gameData, setGameData] = useState(gameRecommendations);
+    const [gameData, setGameData] = useState<gameRecommendations[]>([]);
     const [index, setIndex] = useState(0);
 
     const buttonPressBack = () => {
         if(index == 0){
-            setIndex(gameRecommendations.length - 1);
+            setIndex(gameData.length - 1);
         }
         else{
             setIndex(index - 1);
@@ -25,7 +26,7 @@ const Recommendations = () => {
     };
 
     const buttonPressForward = () => {
-        if(index == gameRecommendations.length - 1){
+        if(index == gameData.length - 1){
             setIndex(0);
         }
         else{
@@ -33,6 +34,37 @@ const Recommendations = () => {
         }
         
     };
+
+    useEffect(() => {
+    
+            const fetchRecommendationInfo = async () => {
+    
+                try{
+                    const response = await fetch("/api/GameName");
+                    const data = await response.json();
+                    console.log(data);
+
+                    const recommendationSet: gameRecommendations[] = [];
+                    for(let i = 0; i<data.gameName.length; i++){
+                        recommendationSet.push({
+                            name: data.gameName[i],
+                            description: data.gameDescription[i],
+                            imgURL: data.imgURL[i],
+
+                        });
+                    }
+                    setGameData(recommendationSet);
+                }
+    
+                catch(error){
+                    console.error("Error: ", error);
+                }
+            };
+    
+            fetchRecommendationInfo();
+    
+            
+        }, []);
 
     return(
         <div className="bg-gray-700 h-screen w-full pt-5 ">
@@ -68,21 +100,26 @@ const Recommendations = () => {
             <div className="flex flex-col justify-self-center">
 
                 <div className="card lg:card-side bg-base-100 shadow-xl w-[50rem] mt-5 hover:scale-[1.025] transition-transform">
-                    <figure>
-                        <img
-                        src={gameData[index].imgURL}
-                        alt="Album" />
-                    </figure>
-                    <div className="card-body">
-                        <h2 className="card-title">{gameData[index].name}</h2>
-                        <p>{gameData[index].info}</p>
 
-                        <div>
-                            <p className="flex flex-row justify-end">{index + 1}</p>
-                        </div>
-                    </div>
+                    {gameData.length > 0 ? (
+                        <>
+                            <figure className="relative w-full h-[22rem] overflow-hidden">
+                                <img
+                                src={gameData[index].imgURL}
+                                alt="Img" className="object-contain w-full h-[22rem]"/>
+                            </figure>
+                            <div className="card-body">
+                                <h2 className="card-title">{gameData[index].name}</h2>
+                                <p>{gameData[index].description}</p>
 
-                    
+                                <div>
+                                    <p className="flex flex-row justify-end">{index + 1}</p>
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="skeleton h-[22rem] w-[16.5rem]"></div>
+                    )}
                 </div>
 
                 <div className="join ml-[20rem] pt-5">
