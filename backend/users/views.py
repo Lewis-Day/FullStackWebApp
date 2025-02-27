@@ -58,3 +58,103 @@ class loginView(APIView):
         else:
             return Response({'message':'User Authentication Unsuccessful'}, status=status.HTTP_400_BAD_REQUEST)
 
+class fetchUsersView(APIView):
+
+    def get(self, request):
+
+        user = User.objects.get(username = "Test")
+        userDob = userWithDOB.objects.get(user = user)
+
+        user_info = {
+            'username': user.username,
+            'email': user.email,
+            'first_name': user.first_name, 
+            'last_name': user.last_name,
+            'dob':userDob.DOB.strftime('%Y-%m-%d'),
+        }
+        
+        return Response(user_info, status=status.HTTP_200_OK)
+
+class changeUserDataView(APIView):
+
+    def post(self, request):
+
+        uname = request.data.get('oldUname')
+        newUserData = request.data.get('newdata')
+
+        username = newUserData.get('username')
+        email = newUserData.get('email')
+        fname = newUserData.get('firstName')
+        lname = newUserData.get('lastName')
+        dob = newUserData.get('dob')
+
+        user = User.objects.get(username = uname)
+
+        if user is not None:
+
+            user.username = username
+            user.email = email
+            user.first_name = fname
+            user.last_name = lname
+
+            user.save()
+
+            userDob = userWithDOB.objects.get(user = user)
+            userDob.DOB = dob
+            userDob.save()
+
+            return Response({'message':'User Data Change Successful'}, status=status.HTTP_200_OK)
+
+        else:
+            return Response({'message':'User Data Change Unsuccessful'}, status=status.HTTP_400_BAD_REQUEST)
+        
+class changePasswordView(APIView):
+    
+    def post(self, request):
+        
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+
+        user = User.objects.get(username = username)
+
+        if user is not None:
+
+            user.set_password(make_password(password))
+
+            user.save()
+
+            return Response({'message':'Password Change Successful'}, status=status.HTTP_200_OK)
+        
+        else:
+            return Response({'message':'Password Change Unsuccessful'}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+class forgotPasswordView(APIView):
+
+    def post(self, request):
+
+        username = request.data.get('username')
+        email = request.data.get('email')
+        dob = request.data.get('dob')
+        password = request.data.get('password')
+
+        user = User.objects.get(username = username)
+        userDob = userWithDOB.objects.get(user = user)
+
+        if user is not None:
+
+            if user.email == email and userDob.DOB == dob:
+
+
+                user.set_password(make_password(password))
+
+                user.save()
+
+                return Response({'message':'Password Change Successful'}, status=status.HTTP_200_OK)
+            
+            else:
+                return Response({'message': 'User Details Cannot be Matched'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        else:
+            return Response({'message':'User cannot be found, unsuccessful password change'}, status=status.HTTP_400_BAD_REQUEST)

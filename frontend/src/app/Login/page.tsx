@@ -91,7 +91,7 @@ const Login = () => {
                 <input type="password" className="" placeholder="Password" required onChange={(e) => setPassword(e.target.value)}/>
                 </label>
 
-                <Link href="" className="flex flex-row justify-end pb-5 text-white font-bold">Forgot Password?</Link>
+                <Link href="/ForgotPassword" className="flex flex-row justify-end pb-5 text-white font-bold">Forgot Password?</Link>
 
                 <div className="flex justify-center">
                     <button type="submit" className="btn w-[8rem] text-black bg-white hover:scale-[1.025] transition-transform">Login</button>

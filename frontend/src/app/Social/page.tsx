@@ -1,9 +1,97 @@
 'use client';
 
 import Link from "next/link";
+import { useState } from "react";
 
 
 const Social = () => {
+
+    const [message, setMessage] = useState('');
+    const [chatMessages, setChatMessages] = useState([]);
+    const [currentConversation, setCurrentConversation] = useState(null);
+
+    const newConversation = async () => {
+
+        const data = {
+            user1 : 'Test',
+            user2 : 'Test2',
+        }
+
+        const submit = await fetch('http://localhost:8000/api/createChat/', {
+            method:'POST',
+
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body: JSON.stringify(data),
+
+        });
+
+        if(submit.status == 201){
+            console.log(submit);
+        }
+        else{
+            console.log(submit);
+        }
+
+    }
+
+    const addMessage = async () => {
+
+        const data = {
+            user1 : 'Test',
+            user2 : 'Test2',
+            message : message,
+        }
+
+        const submit = await fetch('http://localhost:8000/api/sendMessage/', {
+            method:'POST',
+
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body: JSON.stringify(data),
+
+        });
+
+        if(submit.status == 201){
+            console.log(submit);
+        }
+        else{
+            console.log(submit);
+        }
+
+    }
+
+    const getMessages = async () => {
+
+        const data = {
+            user1 : 'Test',
+            user2 : 'Test2',
+        }
+
+        const submit = await fetch('http://localhost:8000/api/sendMessage/', {
+            method:'POST',
+
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body: JSON.stringify(data),
+
+        });
+
+
+        if(submit.status == 201){
+            console.log(submit);
+            const response = await submit.json()
+            console.log(response);
+            setChatMessages(response);
+        }
+        else{
+            console.log(submit);
+        }
+
+    }
 
     return(
         <div className="bg-gray-700 h-screen w-full pt-5 ">
@@ -39,19 +127,7 @@ const Social = () => {
             <div className="flex flex-row justify-start">
                 <ul className="menu bg-base-200 rounded-box w-56 h-[80vh] mx-28">
                     <div>
-                    <button className="btn bg-gray-500">
-                        {/* <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-6 w-6"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg> */}
+                    <button className="btn bg-gray-500" onClick={newConversation}>
                         New Chat
                     </button>
                     </div>
@@ -59,7 +135,7 @@ const Social = () => {
                         <a className="flex flex-row justify-between">
                             User 1
 
-                            <button className="btn btn-square">
+                            <button className="btn btn-square" onClick={getMessages}>
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     className="h-6 w-6"
@@ -115,8 +191,8 @@ const Social = () => {
                         <div className="chat-bubble">You underestimate my power!</div>
                     </div>
 
-                    <form action="" className="">
-                        <input type="text" placeholder="Type your message here..." className="w-[40rem] h-[3rem] ml-[1rem]"/>
+                    <form onSubmit={addMessage} className="">
+                        <input type="text" placeholder="Type your message here..." className="w-[40rem] h-[3rem] ml-[1rem]" onChange={(e) => setMessage(e.target.value)}/>
                         <button type="submit" className="btn w-[8rem] text-black bg-white hover:scale-[1.025] transition-transform">Send</button>
                     </form>
 
