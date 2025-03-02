@@ -8,6 +8,7 @@ from django.contrib.auth.hashers import make_password
 from rest_framework.permissions import AllowAny
 from .models import userWithDOB, userFriends, FriendStatus
 from django.contrib.auth import authenticate
+from django.db.models import Q
 
 # Create your views here.
 
@@ -62,7 +63,9 @@ class fetchUsersView(APIView):
 
     def get(self, request):
 
-        user = User.objects.get(username = "Test")
+        username = request.query_params.get('username')  
+
+        user = User.objects.get(username = username)
         userDob = userWithDOB.objects.get(user = user)
 
         user_info = {
@@ -277,8 +280,7 @@ class deleteFriend(APIView):
             u1 = User.objects.get(username = friendUsername)
             u2 = User.objects.get(username = userUsername)
 
-            query = Q(user1 = u1, user2 = u2) | Q(user1 = u2, user2 = u1), status = FriendStatus.ACCEPTED
-            friendship = userFriends.objects.filter(query).first()
+            friendship = userFriends.objects.filter(Q(user1 = u1, user2 = u2) | Q(user1 = u2, user2 = u1), status = FriendStatus.ACCEPTED).first()
             if friendship is not None:
                 friendship.delete()
                 return Response({'message':'Friend Deleted'}, status=status.HTTP_200_OK)
@@ -297,17 +299,16 @@ class listFriends(APIView):
 
         u1 = User.objects.get(username = username)
 
-        query = Q(user1 = u1) | Q(user2 = u1), status = FriendStatus.ACCEPTED
-        friendship = userFriends.objects.filter(query).all()
+        friendship = userFriends.objects.filter(Q(user1 = u1) | Q(user2 = u1), status = FriendStatus.ACCEPTED).all()
         if friendship is not None:
 
             friendList = []
 
             for friend in friendship:
                 if friend.user1 == u1:
-                    friendList.append(friend.user2.username)
+                    friendList.append(friend.user2)
                 else:
-                    friendList.append(friend.user1.username)
+                    friendList.append(friend.user1)
 
 
             return Response(friendList, status=status.HTTP_200_OK)

@@ -17,6 +17,11 @@ var currentUsername:string;
 const Profile = () => {
 
     const [newPassword, setNewPassword] = useState('');
+    const [search, setSearch] = useState('');
+    const [foundUser, setFoundUser] = useState('');
+    const [friends, setFriends] = useState<userInfo[]>([]);
+    const [friendRequests, setFriendRequests] = useState<userInfo[]>([]);
+    const [sentFriendRequests, setSentFriendRequests] = useState<userInfo[]>([]);
 
     const [user, setUser] = useState<userInfo>({
         username: '',
@@ -28,10 +33,11 @@ const Profile = () => {
 
     useEffect(() => {
         
-        const fetchUserInfo = async () => {
+        const fetchUserInfo = async (searchUser:string) => {
+
 
             try{
-                const userinforesponse = await fetch("http://127.0.0.1:8000/api/user/", {
+                const userinforesponse = await fetch(`http://127.0.0.1:8000/api/user/?username=${encodeURIComponent(searchUser)}`, {
                     method:'GET',
                 });
         
@@ -57,7 +63,104 @@ const Profile = () => {
             }
         };
 
-        fetchUserInfo();
+        fetchUserInfo("Test");
+
+        const fetchFriends = async (searchUser:string) => {
+
+
+            try{
+                const friendsResponse = await fetch(`http://127.0.0.1:8000/api/getFriends/?username=${encodeURIComponent(searchUser)}`, {
+                    method:'GET',
+                });
+        
+                const data = await friendsResponse.json();        
+                console.log(data);
+
+                const friends = data.friendList;
+
+                console.log(friends)
+
+                if (!Array.isArray(friends)){
+                    setFriends([]);
+                }
+                else{
+                    setFriends(friends);
+                }
+                
+            }
+
+            catch(error){
+                console.error("Error: ", error);
+                setFriends([]);
+            }
+        };
+
+        fetchFriends("Test");
+        
+        const fetchFriendRequests = async (searchUser:string) => {
+
+
+            try{
+                const friendsResponse = await fetch(`http://127.0.0.1:8000/api/getFriendRequests/?username=${encodeURIComponent(searchUser)}`, {
+                    method:'GET',
+                });
+        
+                const data = await friendsResponse.json();        
+                console.log(data);
+
+                const requests = data.friendList;
+
+                console.log(requests)
+
+                if (!Array.isArray(requests)){
+                    setFriendRequests([]);
+                }
+                else{
+                    setFriendRequests(requests);
+                }
+                
+            }
+
+            catch(error){
+                console.error("Error: ", error);
+                setFriendRequests([]);
+            }
+        };
+
+        fetchFriendRequests("Test");
+
+
+        const fetchSentFriendRequests = async (searchUser:string) => {
+
+
+            try{
+                const friendsResponse = await fetch(`http://127.0.0.1:8000/api/getSentFriendRequests/?username=${encodeURIComponent(searchUser)}`, {
+                    method:'GET',
+                });
+        
+                const data = await friendsResponse.json();        
+                console.log(data);
+
+                const requests = data.friendList;
+
+                console.log(requests)
+
+                if (!Array.isArray(requests)){
+                    setSentFriendRequests([]);
+                }
+                else{
+                    setSentFriendRequests(requests);
+                }
+                
+            }
+
+            catch(error){
+                console.error("Error: ", error);
+                setSentFriendRequests([]);
+            }
+        };
+
+        fetchSentFriendRequests("Test");
         
                 
     }, []);
@@ -136,8 +239,191 @@ const Profile = () => {
         
     };
 
+    const formGetUsers = async (e : React.FormEvent) => {
+        e.preventDefault();
+
+        try{
+            const userinforesponse = await fetch(`http://127.0.0.1:8000/api/user/?username=${encodeURIComponent(search)}`, {
+                method:'GET',
+            });
+    
+            const data = await userinforesponse.json();        
+            console.log(data);
+
+            const foundUser = data.username;
+            setFoundUser(foundUser);
+        }
+
+        catch(error){
+            console.error("Error: ", error);
+        }
+
+    }
+
+    const formSendFriendRequest = async (friendUsername : string) => {
+
+
+        const sendData = {
+            username : friendUsername, 
+            ownUsername : currentUsername,
+        };
+
+        const submit = await fetch('http://localhost:8000/api/addFriend/', {
+            method:'POST',
+
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body: JSON.stringify(sendData),
+
+        });
+
+       const response = await submit.json();
+
+        if(submit.status == 201){
+            console.log(submit);
+            alert("Friend Request Sent");
+        }
+        else{
+            console.log(submit);
+            alert(response.message);
+        }
+
+        
+    };
+
+    const formRemoveFriend = async (friendUsername : string) => {
+
+
+        const sendData = {
+            username : friendUsername, 
+            ownUsername : currentUsername,
+        };
+
+        const submit = await fetch('http://localhost:8000/api/deleteFriend/', {
+            method:'POST',
+
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body: JSON.stringify(sendData),
+
+        });
+
+       const response = await submit.json();
+
+        if(submit.status == 201){
+            console.log(submit);
+            alert("Friend Removed");
+        }
+        else{
+            console.log(submit);
+            alert(response.message);
+        }
+
+        
+    };
+
+    const acceptRequest = async (friendUsername : string) => {
+
+
+        const sendData = {
+            username : friendUsername, 
+            ownUsername : currentUsername,
+        };
+
+        const submit = await fetch('http://localhost:8000/api/acceptRequest/', {
+            method:'POST',
+
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body: JSON.stringify(sendData),
+
+        });
+
+       const response = await submit.json();
+
+        if(submit.status == 201){
+            console.log(submit);
+            alert("Friend Request Accepted");
+        }
+        else{
+            console.log(submit);
+            alert(response.message);
+        }
+
+        
+    };
+
+    const declineRequest = async (friendUsername : string) => {
+
+
+        const sendData = {
+            username : friendUsername, 
+            ownUsername : currentUsername,
+        };
+
+        const submit = await fetch('http://localhost:8000/api/deleteRequest/', {
+            method:'POST',
+
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body: JSON.stringify(sendData),
+
+        });
+
+       const response = await submit.json();
+
+        if(submit.status == 201){
+            console.log(submit);
+            alert("Friend Request Declined");
+        }
+        else{
+            console.log(submit);
+            alert(response.message);
+        }
+
+        
+    };
+
+    const deleteRequest = async (friendUsername : string) => {
+
+
+        const sendData = {
+            username : friendUsername, 
+            ownUsername : currentUsername,
+        };
+
+        const submit = await fetch('http://localhost:8000/api/deleteRequest/', {
+            method:'POST',
+
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body: JSON.stringify(sendData),
+
+        });
+
+       const response = await submit.json();
+
+        if(submit.status == 201){
+            console.log(submit);
+            alert("Friend Request Deleted");
+        }
+        else{
+            console.log(submit);
+            alert(response.message);
+        }
+
+        
+    };
+
+    
+
     return(
-        <div className="bg-gray-700 h-screen w-full pt-5 ">
+        <div className="bg-gray-700 h-auto w-full pt-5 ">
             <div className="navbar bg-white rounded-md mx-auto max-w-screen-xl">
                 <div className="flex-1">
                     <Link href="/Home" className="btn btn-ghost text-xl text-black">VGR</Link>
@@ -210,6 +496,76 @@ const Profile = () => {
                 </>
                 ) : (
                     <div className="skeleton h-[22rem] w-[16.5rem]"></div>
+                )}
+
+            </div>
+
+            <div className="rounded-md mx-auto max-w-screen-xl bg-white p-2">
+                <form action="GET" onSubmit={formGetUsers}>
+                    <fieldset><h2>Add Friends:</h2></fieldset>
+                    <input type="text" placeholder="Friend Username..." onChange={(e) => setSearch(e.target.value)}/>
+                    <button type="submit">Search</button>
+                </form>
+
+                {foundUser && (
+                    <div>
+                        <p>User: {foundUser}</p>
+                        <button onClick={() => formSendFriendRequest(foundUser)}>Add Friend</button>
+                    </div>
+                )}
+            </div>
+
+            <div className="rounded-md mx-auto max-w-screen-xl bg-white p-2">
+
+                <h2>My Friends: </h2>
+
+                {friends.length === 0 ? (
+                    <p>No friends found</p> 
+                    ) : (
+                    <ul>
+                        {friends.map((friend) => (
+                            <li key={friend.username}>{friend.username} <button onClick={() => formRemoveFriend(friend.username)}>Remove Friend</button></li>
+                        ))}
+                    </ul>
+                )}
+
+            </div>
+
+            <div className="rounded-md mx-auto max-w-screen-xl bg-white p-2">
+
+                <h2>Friend Requests: </h2>
+
+                {friendRequests.length === 0 ? (
+                    <p>No pending friend requests</p> 
+                    ) : (
+                    <ul>
+                        {friendRequests.map((friend) => (
+                            <li key={friend.username}>
+                                {friend.username} 
+                                <button onClick={() => acceptRequest(friend.username)}>Accept</button>
+                                <button onClick={() => declineRequest(friend.username)}>Decline</button>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+
+            </div>
+
+            <div className="rounded-md mx-auto max-w-screen-xl bg-white p-2">
+
+                <h2>Sent Friend Requests: </h2>
+
+                {sentFriendRequests.length === 0 ? (
+                    <p>No friend requests sent</p> 
+                    ) : (
+                    <ul>
+                        {sentFriendRequests.map((friend) => (
+                            <li key={friend.username}>
+                                {friend.username} 
+                                <button onClick={() => deleteRequest(friend.username)}>Cancel</button>
+                            </li>
+                        ))}
+                    </ul>
                 )}
 
             </div>
