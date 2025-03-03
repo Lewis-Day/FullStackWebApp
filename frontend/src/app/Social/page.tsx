@@ -1,20 +1,97 @@
 'use client';
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
+interface userInfo{
+    username: string,
+    email: string, 
+    firstName: string,
+    lastName: string, 
+    dob: string,
+}
 
 const Social = () => {
 
     const [message, setMessage] = useState('');
     const [chatMessages, setChatMessages] = useState([]);
-    const [currentConversation, setCurrentConversation] = useState(null);
+    const [friends, setFriends] = useState<userInfo[]>([]);
+    const [newChatFriend, setNetChatFriend] = useState<string>('');
+    const [chats, setChats] = useState<string[]>([]);
+    const [currentChat, setCurrentChat] = useState('');
+
+    useEffect(() => {
+        const fetchFriends = async (searchUser:string) => {
+
+
+            try{
+                const friendsResponse = await fetch(`http://127.0.0.1:8000/api/getFriends/?username=${encodeURIComponent(searchUser)}`, {
+                    method:'GET',
+                });
+        
+                const data = await friendsResponse.json();        
+                console.log(data);
+
+                const friends = data.friendList;
+
+                console.log(friends)
+
+                if (!Array.isArray(friends)){
+                    setFriends([]);
+                }
+                else{
+                    setFriends(friends);
+                }
+                
+            }
+
+            catch(error){
+                console.error("Error: ", error);
+                setFriends([]);
+            }
+        };
+
+        fetchFriends("Test")
+
+        const fetchChats = async (searchUser:string) => {
+
+
+            try{
+                const chatResponse = await fetch(`http://127.0.0.1:8000/api/getFriends/?username=${encodeURIComponent(searchUser)}`, {
+                    method:'GET',
+                });
+        
+                const data = await chatResponse.json();        
+                console.log(data);
+
+                const allChats = data.chats;
+
+                console.log(allChats)
+
+                if (!Array.isArray(allChats)){
+                    setChats([]);
+                }
+                else{
+                    setChats(allChats);
+                }
+                
+            }
+
+            catch(error){
+                console.error("Error: ", error);
+                setChats([]);
+            }
+        };
+
+        fetchChats("Test")
+
+    }, []);
 
     const newConversation = async () => {
 
         const data = {
             user1 : 'Test',
-            user2 : 'Test2',
+            user2 : newChatFriend,
         }
 
         const submit = await fetch('http://localhost:8000/api/createChat/', {
@@ -63,14 +140,14 @@ const Social = () => {
 
     }
 
-    const getMessages = async () => {
+    const deleteChat = async () => {
 
         const data = {
             user1 : 'Test',
-            user2 : 'Test2',
+            user2 : currentChat,
         }
 
-        const submit = await fetch('http://localhost:8000/api/sendMessage/', {
+        const submit = await fetch('http://localhost:8000/api/deleteChat/', {
             method:'POST',
 
             headers:{
@@ -80,18 +157,44 @@ const Social = () => {
 
         });
 
-
         if(submit.status == 201){
             console.log(submit);
-            const response = await submit.json()
-            console.log(response);
-            setChatMessages(response);
         }
         else{
             console.log(submit);
         }
 
     }
+
+    // const getMessages = async () => {
+
+    //     const data = {
+    //         user1 : 'Test',
+    //         user2 : 'Test2',
+    //     }
+
+    //     const submit = await fetch('http://localhost:8000/api/sendMessage/', {
+    //         method:'POST',
+
+    //         headers:{
+    //             'Content-Type':'application/json',
+    //         },
+    //         body: JSON.stringify(data),
+
+    //     });
+
+
+    //     if(submit.status == 201){
+    //         console.log(submit);
+    //         const response = await submit.json()
+    //         console.log(response);
+    //         setChatMessages(response);
+    //     }
+    //     else{
+    //         console.log(submit);
+    //     }
+
+    // }
 
     return(
         <div className="bg-gray-700 h-screen w-full pt-5 ">
@@ -127,57 +230,49 @@ const Social = () => {
             <div className="flex flex-row justify-start">
                 <ul className="menu bg-base-200 rounded-box w-56 h-[80vh] mx-28">
                     <div>
-                    <button className="btn bg-gray-500" onClick={newConversation}>
-                        New Chat
-                    </button>
+                        <label>Select a Friend to Chat With:</label><br></br>
+                        <select name="friends" id="friends" onChange={(e)=>setNetChatFriend(e.target.value)}>
+                            {friends.map((friend) => (
+                                <option key={friend.username} value={friend.username}>{friend.username}</option>
+                            ))}
+                        </select>
+                        <button className="btn bg-gray-500" onClick={newConversation} disabled={newChatFriend == ''}>
+                            New Chat
+                        </button>
                     </div>
-                    <li>
-                        <a className="flex flex-row justify-between">
-                            User 1
+                    {chats.length === 0 ? (
+                        <p>No Chats Found</p> 
+                        ) : (
+                        <ul>
+                            {chats.map((chat) => (
+                                <li key={chat}>
+                                    <button className="flex flex-row justify-between" onClick={() => setCurrentChat(chat)}>
+                                        {chat}
 
-                            <button className="btn btn-square" onClick={getMessages}>
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-6 w-6"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </a>
-                        
-                    </li>
-                    <li>
-                        <a className="flex flex-row justify-between">
-                            User 2
-
-                            <button className="btn btn-square">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-6 w-6"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </a>
-                        
-                    </li>
+                                        <button className="btn btn-square" onClick={deleteChat} disabled={currentChat == ''}>
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="h-6 w-6"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor">
+                                                <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="2"
+                                                d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </ul>
 
                 <div className="w-[50rem] h-[80vh] bg-white rounded-xl flex flex-col justify-between p-1">
                     <div>
-                        <h1>Chat with Username</h1>
+                        <h1>Chat with {currentChat}</h1>
                     </div>
 
                     <div className="chat chat-start">
