@@ -11,10 +11,17 @@ interface userInfo{
     dob: string,
 }
 
+interface message{
+    chat:string, 
+    sender:string, 
+    time:string, 
+    msg:string,
+}
+
 const Social = () => {
 
     const [message, setMessage] = useState('');
-    const [chatMessages, setChatMessages] = useState([]);
+    const [chatMessages, setChatMessages] = useState<message[]>([]);
     const [friends, setFriends] = useState<userInfo[]>([]);
     const [newChatFriend, setNetChatFriend] = useState<string>('');
     const [chats, setChats] = useState<string[]>([]);
@@ -166,38 +173,45 @@ const Social = () => {
 
     }
 
-    // const getMessages = async () => {
+    function chatClick(chat:string){
 
-    //     const data = {
-    //         user1 : 'Test',
-    //         user2 : 'Test2',
-    //     }
+        setCurrentChat(chat);
+        getMessages();
 
-    //     const submit = await fetch('http://localhost:8000/api/sendMessage/', {
-    //         method:'POST',
+    }
 
-    //         headers:{
-    //             'Content-Type':'application/json',
-    //         },
-    //         body: JSON.stringify(data),
+    const getMessages = async () => {
 
-    //     });
+        const data = {
+            user1 : 'Test',
+            user2 : currentChat,
+        }
+
+        const submit = await fetch('http://localhost:8000/api/getMessages/', {
+            method:'POST',
+
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body: JSON.stringify(data),
+
+        });
 
 
-    //     if(submit.status == 201){
-    //         console.log(submit);
-    //         const response = await submit.json()
-    //         console.log(response);
-    //         setChatMessages(response);
-    //     }
-    //     else{
-    //         console.log(submit);
-    //     }
+        if(submit.status == 201){
+            console.log(submit);
+            const response = await submit.json()
+            console.log(response);
+            setChatMessages(response);
+        }
+        else{
+            console.log(submit);
+        }
 
-    // }
+    }
 
     return(
-        <div className="bg-gray-700 h-screen w-full pt-5 ">
+        <div className="bg-gray-700 h-full w-full pt-5 ">
             <div className="navbar bg-white rounded-md mx-auto max-w-screen-xl">
                 <div className="flex-1">
                     <Link href="/Home" className="btn btn-ghost text-xl text-black">VGR</Link>
@@ -227,7 +241,7 @@ const Social = () => {
 
             <h2 className="mx-28 text-3xl text-gray-100 font-bold py-5">Social</h2>
 
-            <div className="flex flex-row justify-start">
+            <div className="flex flex-row justify-start pb-5">
                 <ul className="menu bg-base-200 rounded-box w-56 h-[80vh] mx-28">
                     <div>
                         <label>Select a Friend to Chat With:</label><br></br>
@@ -246,7 +260,7 @@ const Social = () => {
                         <ul>
                             {chats.map((chat) => (
                                 <li key={chat}>
-                                    <button className="flex flex-row justify-between" onClick={() => setCurrentChat(chat)}>
+                                    <button className="flex flex-row justify-between" onClick={() => chatClick(chat)}>
                                         {chat}
 
                                         <button className="btn btn-square" onClick={deleteChat} disabled={currentChat == ''}>
@@ -275,16 +289,19 @@ const Social = () => {
                         <h1>Chat with {currentChat}</h1>
                     </div>
 
-                    <div className="chat chat-start">
-                        <div className="chat-bubble">
-                            It's over Anakin,
-                            <br />
-                            I have the high ground.
-                        </div>
+                    <div className="overflow-y-auto">
+                        {chatMessages.length == 0 ? (
+                            <p>No messages found</p>
+                        ) : (
+                            chatMessages.map((msg, idx) => (
+                                <div key={idx} className={`chat ${msg.sender == currentChat && "chat-start"} ${msg.sender != currentChat && "chat-end"}`}>
+                                    <div className="chat-bubble">{msg.msg}</div>
+                                </div>
+                            ))
+                        )}
                     </div>
-                    <div className="chat chat-end">
-                        <div className="chat-bubble">You underestimate my power!</div>
-                    </div>
+
+                    
 
                     <form onSubmit={addMessage} className="">
                         <input type="text" placeholder="Type your message here..." className="w-[40rem] h-[3rem] ml-[1rem]" onChange={(e) => setMessage(e.target.value)}/>
