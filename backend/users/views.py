@@ -6,8 +6,8 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework.permissions import AllowAny
-from .models import userWithDOB, userFriends, FriendStatus
-from django.contrib.auth import authenticate
+from .models import userWithDOB, userFriends, FriendStatus, userwithID
+from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 
 # Create your views here.
@@ -40,6 +40,7 @@ class userCreationView(APIView):
         )
 
         userWithDOB.objects.create(user=newUser, DOB = dob)
+        userwithID.objects.create(user=newUser)
 
         return Response({'message':'New User Created'}, status=status.HTTP_201_CREATED)
     
@@ -54,10 +55,16 @@ class loginView(APIView):
         user = authenticate(username=username, password=password)
 
         if user is not None:
+            login(request, user)
             return Response({'message':'User Authentication Successful'}, status=status.HTTP_200_OK)
         
         else:
             return Response({'message':'User Authentication Unsuccessful'}, status=status.HTTP_400_BAD_REQUEST)
+
+class logoutView(APIView):
+    def post(self, request):
+        logout(request)   
+        return Response({'message':'Logout Successful'}, status=status.HTTP_200_OK)   
 
 class fetchUsersView(APIView):
 

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Cookies from "js-cookie";
 
 const Login = () => {
 
@@ -21,17 +22,20 @@ const Login = () => {
             password,
         };
 
+        const csrfToken = Cookies.get('csrftoken') || '';
+
         const submit = await fetch('http://localhost:8000/api/login/', {
             method:'POST',
 
             headers:{
                 'Content-Type':'application/json',
+                'X-CSRFToken': csrfToken,
             },
             body: JSON.stringify(formData),
 
         });
 
-        // const response = await submit.json();
+        const response = await submit.json();
 
         if(submit.status == 200){
             console.log(submit);
