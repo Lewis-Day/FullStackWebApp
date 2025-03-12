@@ -22,24 +22,13 @@ class recommendationsView(APIView):
             return JsonResponse({"error": "Database file not found"}, status=500)
         dbConn = sqlite3.connect(db_path)
 
-        if not request.user.is_authenticated:
-            return JsonResponse({'error': 'User not authenticated'}, status=401)
-
-        print("#######################################")
-
-        user = request.user
-        userid = userwithID.objects.get(user=user)
-        id = userid.recID
-        
-        print("#######################################", id)
-
 
         # userToRecommend = int(input("Enter User ID to Recommend: "))
 
         # userToRecommend = int(2459)
 
-        # userToRecommend = request.GET.get('userId', 2459)  # Default user if none provided
-        userToRecommend = int(id)
+        userToRecommend = request.GET.get('userId', 2459)  # Default user if none provided
+
 
         # get all unique games
         uniqueGamesdf = pd.read_sql('SELECT DISTINCT gameIdFact FROM ratings', dbConn)

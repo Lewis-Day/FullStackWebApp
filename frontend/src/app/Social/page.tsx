@@ -1,31 +1,42 @@
 'use client';
 
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import { log } from "console";
 
-interface userInfo{
-    username: string,
-    email: string, 
-    firstName: string,
-    lastName: string, 
-    dob: string,
+interface User{
+    username:string
 }
 
 interface message{
-    chat:string, 
-    sender:string, 
-    time:string, 
-    msg:string,
+    conversation:string, 
+    message:string,
+    messageTime:string, 
+    sendingUser:User, 
+}
+
+interface friendInfo{
+    username: string,
 }
 
 const Social = () => {
 
+    const loggedInUser = localStorage.getItem('user');
+
     const [message, setMessage] = useState('');
     const [chatMessages, setChatMessages] = useState<message[]>([]);
-    const [friends, setFriends] = useState<userInfo[]>([]);
-    const [newChatFriend, setNetChatFriend] = useState<string>('');
-    const [chats, setChats] = useState<string[]>([]);
+    const [friends, setFriends] = useState<friendInfo[]>([]);
+    const [newChatFriend, setNewChatFriend] = useState<string>('');
+    const [chats, setChats] = useState<friendInfo[]>([]);
     const [currentChat, setCurrentChat] = useState('');
+
+    const token = Cookies.get('access_token');
+
+    if(!token){
+        redirect('/Login/');
+    }
 
     useEffect(() => {
         const fetchFriends = async (searchUser:string) => {
@@ -34,20 +45,23 @@ const Social = () => {
             try{
                 const friendsResponse = await fetch(`http://127.0.0.1:8000/api/getFriends/?username=${encodeURIComponent(searchUser)}`, {
                     method:'GET',
+                    // headers:{
+                    //     Authorization: `Bearer ${token}`,
+                    // }
                 });
+
+                // if(friendsResponse.status == 401){
+                //     redirect('/Login/');
+                // }
         
                 const data = await friendsResponse.json();        
                 console.log(data);
 
-                const friends = data.friendList;
-
-                console.log(friends)
-
-                if (!Array.isArray(friends)){
+                if (!Array.isArray(data)){
                     setFriends([]);
                 }
                 else{
-                    setFriends(friends);
+                    setFriends(data);
                 }
                 
             }
@@ -58,7 +72,7 @@ const Social = () => {
             }
         };
 
-        fetchFriends("Test")
+        fetchFriends(loggedInUser)
 
         const fetchChats = async (searchUser:string) => {
 
@@ -66,20 +80,25 @@ const Social = () => {
             try{
                 const chatResponse = await fetch(`http://127.0.0.1:8000/api/getFriends/?username=${encodeURIComponent(searchUser)}`, {
                     method:'GET',
+                    headers:{
+                        Authorization: `Bearer ${token}`,
+                    }
+                    
                 });
+
+                if(chatResponse.status == 401){
+                    redirect('/Login/');
+                }
         
-                const data = await chatResponse.json();        
+                const data = await chatResponse.json(); 
+                console.log('CHATS');       
                 console.log(data);
 
-                const allChats = data.chats;
-
-                console.log(allChats)
-
-                if (!Array.isArray(allChats)){
+                if (!Array.isArray(data)){
                     setChats([]);
                 }
                 else{
-                    setChats(allChats);
+                    setChats(data);
                 }
                 
             }
@@ -90,14 +109,14 @@ const Social = () => {
             }
         };
 
-        fetchChats("Test")
+        fetchChats(loggedInUser)
 
     }, []);
 
     const newConversation = async () => {
 
         const data = {
-            user1 : 'Test',
+            user1 : loggedInUser,
             user2 : newChatFriend,
         }
 
@@ -123,8 +142,8 @@ const Social = () => {
     const addMessage = async () => {
 
         const data = {
-            user1 : 'Test',
-            user2 : 'Test2',
+            user1 : loggedInUser,
+            user2 : currentChat,
             message : message,
         }
 
@@ -150,7 +169,7 @@ const Social = () => {
     const deleteChat = async () => {
 
         const data = {
-            user1 : 'Test',
+            user1 : loggedInUser,
             user2 : currentChat,
         }
 
@@ -183,26 +202,25 @@ const Social = () => {
     const getMessages = async () => {
 
         const data = {
-            user1 : 'Test',
+            user1 : loggedInUser,
             user2 : currentChat,
         }
 
-        const submit = await fetch('http://localhost:8000/api/getMessages/', {
-            method:'POST',
-
-            headers:{
-                'Content-Type':'application/json',
-            },
-            body: JSON.stringify(data),
+        const submit = await fetch(`http://localhost:8000/api/getMessages/?user1=${encodeURIComponent(data.user1)}&user2=${encodeURIComponent(data.user2)}`, {
+            method:'GET',
 
         });
 
 
-        if(submit.status == 201){
+        if(submit.status == 200){
             console.log(submit);
             const response = await submit.json()
             console.log(response);
             setChatMessages(response);
+
+            console.log(response[0].message);
+            console.log(chatMessages[0].message)
+
         }
         else{
             console.log(submit);
@@ -228,7 +246,7 @@ const Social = () => {
 
                         <li>
                             <details>
-                                <summary>Username</summary>
+                                <summary>{localStorage.getItem('user')}</summary>
                                 <ul className="bg-base-100 rounded-t-none p-2">
                                     <li><Link href="/Profile/">Profile</Link></li>
                                     <li><Link href="/Logout/">Logout</Link></li>
@@ -245,12 +263,13 @@ const Social = () => {
                 <ul className="menu bg-base-200 rounded-box w-56 h-[80vh] mx-28">
                     <div>
                         <label>Select a Friend to Chat With:</label><br></br>
-                        <select name="friends" id="friends" onChange={(e)=>setNetChatFriend(e.target.value)}>
+                        <select name="friends" id="friends" onChange={(e)=>setNewChatFriend(e.target.value)}>
+                            <option value="">Select a Friend</option>
                             {friends.map((friend) => (
                                 <option key={friend.username} value={friend.username}>{friend.username}</option>
                             ))}
                         </select>
-                        <button className="btn bg-gray-500" onClick={newConversation} disabled={newChatFriend == ''}>
+                        <button className="btn bg-gray-500" onClick={newConversation} disabled={!newChatFriend}>
                             New Chat
                         </button>
                     </div>
@@ -260,8 +279,8 @@ const Social = () => {
                         <ul>
                             {chats.map((chat) => (
                                 <li key={chat}>
-                                    <button className="flex flex-row justify-between" onClick={() => chatClick(chat)}>
-                                        {chat}
+                                    <div className="flex flex-row justify-between" onClick={() => chatClick(chat.username)}>
+                                        {chat.username}
 
                                         <button className="btn btn-square" onClick={deleteChat} disabled={currentChat == ''}>
                                             <svg
@@ -277,7 +296,7 @@ const Social = () => {
                                                 d="M6 18L18 6M6 6l12 12" />
                                             </svg>
                                         </button>
-                                    </button>
+                                    </div>
                                 </li>
                             ))}
                         </ul>
@@ -293,9 +312,13 @@ const Social = () => {
                         {chatMessages.length == 0 ? (
                             <p>No messages found</p>
                         ) : (
-                            chatMessages.map((msg, idx) => (
-                                <div key={idx} className={`chat ${msg.sender == currentChat && "chat-start"} ${msg.sender != currentChat && "chat-end"}`}>
-                                    <div className="chat-bubble">{msg.msg}</div>
+                            chatMessages.map((msg, idx) => (     
+                                <div key={idx} className={`chat ${msg.sendingUser.username == loggedInUser && "chat-start"} ${msg.sendingUser.username != loggedInUser && "chat-end"}`}>
+                                    <div className="chat-header">
+                                        {msg.sendingUser.username}
+                                        <time className="text-xs opacity-50 pl-2">{msg.messageTime}</time>
+                                    </div>
+                                    <div className="chat-bubble bg-blue-500">{msg.message}</div>
                                 </div>
                             ))
                         )}

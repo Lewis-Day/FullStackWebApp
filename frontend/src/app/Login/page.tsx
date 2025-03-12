@@ -22,14 +22,12 @@ const Login = () => {
             password,
         };
 
-        const csrfToken = Cookies.get('csrftoken') || '';
 
         const submit = await fetch('http://localhost:8000/api/login/', {
             method:'POST',
 
             headers:{
                 'Content-Type':'application/json',
-                'X-CSRFToken': csrfToken,
             },
             body: JSON.stringify(formData),
 
@@ -39,6 +37,12 @@ const Login = () => {
 
         if(submit.status == 200){
             console.log(submit);
+
+            console.log(response)
+            Cookies.set('access_token', response.access, { expires: 1 });
+            Cookies.set('refresh_token', response.refresh, { expires: 7 });
+
+            localStorage.setItem('user', response.user);
             pageRouter.push('/Recommendations')
         }
         else{

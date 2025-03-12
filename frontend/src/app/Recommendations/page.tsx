@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import Cookies from "js-cookie";
+import { redirect } from "next/navigation";
 
 
 interface gameRecommendations{
@@ -11,6 +13,12 @@ interface gameRecommendations{
 }
 
 const Recommendations = () => {
+
+    const token = Cookies.get('access_token');
+
+    if(!token){
+        redirect('/Login/');
+    }
 
     const [gameData, setGameData] = useState<gameRecommendations[]>([]);
     const [index, setIndex] = useState(0);
@@ -84,7 +92,7 @@ const Recommendations = () => {
 
                         <li>
                             <details>
-                                <summary>Username</summary>
+                                <summary>{localStorage.getItem('user')}</summary>
                                 <ul className="bg-base-100 rounded-t-none p-2">
                                     <li><Link href="/Profile/">Profile</Link></li>
                                     <li><Link href="/Logout/">Logout</Link></li>

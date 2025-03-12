@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import { redirect } from "next/navigation";
 
 
 interface userInfo{
@@ -12,16 +14,27 @@ interface userInfo{
     dob: string,
 }
 
+interface friendInfo{
+    username: string,
+}
+
 var currentUsername:string;
 
 const Profile = () => {
 
+    const token = Cookies.get('access_token');
+    const loggedInUser = localStorage.getItem('user');
+
+    if(!token){
+        redirect('/Login/');
+    }
+
     const [newPassword, setNewPassword] = useState('');
     const [search, setSearch] = useState('');
     const [foundUser, setFoundUser] = useState('');
-    const [friends, setFriends] = useState<userInfo[]>([]);
-    const [friendRequests, setFriendRequests] = useState<userInfo[]>([]);
-    const [sentFriendRequests, setSentFriendRequests] = useState<userInfo[]>([]);
+    const [friends, setFriends] = useState<friendInfo[]>([]);
+    const [friendRequests, setFriendRequests] = useState<friendInfo[]>([]);
+    const [sentFriendRequests, setSentFriendRequests] = useState<friendInfo[]>([]);
 
     const [user, setUser] = useState<userInfo>({
         username: '',
@@ -63,7 +76,7 @@ const Profile = () => {
             }
         };
 
-        fetchUserInfo("Test");
+        fetchUserInfo(loggedInUser);
 
         const fetchFriends = async (searchUser:string) => {
 
@@ -73,18 +86,15 @@ const Profile = () => {
                     method:'GET',
                 });
         
-                const data = await friendsResponse.json();        
+                const data = await friendsResponse.json();  
+                console.log("friends data")      
                 console.log(data);
 
-                const friends = data.friendList;
-
-                console.log(friends)
-
-                if (!Array.isArray(friends)){
+                if (!Array.isArray(data)){
                     setFriends([]);
                 }
                 else{
-                    setFriends(friends);
+                    setFriends(data);
                 }
                 
             }
@@ -95,28 +105,24 @@ const Profile = () => {
             }
         };
 
-        fetchFriends("Test");
+        fetchFriends(loggedInUser);
         
         const fetchFriendRequests = async (searchUser:string) => {
-
 
             try{
                 const friendsResponse = await fetch(`http://127.0.0.1:8000/api/getFriendRequests/?username=${encodeURIComponent(searchUser)}`, {
                     method:'GET',
                 });
+                
         
                 const data = await friendsResponse.json();        
                 console.log(data);
 
-                const requests = data.friendList;
-
-                console.log(requests)
-
-                if (!Array.isArray(requests)){
+                if (!Array.isArray(data)){
                     setFriendRequests([]);
                 }
                 else{
-                    setFriendRequests(requests);
+                    setFriendRequests(data);
                 }
                 
             }
@@ -127,7 +133,7 @@ const Profile = () => {
             }
         };
 
-        fetchFriendRequests("Test");
+        fetchFriendRequests(loggedInUser);
 
 
         const fetchSentFriendRequests = async (searchUser:string) => {
@@ -141,15 +147,12 @@ const Profile = () => {
                 const data = await friendsResponse.json();        
                 console.log(data);
 
-                const requests = data.friendList;
 
-                console.log(requests)
-
-                if (!Array.isArray(requests)){
+                if (!Array.isArray(data)){
                     setSentFriendRequests([]);
                 }
                 else{
-                    setSentFriendRequests(requests);
+                    setSentFriendRequests(data);
                 }
                 
             }
@@ -160,7 +163,7 @@ const Profile = () => {
             }
         };
 
-        fetchSentFriendRequests("Test");
+        fetchSentFriendRequests(loggedInUser);
         
                 
     }, []);
@@ -423,7 +426,7 @@ const Profile = () => {
     
 
     return(
-        <div className="bg-gray-700 h-auto w-full pt-5 ">
+        <div className="bg-gray-700 h-full w-full pt-5 pb-5">
             <div className="navbar bg-white rounded-md mx-auto max-w-screen-xl">
                 <div className="flex-1">
                     <Link href="/Home" className="btn btn-ghost text-xl text-black">VGR</Link>
@@ -440,7 +443,7 @@ const Profile = () => {
 
                         <li>
                             <details>
-                                <summary>Username</summary>
+                                <summary>{localStorage.getItem('user')}</summary>
                                 <ul className="bg-base-100 rounded-t-none p-2">
                                     <li><Link href="/Profile/">Profile</Link></li>
                                     <li><Link href="/Logout/">Logout</Link></li>
@@ -500,72 +503,88 @@ const Profile = () => {
 
             </div>
 
-            <div className="rounded-md mx-auto max-w-screen-xl bg-white p-2">
-                <form action="GET" onSubmit={formGetUsers}>
-                    <fieldset><h2>Add Friends:</h2></fieldset>
-                    <input type="text" placeholder="Friend Username..." onChange={(e) => setSearch(e.target.value)}/>
-                    <button type="submit">Search</button>
+            <div className="rounded-lg mx-auto max-w-screen-xl bg-white shadow-lg p-6 mt-5">
+                <form action="GET" onSubmit={formGetUsers} className="flex items-center gap-3">
+                    <fieldset>
+                        <h2 className="text-xl font-bold mb-3">Add Friends:</h2>
+                    </fieldset>
+                    <input className="flex-1 px-4 py-2 border border-gray-300 rounded-lg" type="text" placeholder="Friend Username..." onChange={(e) => setSearch(e.target.value)}/>
+                    <button type="submit" className="px-4 py-2 bg-blue-500 rounded-md text-white">Search</button>
                 </form>
 
                 {foundUser && (
-                    <div>
-                        <p>User: {foundUser}</p>
-                        <button onClick={() => formSendFriendRequest(foundUser)}>Add Friend</button>
+                    <div className="mt-4 p-4 bg-gray-100 rounded-lg flex items-center justify-between">
+                        <p className="font-medium">User: {foundUser}</p>
+                        <button className="px-4 py-2 bg-green-500 rounded-md text-white" onClick={() => formSendFriendRequest(foundUser)}>Add Friend</button>
                     </div>
                 )}
             </div>
 
-            <div className="rounded-md mx-auto max-w-screen-xl bg-white p-2">
 
-                <h2>My Friends: </h2>
+            <div className="rounded-md mx-auto max-w-screen-xl bg-white p-2 mt-5">
 
-                {friends.length === 0 ? (
-                    <p>No friends found</p> 
-                    ) : (
-                    <ul>
+                <h2 className="text-xl font-bold mb-3">My Friends: </h2>
+
+                {friends.length > 0 ? (
+                    <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {friends.map((friend) => (
-                            <li key={friend.username}>{friend.username} <button onClick={() => formRemoveFriend(friend.username)}>Remove Friend</button></li>
-                        ))}
-                    </ul>
-                )}
-
-            </div>
-
-            <div className="rounded-md mx-auto max-w-screen-xl bg-white p-2">
-
-                <h2>Friend Requests: </h2>
-
-                {friendRequests.length === 0 ? (
-                    <p>No pending friend requests</p> 
-                    ) : (
-                    <ul>
-                        {friendRequests.map((friend) => (
-                            <li key={friend.username}>
-                                {friend.username} 
-                                <button onClick={() => acceptRequest(friend.username)}>Accept</button>
-                                <button onClick={() => declineRequest(friend.username)}>Decline</button>
+                            <li key={friend.username} className="flex items-center justify-between bg-gray-100 p-3 rounded-lg shadow-sm">
+                                <div className="font-medium">{friend.username}</div>
+                                <button className="bg-red-500 p-2 rounded-md" onClick={() => formRemoveFriend(friend.username)}>Remove Friend</button>
                             </li>
                         ))}
                     </ul>
+                    
+                    ) : (
+                    
+                    <p className="text-gray-500">No friends found...</p> 
                 )}
 
             </div>
 
-            <div className="rounded-md mx-auto max-w-screen-xl bg-white p-2">
+        
 
-                <h2>Sent Friend Requests: </h2>
 
-                {sentFriendRequests.length === 0 ? (
-                    <p>No friend requests sent</p> 
+            <div className="rounded-md mx-auto max-w-screen-xl bg-white p-2 mt-5">
+
+                <h2 className="text-xl font-bold mb-3">Friend Requests: </h2>
+
+                {friendRequests.length > 0 ?(
+                    <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {friendRequests.map((friend) => (
+                            <li key={friend.username} className="flex items-center justify-between bg-gray-100 p-3 rounded-lg shadow-sm">
+                                <div className="font-medium">{friend.username}</div>
+                                <div>
+                                    <button className="bg-green-300 p-2 rounded-md mx-1" onClick={() => acceptRequest(friend.username)}>Accept</button>
+                                    <button className="bg-red-300 p-2 rounded-md mx-1" onClick={() => declineRequest(friend.username)}>Decline</button>
+                                </div>
+                                
+                            </li>
+                        ))}
+                    </ul>
                     ) : (
+                        <p className="text-gray-500">No pending friend requests...</p> 
+                )}
+
+            </div>
+
+            <div className="rounded-md mx-auto max-w-screen-xl bg-white p-2 mt-5">
+
+                <h2 className="text-xl font-bold mb-3">Sent Friend Requests: </h2>
+
+                {sentFriendRequests.length > 0 ?(
                     <ul>
                         {sentFriendRequests.map((friend) => (
-                            <li key={friend.username}>
-                                {friend.username} 
-                                <button onClick={() => deleteRequest(friend.username)}>Cancel</button>
+                            <li key={friend.username} className="flex items-center justify-between bg-gray-100 p-3 rounded-lg shadow-sm">
+                                <div className="font-medium">{friend.username}</div>
+                                <button className="bg-orange-300 p-2 rounded-md mx-1" onClick={() => deleteRequest(friend.username)}>Cancel</button>
                             </li>
                         ))}
                     </ul>
+                    
+                    ) : (
+                    
+                    <p className="text-gray-500">No friend requests sent...</p> 
                 )}
 
             </div>

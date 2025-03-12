@@ -1,17 +1,15 @@
+'use client';
+
 import { redirect } from "next/navigation";
 import Cookies from "js-cookie";
 
 
 const Logout = () => {
 
-  const logoutProcess = async() => {
-    const response = await fetch('http://localhost:8000/api/logout/', {
-    method: 'POST',
-    });
-
-    if(response.status == 200){
-      Cookies.remove('sessionid');
-    }
+  function logoutProcess() {
+    Cookies.remove('access_token');
+    Cookies.remove('refresh_token');
+    localStorage.removeItem('user');
   }
   logoutProcess();
   redirect('/Home/');

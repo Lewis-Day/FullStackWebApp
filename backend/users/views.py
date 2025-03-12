@@ -9,6 +9,7 @@ from rest_framework.permissions import AllowAny
 from .models import userWithDOB, userFriends, FriendStatus, userwithID
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
+from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your views here.
 
@@ -55,15 +56,19 @@ class loginView(APIView):
         user = authenticate(username=username, password=password)
 
         if user is not None:
-            login(request, user)
-            return Response({'message':'User Authentication Successful'}, status=status.HTTP_200_OK)
+            token = RefreshToken.for_user(user)
+            user = User.objects.get(username = username)
+
+            return Response({'message':'User Authentication Successful',
+                             'user' : str(user.username),
+                             'refresh': str(token),
+                             'access' : str(token.access_token)}, status=status.HTTP_200_OK)
         
         else:
             return Response({'message':'User Authentication Unsuccessful'}, status=status.HTTP_400_BAD_REQUEST)
 
 class logoutView(APIView):
-    def post(self, request):
-        logout(request)   
+    def post(self, request): 
         return Response({'message':'Logout Successful'}, status=status.HTTP_200_OK)   
 
 class fetchUsersView(APIView):
@@ -297,7 +302,8 @@ class deleteFriend(APIView):
                 return Response({'message':'No Friendship'}, status=status.HTTP_400_BAD_REQUEST)    
         else:
             return Response({'message':'Cannot friend yourself, error'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+
 class listFriends(APIView):
     def get(self, request):
 
@@ -313,9 +319,16 @@ class listFriends(APIView):
 
             for friend in friendship:
                 if friend.user1 == u1:
-                    friendList.append(friend.user2)
+                    
+                    user_info = {
+                        'username': friend.user2.username,
+                    }
+                    friendList.append(user_info)
                 else:
-                    friendList.append(friend.user1)
+                    user_info = {
+                        'username': friend.user1.username,
+                    }
+                    friendList.append(user_info)
 
 
             return Response(friendList, status=status.HTTP_200_OK)
@@ -332,12 +345,18 @@ class listFriendRequests(APIView):
 
         u1 = User.objects.get(username = username)
         friendship = userFriends.objects.filter(user2 = u1, status = FriendStatus.REQUESTED).all()
+        print("FRIENDSHIP", friendship)
         if friendship is not None:
 
             friendList = []
 
             for friend in friendship:
-                friendList.append(friend.user1.username)
+                user_info = {
+                    'username': friend.user1.username,
+                }
+                friendList.append(user_info)
+
+                print(user_info)
 
 
             return Response(friendList, status=status.HTTP_200_OK)
@@ -360,7 +379,11 @@ class listSentFriendRequests(APIView):
             friendList = []
 
             for friend in friendship:
-                friendList.append(friend.user2.username)
+
+                user_info = {
+                    'username': friend.user2.username,
+                }
+                friendList.append(user_info)
 
 
             return Response(friendList, status=status.HTTP_200_OK)
