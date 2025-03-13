@@ -27,13 +27,19 @@ const fetchToken = async () : Promise<string | null> => {
 
 };
 
-export async function GET() {
+export async function GET(request : Request) {
+
+    const userToken = request.headers.get("Authorization");
 
     const token = await fetchToken();
 
     try{
         const gameRecommendations = await fetch("http://127.0.0.1:8000/api/recommendations/", {
             method:'GET',
+            headers:{
+                Authorization: `${userToken}`,
+            }
+
         });
 
         const recommendations = await gameRecommendations.json();
