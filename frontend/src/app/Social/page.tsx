@@ -4,7 +4,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { log } from "console";
 
 interface User{
     username:string
@@ -22,8 +21,7 @@ interface friendInfo{
 }
 
 const Social = () => {
-
-    const loggedInUser = localStorage.getItem('user');
+    let loggedInUser = localStorage.getItem('user');
 
     const [message, setMessage] = useState('');
     const [chatMessages, setChatMessages] = useState<message[]>([]);
@@ -45,14 +43,14 @@ const Social = () => {
             try{
                 const friendsResponse = await fetch(`http://127.0.0.1:8000/api/getFriends/?username=${encodeURIComponent(searchUser)}`, {
                     method:'GET',
-                    // headers:{
-                    //     Authorization: `Bearer ${token}`,
-                    // }
+                    headers:{
+                        Authorization: `Bearer ${token}`,
+                    }
                 });
 
-                // if(friendsResponse.status == 401){
-                //     redirect('/Login/');
-                // }
+                if(friendsResponse.status == 401){
+                    redirect('/Login/');
+                }
         
                 const data = await friendsResponse.json();        
                 console.log(data);
@@ -73,6 +71,8 @@ const Social = () => {
         };
 
         fetchFriends(loggedInUser)
+
+        
 
         const fetchChats = async (searchUser:string) => {
 
@@ -125,10 +125,15 @@ const Social = () => {
 
             headers:{
                 'Content-Type':'application/json',
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(data),
 
         });
+
+        if(submit.status == 401){
+            redirect('/Login/');
+        }
 
         if(submit.status == 201){
             console.log(submit);
@@ -152,10 +157,15 @@ const Social = () => {
 
             headers:{
                 'Content-Type':'application/json',
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(data),
 
         });
+
+        if(submit.status == 401){
+            redirect('/Login/');
+        }
 
         if(submit.status == 201){
             console.log(submit);
@@ -178,10 +188,15 @@ const Social = () => {
 
             headers:{
                 'Content-Type':'application/json',
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(data),
 
         });
+
+        if(submit.status == 401){
+            redirect('/Login/');
+        }
 
         if(submit.status == 201){
             console.log(submit);
@@ -208,8 +223,15 @@ const Social = () => {
 
         const submit = await fetch(`http://localhost:8000/api/getMessages/?user1=${encodeURIComponent(data.user1)}&user2=${encodeURIComponent(data.user2)}`, {
             method:'GET',
+            headers:{
+                Authorization: `Bearer ${token}`,
+            }
 
         });
+
+        if(submit.status == 401){
+            redirect('/Login/');
+        }
 
 
         if(submit.status == 200){

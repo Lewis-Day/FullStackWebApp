@@ -52,7 +52,14 @@ const Profile = () => {
             try{
                 const userinforesponse = await fetch(`http://127.0.0.1:8000/api/user/?username=${encodeURIComponent(searchUser)}`, {
                     method:'GET',
+                    headers:{
+                        Authorization: `Bearer ${token}`,
+                    }
                 });
+
+                if(userinforesponse.status == 401){
+                    redirect('/Login/');
+                }
         
                 const data = await userinforesponse.json();        
                 console.log(data);
@@ -84,7 +91,14 @@ const Profile = () => {
             try{
                 const friendsResponse = await fetch(`http://127.0.0.1:8000/api/getFriends/?username=${encodeURIComponent(searchUser)}`, {
                     method:'GET',
+                    headers:{
+                        Authorization: `Bearer ${token}`,
+                    }
                 });
+
+                if(friendsResponse.status == 401){
+                    redirect('/Login/');
+                }
         
                 const data = await friendsResponse.json();  
                 console.log("friends data")      
@@ -106,13 +120,21 @@ const Profile = () => {
         };
 
         fetchFriends(loggedInUser);
+
         
         const fetchFriendRequests = async (searchUser:string) => {
 
             try{
                 const friendsResponse = await fetch(`http://127.0.0.1:8000/api/getFriendRequests/?username=${encodeURIComponent(searchUser)}`, {
                     method:'GET',
+                    headers:{
+                        Authorization: `Bearer ${token}`,
+                    }
                 });
+
+                if(friendsResponse.status == 401){
+                    redirect('/Login/');
+                }
                 
         
                 const data = await friendsResponse.json();        
@@ -142,7 +164,14 @@ const Profile = () => {
             try{
                 const friendsResponse = await fetch(`http://127.0.0.1:8000/api/getSentFriendRequests/?username=${encodeURIComponent(searchUser)}`, {
                     method:'GET',
+                    headers:{
+                        Authorization: `Bearer ${token}`,
+                    }
                 });
+
+                if(friendsResponse.status == 401){
+                    redirect('/Login/');
+                }
         
                 const data = await friendsResponse.json();        
                 console.log(data);
@@ -190,12 +219,17 @@ const Profile = () => {
 
             headers:{
                 'Content-Type':'application/json',
+                Authorization: `Bearer ${token}`,
             },
 
 
             body: JSON.stringify(sendData),
 
         });
+
+        if(submit.status == 401){
+            redirect('/Login/');
+        }
 
         // const response = await submit.json();
 
@@ -223,12 +257,18 @@ const Profile = () => {
 
             headers:{
                 'Content-Type':'application/json',
+                Authorization: `Bearer ${token}`,
             },
 
 
             body: JSON.stringify(sendData),
 
         });
+
+
+        if(submit.status == 401){
+            redirect('/Login/');
+        }
 
         // const response = await submit.json();
 
@@ -248,7 +288,14 @@ const Profile = () => {
         try{
             const userinforesponse = await fetch(`http://127.0.0.1:8000/api/user/?username=${encodeURIComponent(search)}`, {
                 method:'GET',
+                headers:{
+                    Authorization: `Bearer ${token}`,
+                }
             });
+
+            if(userinforesponse.status == 401){
+                redirect('/Login/');
+            }
     
             const data = await userinforesponse.json();        
             console.log(data);
@@ -276,10 +323,15 @@ const Profile = () => {
 
             headers:{
                 'Content-Type':'application/json',
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(sendData),
 
         });
+
+        if(submit.status == 401){
+            redirect('/Login/');
+        }
 
        const response = await submit.json();
 
@@ -308,10 +360,15 @@ const Profile = () => {
 
             headers:{
                 'Content-Type':'application/json',
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(sendData),
 
         });
+
+        if(submit.status == 401){
+            redirect('/Login/');
+        }
 
        const response = await submit.json();
 
@@ -340,10 +397,15 @@ const Profile = () => {
 
             headers:{
                 'Content-Type':'application/json',
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(sendData),
 
         });
+
+        if(submit.status == 401){
+            redirect('/Login/');
+        }
 
        const response = await submit.json();
 
@@ -372,10 +434,15 @@ const Profile = () => {
 
             headers:{
                 'Content-Type':'application/json',
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(sendData),
 
         });
+
+        if(submit.status == 401){
+            redirect('/Login/');
+        }
 
        const response = await submit.json();
 
@@ -404,10 +471,15 @@ const Profile = () => {
 
             headers:{
                 'Content-Type':'application/json',
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(sendData),
 
         });
+
+        if(submit.status == 401){
+            redirect('/Login/');
+        }
 
        const response = await submit.json();
 

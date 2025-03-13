@@ -10,6 +10,9 @@ from .models import userWithDOB, userFriends, FriendStatus, userwithID
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.decorators import authentication_classes, permission_classes
 
 # Create your views here.
 
@@ -71,6 +74,8 @@ class logoutView(APIView):
     def post(self, request): 
         return Response({'message':'Logout Successful'}, status=status.HTTP_200_OK)   
 
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class fetchUsersView(APIView):
 
     def get(self, request):
@@ -90,6 +95,8 @@ class fetchUsersView(APIView):
         
         return Response(user_info, status=status.HTTP_200_OK)
 
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class changeUserDataView(APIView):
 
     def post(self, request):
@@ -122,7 +129,9 @@ class changeUserDataView(APIView):
 
         else:
             return Response({'message':'User Data Change Unsuccessful'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])        
 class changePasswordView(APIView):
     
     def post(self, request):
@@ -174,7 +183,8 @@ class forgotPasswordView(APIView):
         else:
             return Response({'message':'User cannot be found, unsuccessful password change'}, status=status.HTTP_400_BAD_REQUEST)
         
-
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class addFriendView(APIView):
 
     def post(self, request):
@@ -208,7 +218,8 @@ class addFriendView(APIView):
         else:
             return Response({'message':'Cannot friend yourself, error'}, status=status.HTTP_400_BAD_REQUEST)
         
-
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class acceptRequestView(APIView):
     def post(self, request):
 
@@ -232,7 +243,9 @@ class acceptRequestView(APIView):
                 return Response({'message':'No Friend Request Pending'}, status=status.HTTP_400_BAD_REQUEST)    
         else:
             return Response({'message':'Cannot friend yourself, error'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])        
 class declineFriendRequest(APIView):
     def post(self, request):
 
@@ -257,7 +270,8 @@ class declineFriendRequest(APIView):
         else:
             return Response({'message':'Cannot friend yourself, error'}, status=status.HTTP_400_BAD_REQUEST)
         
-
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class deleteFriendRequest(APIView):
     def post(self, request):
 
@@ -280,7 +294,8 @@ class deleteFriendRequest(APIView):
         else:
             return Response({'message':'Cannot friend yourself, error'}, status=status.HTTP_400_BAD_REQUEST)
         
-
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class deleteFriend(APIView):
     def post(self, request):
 
@@ -304,6 +319,8 @@ class deleteFriend(APIView):
             return Response({'message':'Cannot friend yourself, error'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class listFriends(APIView):
     def get(self, request):
 
@@ -336,7 +353,10 @@ class listFriends(APIView):
         else:
 
             return Response([], status=status.HTTP_200_OK)    
-        
+
+
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])        
 class listFriendRequests(APIView):
     def get(self, request):
 
@@ -366,6 +386,8 @@ class listFriendRequests(APIView):
             return Response([], status=status.HTTP_200_OK)    
         
 
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class listSentFriendRequests(APIView):
     def get(self, request):
 

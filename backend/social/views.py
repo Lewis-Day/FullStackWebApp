@@ -15,6 +15,8 @@ from users.models import User
 
 # Create your views here.
 
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class createConversation(APIView):
 
     def post(self, request):
@@ -41,6 +43,8 @@ class createConversation(APIView):
 
         return Response({'message':'Chat created'}, status=status.HTTP_201_CREATED)
         
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class addMessage(APIView):
 
     def post(self, request):
@@ -68,6 +72,8 @@ class addMessage(APIView):
 
         return Response({'message':'Message saved'}, status=status.HTTP_201_CREATED)
 
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class getMessages(APIView):
 
     def get(self, request):
@@ -150,7 +156,9 @@ class getConversations(APIView):
 
         else:
             return Response([], status=status.HTTP_200_OK)
-    
+
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])    
 class deleteConversation(APIView):
     def post(self, request):
 
