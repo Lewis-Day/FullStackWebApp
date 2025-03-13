@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Cookies from "js-cookie";
 
 const Login = () => {
 
@@ -21,6 +22,7 @@ const Login = () => {
             password,
         };
 
+
         const submit = await fetch('http://localhost:8000/api/login/', {
             method:'POST',
 
@@ -31,10 +33,16 @@ const Login = () => {
 
         });
 
-        // const response = await submit.json();
+        const response = await submit.json();
 
         if(submit.status == 200){
             console.log(submit);
+
+            console.log(response)
+            Cookies.set('access_token', response.access, { expires: 1 });
+            Cookies.set('refresh_token', response.refresh, { expires: 7 });
+
+            localStorage.setItem('user', response.user);
             pageRouter.push('/Recommendations')
         }
         else{

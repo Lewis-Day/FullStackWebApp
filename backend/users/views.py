@@ -6,9 +6,13 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework.permissions import AllowAny
-from .models import userWithDOB, userFriends, FriendStatus
-from django.contrib.auth import authenticate
+from .models import userWithDOB, userFriends, FriendStatus, userwithID
+from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.decorators import authentication_classes, permission_classes
 
 # Create your views here.
 
@@ -40,6 +44,7 @@ class userCreationView(APIView):
         )
 
         userWithDOB.objects.create(user=newUser, DOB = dob)
+        userwithID.objects.create(user=newUser)
 
         return Response({'message':'New User Created'}, status=status.HTTP_201_CREATED)
     
@@ -54,11 +59,23 @@ class loginView(APIView):
         user = authenticate(username=username, password=password)
 
         if user is not None:
-            return Response({'message':'User Authentication Successful'}, status=status.HTTP_200_OK)
+            token = RefreshToken.for_user(user)
+            user = User.objects.get(username = username)
+
+            return Response({'message':'User Authentication Successful',
+                             'user' : str(user.username),
+                             'refresh': str(token),
+                             'access' : str(token.access_token)}, status=status.HTTP_200_OK)
         
         else:
             return Response({'message':'User Authentication Unsuccessful'}, status=status.HTTP_400_BAD_REQUEST)
 
+class logoutView(APIView):
+    def post(self, request): 
+        return Response({'message':'Logout Successful'}, status=status.HTTP_200_OK)   
+
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class fetchUsersView(APIView):
 
     def get(self, request):
@@ -78,6 +95,8 @@ class fetchUsersView(APIView):
         
         return Response(user_info, status=status.HTTP_200_OK)
 
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class changeUserDataView(APIView):
 
     def post(self, request):
@@ -110,7 +129,9 @@ class changeUserDataView(APIView):
 
         else:
             return Response({'message':'User Data Change Unsuccessful'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])        
 class changePasswordView(APIView):
     
     def post(self, request):
@@ -162,7 +183,8 @@ class forgotPasswordView(APIView):
         else:
             return Response({'message':'User cannot be found, unsuccessful password change'}, status=status.HTTP_400_BAD_REQUEST)
         
-
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class addFriendView(APIView):
 
     def post(self, request):
@@ -196,7 +218,8 @@ class addFriendView(APIView):
         else:
             return Response({'message':'Cannot friend yourself, error'}, status=status.HTTP_400_BAD_REQUEST)
         
-
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class acceptRequestView(APIView):
     def post(self, request):
 
@@ -220,7 +243,9 @@ class acceptRequestView(APIView):
                 return Response({'message':'No Friend Request Pending'}, status=status.HTTP_400_BAD_REQUEST)    
         else:
             return Response({'message':'Cannot friend yourself, error'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])        
 class declineFriendRequest(APIView):
     def post(self, request):
 
@@ -245,7 +270,8 @@ class declineFriendRequest(APIView):
         else:
             return Response({'message':'Cannot friend yourself, error'}, status=status.HTTP_400_BAD_REQUEST)
         
-
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class deleteFriendRequest(APIView):
     def post(self, request):
 
@@ -268,7 +294,8 @@ class deleteFriendRequest(APIView):
         else:
             return Response({'message':'Cannot friend yourself, error'}, status=status.HTTP_400_BAD_REQUEST)
         
-
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class deleteFriend(APIView):
     def post(self, request):
 
@@ -290,7 +317,10 @@ class deleteFriend(APIView):
                 return Response({'message':'No Friendship'}, status=status.HTTP_400_BAD_REQUEST)    
         else:
             return Response({'message':'Cannot friend yourself, error'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class listFriends(APIView):
     def get(self, request):
 
@@ -306,9 +336,16 @@ class listFriends(APIView):
 
             for friend in friendship:
                 if friend.user1 == u1:
-                    friendList.append(friend.user2)
+                    
+                    user_info = {
+                        'username': friend.user2.username,
+                    }
+                    friendList.append(user_info)
                 else:
-                    friendList.append(friend.user1)
+                    user_info = {
+                        'username': friend.user1.username,
+                    }
+                    friendList.append(user_info)
 
 
             return Response(friendList, status=status.HTTP_200_OK)
@@ -316,7 +353,10 @@ class listFriends(APIView):
         else:
 
             return Response([], status=status.HTTP_200_OK)    
-        
+
+
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])        
 class listFriendRequests(APIView):
     def get(self, request):
 
@@ -325,12 +365,18 @@ class listFriendRequests(APIView):
 
         u1 = User.objects.get(username = username)
         friendship = userFriends.objects.filter(user2 = u1, status = FriendStatus.REQUESTED).all()
+        print("FRIENDSHIP", friendship)
         if friendship is not None:
 
             friendList = []
 
             for friend in friendship:
-                friendList.append(friend.user1.username)
+                user_info = {
+                    'username': friend.user1.username,
+                }
+                friendList.append(user_info)
+
+                print(user_info)
 
 
             return Response(friendList, status=status.HTTP_200_OK)
@@ -340,6 +386,8 @@ class listFriendRequests(APIView):
             return Response([], status=status.HTTP_200_OK)    
         
 
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class listSentFriendRequests(APIView):
     def get(self, request):
 
@@ -353,7 +401,11 @@ class listSentFriendRequests(APIView):
             friendList = []
 
             for friend in friendship:
-                friendList.append(friend.user2.username)
+
+                user_info = {
+                    'username': friend.user2.username,
+                }
+                friendList.append(user_info)
 
 
             return Response(friendList, status=status.HTTP_200_OK)

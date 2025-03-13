@@ -8,12 +8,11 @@ import sqlite3
 import requests
 import numpy as np
 import os
+from users.models import userwithID
 
 # Create your views here.
 
 class recommendationsView(APIView):
-
-    permission_classes = [AllowAny]
 
     def get(self, request):
 
@@ -23,12 +22,13 @@ class recommendationsView(APIView):
             return JsonResponse({"error": "Database file not found"}, status=500)
         dbConn = sqlite3.connect(db_path)
 
+
         # userToRecommend = int(input("Enter User ID to Recommend: "))
 
         # userToRecommend = int(2459)
 
         userToRecommend = request.GET.get('userId', 2459)  # Default user if none provided
-        userToRecommend = int(userToRecommend)
+
 
         # get all unique games
         uniqueGamesdf = pd.read_sql('SELECT DISTINCT gameIdFact FROM ratings', dbConn)
