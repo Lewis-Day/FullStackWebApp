@@ -9,9 +9,15 @@ import requests
 import numpy as np
 import os
 from users.models import userwithID
+from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
 
 # Create your views here.
 
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class recommendationsView(APIView):
 
     def get(self, request):
@@ -27,8 +33,16 @@ class recommendationsView(APIView):
 
         # userToRecommend = int(2459)
 
-        userToRecommend = request.GET.get('userId', 2459)  # Default user if none provided
+        # userToRecommend = request.GET.get('userId', 2459)  # Default user if none provided
 
+        user = request.user
+        uidUser = userwithID.objects.get(user = user)
+        uid = uidUser.recID
+        print(user)
+        print(uidUser)
+        print(uid)
+
+        userToRecommend = uid
 
         # get all unique games
         uniqueGamesdf = pd.read_sql('SELECT DISTINCT gameIdFact FROM ratings', dbConn)
@@ -87,59 +101,4 @@ class recommendationsView(APIView):
 
         return JsonResponse(igdbids, safe=False)
 
-        # # My credentials for the igdb database
-        # id = 'ux7bv4lnw3boesl0tt1n1nyq3vgwgk'
-        # secret = 'echnn45lnk1sogfwbsqtviup6okjzl'
-
-        # # Get the token required for access to the data
-        # def token():
-
-        #     parameters = {
-        #         'client_id' : id,
-        #         'client_secret': secret,
-        #         'grant_type' : 'client_credentials',
-        #     }
-
-        #     response = requests.post('https://id.twitch.tv/oauth2/token', data=parameters)
-        #     response.raise_for_status()
-
-        #     print(response.json())
-
-        #     token = response.json()['access_token']
-        #     return token
-
-
-        # # Get the game name from the igdb based on the id
-        # def getGameName(auth, id, gid):
-        #     header = {
-        #         'Client-ID' : id,
-        #         'Authorization' : 'Bearer ' + auth,
-        #     }
-
-        #     query = 'fields name; where id = '+ str(gid) +';'
-
-
-        #     response2 = requests.post(
-        #         'https://api.igdb.com/v4/games',
-        #         headers=header,
-        #         data=query
-        #     )
-        #     response2.raise_for_status()
-
-        #     gamesResponse = response2.json()
-        #     for game in gamesResponse:
-
-        #         gameName = game['name']
-        #         return gameName
-
-
-        # gettoken = token()
-
-        # print("The games recommended are: ")
-
-        # # For each igdb id get the name and print it out
-        # for gid in igdbids:
-        #     gameName = getGameName(gettoken, id, gid)
-        #     print(gameName)
-
-
+    

@@ -45,31 +45,40 @@ const Recommendations = () => {
 
     useEffect(() => {
     
-            const fetchRecommendationInfo = async () => {
-    
-                try{
-                    const response = await fetch("/api/GameName");
-                    const data = await response.json();
-                    console.log(data);
+        const fetchRecommendationInfo = async () => {
 
-                    const recommendationSet: gameRecommendations[] = [];
-                    for(let i = 0; i<data.gameName.length; i++){
-                        recommendationSet.push({
-                            name: data.gameName[i],
-                            description: data.gameDescription[i],
-                            imgURL: data.imgURL[i],
-
-                        });
+            try{
+                const response = await fetch("/api/GameName", {
+                    method:'GET',
+                    headers:{
+                        Authorization: `Bearer ${token}`,
                     }
-                    setGameData(recommendationSet);
+                });
+
+                if(response.status == 401){
+                    redirect('/Login/')
                 }
-    
-                catch(error){
-                    console.error("Error: ", error);
+                const data = await response.json();
+                console.log(data);
+
+                const recommendationSet: gameRecommendations[] = [];
+                for(let i = 0; i<data.gameName.length; i++){
+                    recommendationSet.push({
+                        name: data.gameName[i],
+                        description: data.gameDescription[i],
+                        imgURL: data.imgURL[i],
+
+                    });
                 }
-            };
-    
-            fetchRecommendationInfo();
+                setGameData(recommendationSet);
+            }
+
+            catch(error){
+                console.error("Error: ", error);
+            }
+        };
+
+        fetchRecommendationInfo();
     
             
         }, []);
