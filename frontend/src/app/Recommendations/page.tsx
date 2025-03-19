@@ -100,6 +100,10 @@ const Recommendations = () => {
                         </li>
 
                         <li>
+                            <Link href="/AddRatings/">Add Ratings</Link>
+                        </li>
+
+                        <li>
                             <details>
                                 <summary>{localStorage.getItem('user')}</summary>
                                 <ul className="bg-base-100 rounded-t-none p-2">

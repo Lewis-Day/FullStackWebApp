@@ -45,7 +45,7 @@ const SignUp = () => {
 
         if(submit.status == 201){
             console.log(submit);
-            pageRouter.push('/Login')
+            pageRouter.push('/AddRatings/')
         }
         else{
             console.log(submit);
