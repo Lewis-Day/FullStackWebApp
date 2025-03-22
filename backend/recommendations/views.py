@@ -130,10 +130,13 @@ class initialRatingsView(APIView):
         return Response({'message':'New User Created'}, status=status.HTTP_201_CREATED)
     
 
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 class addRatingsView(APIView):
 
     def post(self, request):
-        user = request.data.get('user')
+        
+        user = request.user
         ratings = request.data.get('ratings')
 
         user = User.objects.get(username = user)

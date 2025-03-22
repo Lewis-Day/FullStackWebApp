@@ -2,7 +2,9 @@
 
 
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { useState } from "react";
+import Cookies from "js-cookie";
 
 interface gameSearch{
     id: number,
@@ -30,6 +32,12 @@ const AddRatings = () => {
     const [showReview, setShowReview] = useState(false);
     const [reviewGame, setReviewGame] = useState<gameForReview | null>();
     const [gameReview, setGameReview] = useState<newReview[]>([]);
+
+    const token = Cookies.get('access_token');
+
+    if(!token){
+        redirect('/Login/');
+    }
 
     const fetchGames = async () => {
 
@@ -100,6 +108,7 @@ const AddRatings = () => {
 
             headers:{
                 'Content-Type':'application/json',
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(data),
 
