@@ -136,6 +136,7 @@ const InitialRatings = () => {
             setGameReview((prevReviews) => [...prevReviews, newRating]);
             setShowReview(false);
             setShowSearchResults(false);
+            setGameName('');
     }
 
     return(
@@ -166,7 +167,7 @@ const InitialRatings = () => {
                 <fieldset className="fieldset w-xs bg-white border border-base-300 p-4 rounded-box">
                     <h3 className="text-xl font-bold pb-2">Search for a game</h3>
                     <div className="join">
-                        <input type="text" className="input join-item w-[25rem] border border-gray-300" placeholder="Game Name" onChange={(e)=>setGameName(e.target.value)}/>
+                        <input type="text" className="input join-item w-[25rem] border border-gray-300" placeholder="Game Name" value={gameName} onChange={(e)=>setGameName(e.target.value)}/>
                         <button className="btn join-item hover:scale-[1.01]" onClick={fetchGames}>Search</button>
                     </div>
                 </fieldset>

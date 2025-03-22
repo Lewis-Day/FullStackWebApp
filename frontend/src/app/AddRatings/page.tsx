@@ -10,10 +10,16 @@ interface gameSearch{
 }
 
 interface gameForReview{
+    id : number,
     imgURL : string,
     name : string,
     releaseDate : number,
     description : string,
+}
+
+interface newReview{
+    gameID:number, 
+    rating:number,
 }
 
 const AddRatings = () => {
@@ -23,6 +29,7 @@ const AddRatings = () => {
     const [showSearchResults, setShowSearchResults] = useState(false);
     const [showReview, setShowReview] = useState(false);
     const [reviewGame, setReviewGame] = useState<gameForReview | null>();
+    const [gameReview, setGameReview] = useState<newReview[]>([]);
 
     const fetchGames = async () => {
 
@@ -62,6 +69,7 @@ const AddRatings = () => {
             const releaseYear = date.getFullYear();
             console.log(releaseYear);
             setReviewGame({
+                id: responseData.game[0].id,
                 imgURL: responseData.game[0].cover.url,
                 name: responseData.game[0].name,
                 releaseDate: releaseYear,
@@ -76,11 +84,58 @@ const AddRatings = () => {
         }
     };
 
+    const sendRatings = async () => {
+
+        console.log(gameReview);
+
+        const user = localStorage.getItem('user');
+
+        const data = {
+            user : user,
+            ratings : gameReview,
+        }
+
+        const submit = await fetch('http://localhost:8000/api/addRatings/', {
+            method:'POST',
+
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body: JSON.stringify(data),
+
+        });
+
+        // const response = await submit.json();
+
+        if(submit.status == 201){
+            console.log(submit);
+            setGameName('');
+        }
+        else{
+            console.log(submit);
+        }
+    };
+
+    function saveRating(id: number): void {
+        
+        const rating = document.querySelector<HTMLInputElement>('input[name="rating-1"]:checked');
+
+            const newRating : newReview = {
+                gameID : id, 
+                rating : parseInt(rating.value, 10), 
+            }
+
+            setGameReview((prevReviews) => [...prevReviews, newRating]);
+            setShowReview(false);
+            setShowSearchResults(false);
+            sendRatings();
+    };
+
 
 
 
     return(
-        <div className="bg-gray-700 h-screen w-full py-5 ">
+        <div className="bg-gray-700 min-h-screen w-full py-5 ">
             <div className="navbar bg-white rounded-md mx-auto max-w-screen-xl">
                 <div className="flex-1">
                     <Link href="/Home" className="btn btn-ghost text-xl text-black">VGR</Link>
@@ -124,7 +179,7 @@ const AddRatings = () => {
                 <fieldset className="fieldset w-xs bg-white border border-base-300 p-4 rounded-box">
                     <h3 className="text-xl font-bold pb-2">Search for a game</h3>
                     <div className="join">
-                        <input type="text" className="input join-item w-[25rem] border border-gray-300" placeholder="Game Name" onChange={(e)=>setGameName(e.target.value)}/>
+                        <input type="text" className="input join-item w-[25rem] border border-gray-300" placeholder="Game Name" value={gameName} onChange={(e)=>setGameName(e.target.value)}/>
                         <button className="btn join-item hover:scale-[1.01]" onClick={fetchGames}>Search</button>
                     </div>
                 </fieldset>
@@ -167,7 +222,7 @@ const AddRatings = () => {
                         </div>
 
                         <div className="card-actions justify-end mt-4">
-                            <button className="btn btn-primary hover:scale-[1.01]">Submit Rating</button>
+                            <button className="btn btn-primary hover:scale-[1.01]" onClick={() => saveRating(reviewGame?.id)}>Submit Rating</button>
                         </div>
                     </div>
                 </div>
