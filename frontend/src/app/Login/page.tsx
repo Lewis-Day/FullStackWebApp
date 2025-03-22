@@ -15,6 +15,8 @@ const Login = () => {
 
     const formSubmit = async (e : React.FormEvent) => {
 
+        localStorage.clear();
+
         e.preventDefault();
 
         const formData = {

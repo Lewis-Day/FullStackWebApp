@@ -44,8 +44,9 @@ const SignUp = () => {
         // const response = await submit.json();
 
         if(submit.status == 201){
+            localStorage.setItem('user', username);
             console.log(submit);
-            pageRouter.push('/AddRatings/')
+            pageRouter.push('/InitialRatings/')
         }
         else{
             console.log(submit);

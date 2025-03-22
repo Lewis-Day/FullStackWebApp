@@ -2,6 +2,7 @@
 
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface gameSearch{
@@ -10,19 +11,29 @@ interface gameSearch{
 }
 
 interface gameForReview{
+    id : number,
     imgURL : string,
     name : string,
     releaseDate : number,
     description : string,
 }
 
+interface newReview{
+    gameID:number, 
+    rating:number,
+}
+
 const InitialRatings = () => {
+
+    const pageRouter = useRouter();
+        
 
     const [gameName, setGameName] = useState('');
     const [gameData, setGameData] = useState<gameSearch[]>([]);
     const [showSearchResults, setShowSearchResults] = useState(false);
     const [showReview, setShowReview] = useState(false);
     const [reviewGame, setReviewGame] = useState<gameForReview | null>();
+    const [gameReview, setGameReview] = useState<newReview[]>([]);
 
     const fetchGames = async () => {
 
@@ -62,6 +73,7 @@ const InitialRatings = () => {
             const releaseYear = date.getFullYear();
             console.log(releaseYear);
             setReviewGame({
+                id: responseData.game[0].id,
                 imgURL: responseData.game[0].cover.url,
                 name: responseData.game[0].name,
                 releaseDate: releaseYear,
@@ -76,11 +88,58 @@ const InitialRatings = () => {
         }
     };
 
+    const sendRatings = async () => {
 
+        console.log(gameReview);
 
+        const user = localStorage.getItem('user');
+
+        const data = {
+            user : user,
+            ratings : gameReview,
+        }
+
+        const submit = await fetch('http://localhost:8000/api/initialRatings/', {
+            method:'POST',
+
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body: JSON.stringify(data),
+
+        });
+
+        // const response = await submit.json();
+
+        if(submit.status == 201){
+            console.log(submit);
+            pageRouter.push('/Login/');
+        }
+        else{
+            console.log(submit);
+        }
+    };
+
+    function saveRating(id: number): void {
+
+        if(gameReview.length == 5){
+            sendRatings();
+        }
+        
+        const rating = document.querySelector<HTMLInputElement>('input[name="rating-1"]:checked');
+
+            const newRating : newReview = {
+                gameID : id, 
+                rating : parseInt(rating.value, 10), 
+            }
+
+            setGameReview((prevReviews) => [...prevReviews, newRating]);
+            setShowReview(false);
+            setShowSearchResults(false);
+    }
 
     return(
-        <div className="bg-gray-700 h-screen w-full py-5 ">
+        <div className="bg-gray-700 min-h-screen w-full py-5 ">
             <div className="navbar bg-white rounded-md mx-auto max-w-screen-xl">
                 <div className="flex-1">
                     <Link href="/Home" className="btn btn-ghost text-xl text-black">VGR</Link>
@@ -143,14 +202,14 @@ const InitialRatings = () => {
 
                         <div className="rating">
                             <input type="radio" name="rating-1" value="1" className="mask mask-star" aria-label="1 star" />
-                            <input type="radio" name="rating-2" value="2" className="mask mask-star" aria-label="2 star" defaultChecked />
-                            <input type="radio" name="rating-3" value="3" className="mask mask-star" aria-label="3 star" />
-                            <input type="radio" name="rating-4" value="4" className="mask mask-star" aria-label="4 star" />
-                            <input type="radio" name="rating-5" value="5" className="mask mask-star" aria-label="5 star" />
+                            <input type="radio" name="rating-1" value="2" className="mask mask-star" aria-label="2 star" />
+                            <input type="radio" name="rating-1" value="3" className="mask mask-star" aria-label="3 star" />
+                            <input type="radio" name="rating-1" value="4" className="mask mask-star" aria-label="4 star" />
+                            <input type="radio" name="rating-1" value="5" className="mask mask-star" aria-label="5 star" />
                         </div>
 
                         <div className="card-actions justify-end mt-4">
-                            <button className="btn btn-primary hover:scale-[1.01]">Submit Rating</button>
+                            <button className="btn btn-primary hover:scale-[1.01]" onClick={() => saveRating(reviewGame?.id)}>Submit Rating</button>
                         </div>
                     </div>
                 </div>

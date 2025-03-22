@@ -2,13 +2,16 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from django.http import JsonResponse
+from rest_framework.response import Response
+from rest_framework import status
 import tensorflow as tf
 import pandas as pd
 import sqlite3
 import requests
 import numpy as np
 import os
-from users.models import userwithID
+from users.models import userwithID, User
+from .models import NewRatings
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -101,4 +104,52 @@ class recommendationsView(APIView):
 
         return JsonResponse(igdbids, safe=False)
 
+
+class initialRatingsView(APIView):
+
+    def post(self, request):
+        user = request.data.get('user')
+        ratings = request.data.get('ratings')
+
+        user = User.objects.get(username = user)
+        uidUser = userwithID.objects.get(user = user)
+
+        print(uidUser.recID)
+        print(ratings)
+
+        for rating in ratings:
+
+            print(uidUser.recID)
+            print(rating['gameID'])
+            print(rating['rating'])
+            NewRatings.objects.create(
+                userID = uidUser.recID,
+                gameID = rating['gameID'],
+                rating = rating['rating'],
+            )
+        return Response({'message':'New User Created'}, status=status.HTTP_201_CREATED)
     
+
+class addRatingsView(APIView):
+
+    def post(self, request):
+        user = request.data.get('user')
+        ratings = request.data.get('ratings')
+
+        user = User.objects.get(username = user)
+        uidUser = userwithID.objects.get(user = user)
+
+        print(uidUser.recID)
+        print(ratings)
+
+        for rating in ratings:
+
+            print(uidUser.recID)
+            print(rating['gameID'])
+            print(rating['rating'])
+            NewRatings.objects.create(
+                userID = uidUser.recID,
+                gameID = rating['gameID'],
+                rating = rating['rating'],
+            )
+        return Response({'message':'New User Created'}, status=status.HTTP_201_CREATED)

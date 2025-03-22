@@ -43,7 +43,7 @@ export async function GET(request : Request) {
                 'Client-ID': process.env.CLIENT_ID!, 
                 'Authorization': 'Bearer ' + token,
             },
-            body: `fields: cover.url, name, first_release_date, summary; where: id = ${id};`,
+            body: `fields: id, cover.url, name, first_release_date, summary; where: id = ${id};`,
             
         });
 

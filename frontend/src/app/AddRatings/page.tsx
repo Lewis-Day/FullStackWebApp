@@ -160,10 +160,10 @@ const AddRatings = () => {
 
                         <div className="rating">
                             <input type="radio" name="rating-1" value="1" className="mask mask-star" aria-label="1 star" />
-                            <input type="radio" name="rating-2" value="2" className="mask mask-star" aria-label="2 star" defaultChecked />
-                            <input type="radio" name="rating-3" value="3" className="mask mask-star" aria-label="3 star" />
-                            <input type="radio" name="rating-4" value="4" className="mask mask-star" aria-label="4 star" />
-                            <input type="radio" name="rating-5" value="5" className="mask mask-star" aria-label="5 star" />
+                            <input type="radio" name="rating-1" value="2" className="mask mask-star" aria-label="2 star"  />
+                            <input type="radio" name="rating-1" value="3" className="mask mask-star" aria-label="3 star" />
+                            <input type="radio" name="rating-1" value="4" className="mask mask-star" aria-label="4 star" />
+                            <input type="radio" name="rating-1" value="5" className="mask mask-star" aria-label="5 star" />
                         </div>
 
                         <div className="card-actions justify-end mt-4">
