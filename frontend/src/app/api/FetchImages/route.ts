@@ -50,6 +50,14 @@ export async function GET(request : Request) {
         const game = await response.json();
         console.log(game);
 
+        if(game[0].cover){
+
+            const returnedURL = `https:${game[0].cover.url}`;
+            const finalURL = returnedURL.replace("t_thumb", "t_cover_big");
+            game[0].cover.url = finalURL;
+
+        }
+
         return NextResponse.json({game});
     }
 
