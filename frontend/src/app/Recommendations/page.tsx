@@ -63,6 +63,7 @@ const Recommendations = () => {
 
                 const recommendationSet: gameRecommendations[] = [];
                 for(let i = 0; i<data.gameName.length; i++){
+                    console.log(data.imgURL[i])
                     recommendationSet.push({
                         name: data.gameName[i],
                         description: data.gameDescription[i],
