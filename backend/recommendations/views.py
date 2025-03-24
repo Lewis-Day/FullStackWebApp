@@ -44,7 +44,6 @@ class recommendationsView(APIView):
 
         # get games not rated by the user
         gamesNotRated = pd.Series(uniqueGames)[~pd.Series(uniqueGames).isin(rated)]
-
         # Create a new data frame for organising the required columns
         ds = pd.DataFrame()
 
@@ -54,7 +53,7 @@ class recommendationsView(APIView):
         user = ds['user']
         game = ds['games']
 
-
+        tf.keras.backend.set_floatx('float32')
         # load my model saved from earlier
         model = tf.keras.models.load_model('/Users/lewisday/Documents/University/Year 3/Project/FullStackWebApp/MLModels/optimumModel2.h5')
 
