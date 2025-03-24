@@ -85,7 +85,7 @@ const Recommendations = () => {
         }, []);
 
     return(
-        <div className="bg-gray-700 h-screen w-full pt-5 ">
+        <div className="bg-gray-700 min-h-screen w-full pt-5 ">
             <div className="navbar bg-white rounded-md mx-auto max-w-screen-xl">
                 <div className="flex-1">
                     <Link href="/Home" className="btn btn-ghost text-xl text-black">VGR</Link>
@@ -125,12 +125,12 @@ const Recommendations = () => {
 
                     {gameData.length > 0 ? (
                         <>
-                            <figure className="relative w-full h-[22rem] overflow-hidden">
+                            <figure className="relative w-[16.5rem] h-[22rem] overflow-hidden flex-shrink-0">
                                 <img
                                 src={gameData[index].imgURL}
-                                alt="Img" className="object-contain w-full h-[22rem]"/>
+                                alt="Img" className="object-cover w-full h-full"/>
                             </figure>
-                            <div className="card-body">
+                            <div className="card-body flex-grow">
                                 <h2 className="card-title">{gameData[index].name}</h2>
                                 <p>{gameData[index].description}</p>
 
