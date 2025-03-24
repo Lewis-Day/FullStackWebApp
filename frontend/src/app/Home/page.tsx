@@ -13,7 +13,7 @@ const Home = () => {
         const fetchImgs = async () => {
 
             try{
-                const response = await fetch("/api/PopularImgs");
+                const response = await fetch("../api/PopularImgs/");
                 const data = await response.json();
                 console.log(data.imgURL);
                 setImgs(data.imgURL);
@@ -47,29 +47,31 @@ const Home = () => {
                 </div>
             </div>
 
-            <h2 className="mx-[7.5rem] text-3xl text-gray-100 font-bold py-5">Popular Games</h2>
+            <div className="flex flex-col items-start content-center flex-wrap">
+                <h2 className="text-3xl text-gray-100 font-bold py-5">Popular Games</h2>
 
-            <div className="carousel carousel-center bg-neutral rounded-box mx-28 max-w-screen-xl p-4">
+                <div className="carousel carousel-center bg-neutral rounded-box max-w-screen-xl p-4">
 
-                {imgs.length > 0 ? imgs.map((url, index) => (
-                    <div key={index} className="carousel-item px-2">
-                        <img src={url} className="rounded-box hover:scale-[1.025] transition-transform" />
-                    </div>
-                )) :
-                (
-                    Array.from({length : numImages}).map((_, index) =>
+                    {imgs.length > 0 ? imgs.map((url, index) => (
                         <div key={index} className="carousel-item px-2">
-                            <div className="skeleton h-[22rem] w-[16.5rem]"></div>
+                            <img src={url} className="rounded-box hover:scale-[1.025] transition-transform" />
                         </div>
-                    )
-                )}
-            </div>
+                    )) :
+                    (
+                        Array.from({length : numImages}).map((_, index) =>
+                            <div key={index} className="carousel-item px-2">
+                                <div className="skeleton h-[22rem] w-[16.5rem]"></div>
+                            </div>
+                        )
+                    )}
+                </div>
 
 
-            <div className="mockup-window border-base-300 border mx-28 max-w-screen-xl p-4 mt-5 bg-gray-200 text-black">
-                <p className="text-xl font-bold pl-5">Welcome to VGR!</p>
-                <p className="pl-5">VGR is a video game recommendation system available to users of all platforms.</p>
-                <p className="pl-5">Here you'll find popular games however, if you log in or create an account, you'll get personalised game recommedations.</p>
+                <div className="mockup-window border-base-300 border max-w-screen-xl p-4 mt-5 bg-gray-200 text-black w-full">
+                    <p className="text-xl font-bold pl-5">Welcome to VGR!</p>
+                    <p className="pl-5">VGR is a video game recommendation system available to users of all platforms.</p>
+                    <p className="pl-5">Here you'll find popular games however, if you log in or create an account, you'll get personalised game recommedations.</p>
+                </div>
             </div>
 
             

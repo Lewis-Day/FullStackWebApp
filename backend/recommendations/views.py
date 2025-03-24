@@ -28,7 +28,8 @@ class recommendationsView(APIView):
 
     def collaborativeFiltering(self, userToRecommend):
 
-        db_path = '/Users/lewisday/Documents/University/Year 3/Project/FullStackWebApp/database/dataset.db'
+        db_path = os.path.abspath('/home/lewisday/projects/tf/FullStackWebApp/FullStackWebApp/database/dataset.db')
+        print(f"Using absolute path for database: {db_path}")
         if not os.path.exists(db_path):
             return JsonResponse({"error": "Database file not found"}, status=500)
         dbConn = sqlite3.connect(db_path)
@@ -53,9 +54,8 @@ class recommendationsView(APIView):
         user = ds['user']
         game = ds['games']
 
-        tf.keras.backend.set_floatx('float32')
         # load my model saved from earlier
-        model = tf.keras.models.load_model('/Users/lewisday/Documents/University/Year 3/Project/FullStackWebApp/MLModels/optimumModel2.h5')
+        model = tf.keras.models.load_model('/home/lewisday/projects/tf/kerasModel.keras')
 
         # Convert to NumPy arrays
         user_array = np.array(ds['user'])
@@ -77,7 +77,7 @@ class recommendationsView(APIView):
         recommendations.rename(columns={'game':'factorised'}, inplace=True)
 
         # Read the file for conversion to igdb id
-        gameMappings = pd.read_csv('/Users/lewisday/Documents/University/Year 3/Project/FullStackWebApp/helperFiles/FactorisedtoGameID.csv')
+        gameMappings = pd.read_csv('/home/lewisday/projects/tf/FullStackWebApp/FullStackWebApp/helperFiles/FactorisedtoGameID.csv')
 
         # Merge with the recommendations I got earlier
         withigdb = recommendations.merge(gameMappings, on='factorised', how='left')
@@ -93,7 +93,7 @@ class recommendationsView(APIView):
     
     def token(self):
 
-        load_dotenv(dotenv_path="/Users/lewisday/Documents/University/Year 3/Project/FullStackWebApp/frontend/.env.local")
+        load_dotenv(dotenv_path="../../frontend/.env.local")
 
         id = os.getenv("CLIENT_ID")
         print("id in token " + id)
@@ -146,7 +146,7 @@ class recommendationsView(APIView):
 
         token = self.token()
 
-        file = pd.read_csv('/Users/lewisday/Documents/University/Year 3/Project/FullStackWebApp/helperFiles/gameGenres.csv')
+        file = pd.read_csv('/home/lewisday/projects/tf/FullStackWebApp/FullStackWebApp/helperFiles/gameGenres.csv')
 
         currentGenres = set(file.columns[1:])
         newGames = []
@@ -185,7 +185,7 @@ class recommendationsView(APIView):
                 df[column] = 0
 
         appended = pd.concat([file, df], ignore_index=True)
-        appended.to_csv('/Users/lewisday/Documents/University/Year 3/Project/FullStackWebApp/helperFiles/gameGenres.csv', index=False)
+        appended.to_csv('/home/lewisday/projects/tf/FullStackWebApp/FullStackWebApp/helperFiles/gameGenres.csv', index=False)
 
 
 
@@ -221,7 +221,7 @@ class recommendationsView(APIView):
     
     def contentBasedFilteringBase(self, gameToRecommend):
 
-        file = pd.read_csv('/Users/lewisday/Documents/University/Year 3/Project/FullStackWebApp/helperFiles/gameGenres.csv')
+        file = pd.read_csv('/home/lewisday/projects/tf/FullStackWebApp/FullStackWebApp/helperFiles/gameGenres.csv')
 
         genresToGet = []
 
@@ -231,7 +231,7 @@ class recommendationsView(APIView):
         
         if len(genresToGet) != 0:
             self.fetchExtraGenres(genresToGet)
-            fileNew = pd.read_csv('/Users/lewisday/Documents/University/Year 3/Project/FullStackWebApp/helperFiles/gameGenres.csv')
+            fileNew = pd.read_csv('/home/lewisday/projects/tf/FullStackWebApp/FullStackWebApp/helperFiles/gameGenres.csv')
             recommendations = self.contentBasedAlgorithm(fileNew, gameToRecommend)
 
         else:
@@ -243,7 +243,7 @@ class recommendationsView(APIView):
     
     def userExists(self, userToRecommend):
 
-        db_path = '/Users/lewisday/Documents/University/Year 3/Project/FullStackWebApp/database/dataset.db'
+        db_path = os.path.abspath('/home/lewisday/projects/tf/FullStackWebApp/FullStackWebApp/database/dataset.db')
         dbConn = sqlite3.connect(db_path)
         userResults = pd.read_sql(f"SELECT COUNT(*) FROM ratings WHERE userId = ?", dbConn, params=(userToRecommend,))
         dbConn.close()

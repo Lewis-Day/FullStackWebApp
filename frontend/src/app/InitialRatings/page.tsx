@@ -43,7 +43,7 @@ const InitialRatings = () => {
         }
 
         try{
-            const response = await fetch(`/api/FetchGames/?name=${encodeURIComponent(gameName)}`, {
+            const response = await fetch(`../api/FetchGames/?name=${encodeURIComponent(gameName)}`, {
                 method:'GET',
             });
             
@@ -63,7 +63,7 @@ const InitialRatings = () => {
     const fetchSelectedGame = async (gameid : number) => {
 
         try{
-            const response = await fetch(`/api/FetchImages/?id=${encodeURIComponent(gameid)}`, {
+            const response = await fetch(`../api/FetchImages/?id=${encodeURIComponent(gameid)}`, {
                 method:'GET',
             });
             

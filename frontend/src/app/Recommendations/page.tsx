@@ -48,7 +48,7 @@ const Recommendations = () => {
         const fetchRecommendationInfo = async () => {
 
             try{
-                const response = await fetch("/api/GameName", {
+                const response = await fetch("../api/GameName/", {
                     method:'GET',
                     headers:{
                         Authorization: `Bearer ${token}`,
@@ -117,9 +117,11 @@ const Recommendations = () => {
                 </div>
             </div>
 
-            <h2 className="mx-28 text-3xl text-gray-100 font-bold py-5">Your Recommendations</h2>
+            
 
             <div className="flex flex-col justify-self-center">
+
+                <h2 className=" text-3xl text-gray-100 font-bold py-5">Your Recommendations</h2>
 
                 <div className="card lg:card-side bg-base-100 shadow-xl w-[50rem] mt-5 hover:scale-[1.025] transition-transform">
 
