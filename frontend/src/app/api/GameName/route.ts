@@ -42,9 +42,15 @@ export async function GET(request : Request) {
 
         });
 
-        const recommendations = await gameRecommendations.json();
+        const returnedData = await gameRecommendations.json();
 
-        
+        console.log('raw data')
+        console.log(returnedData);
+
+        const recommendations = returnedData.recommendations;
+        const retrain = returnedData.retrain;
+
+        console.log('recommendations');        
         console.log(recommendations);
 
         const imgURL : String[] = []
@@ -86,7 +92,7 @@ export async function GET(request : Request) {
 
         console.log({imgURL, gameName, gameDescription})
 
-        return NextResponse.json({imgURL, gameName, gameDescription});
+        return NextResponse.json({imgURL, gameName, gameDescription, retrain});
         
     }
 

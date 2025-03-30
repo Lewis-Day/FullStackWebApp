@@ -264,6 +264,8 @@ class recommendationsView(APIView):
         print(uidUser)
         print(uid)
 
+        retrain = False
+
         userToRecommend = uid
 
         collabOrContent = self.userExists(userToRecommend)
@@ -272,11 +274,80 @@ class recommendationsView(APIView):
             recommendation = self.collaborativeFiltering(userToRecommend)
 
         else:
+            contentRatings = NewRatings.objects.filter(userID = userToRecommend).count()
+
+            if contentRatings >= 10:
+                factorisedFile = pd.read_csv("/home/lewisday/projects/tf/FullStackWebApp/FullStackWebApp/helperFiles/FactorisedtoGameID.csv")
+
+                factorisedID = factorisedFile['factorised'].max() + 1
+                gamesInFile = set(factorisedFile['gameID'])
+
+                ratedGames = NewRatings.objects.filter(userID = userToRecommend).values_list('gameID', flat=True)
+
+                newGames = []
+
+                for game in ratedGames:
+                    if game not in gamesInFile:
+                        newGames.append({'factorised' : factorisedID, 'gameID' : game})
+                        factorisedID = factorisedID + 1
+                
+                if len(newGames) > 0:
+                    additions = pd.DataFrame(newGames)
+                    additions.to_csv("/home/lewisday/projects/tf/FullStackWebApp/FullStackWebApp/helperFiles/FactorisedtoGameID.csv", mode='a', header=False, index=False)
+
+                    db_path = os.path.abspath('/home/lewisday/projects/tf/FullStackWebApp/FullStackWebApp/database/dataset.db')
+                    dbConn = sqlite3.connect(db_path)
+
+                    factGameIDs = pd.read_csv("/home/lewisday/projects/tf/FullStackWebApp/FullStackWebApp/helperFiles/FactorisedtoGameID.csv")
+
+                    newUserRatedGames = NewRatings.objects.filter(userID = userToRecommend).values_list('gameID', flat=True)
+                    newUserRatings = NewRatings.objects.filter(userID = userToRecommend).values_list('rating', flat=True)
+
+                    for i in range(len(newUserRatedGames)):
+
+                        newUserRatedGames[i] = factGameIDs.loc[factGameIDs['gameID'] == newUserRatedGames[i], 'factorised'].values[0]
+                        newUserRatings[i] = (newUserRatings[i] - 1) / 4    
+
+                    
+                    ratingsInDB = dbConn.execute('SELECT userId, gameIdFact from ratings')
+
+                    uniqueEntries = set()
+
+                    for row in ratingsInDB:
+                        uniqueEntries.add((row[0], row[1]))
+
+
+                    
+                    ratingsToAdd = []
+
+                    for i in range(len(newUserRatedGames)):
+
+                        if (newUserRatings[i], newUserRatedGames[i]) not in uniqueEntries:
+                            ratingsToAdd.append((userToRecommend, newUserRatedGames[i], newUserRatings[i]))
+
+
+                    cursor = dbConn.cursor()
+
+                    cursor.executemany('INSERT INTO ratings (userId, gameIdFact, userRating) VALUES (?, ?, ?)', ratingsToAdd)
+
+                    dbConn.commit()
+
+                    dbConn.close()
+
+                    retrain = True
+
+
+
+
+
             userRatedGamesObject = NewRatings.objects.filter(userID = userToRecommend)
             userRatedGames = userRatedGamesObject.values_list('gameID', flat=True)
             recommendation = self.contentBasedFilteringBase(list(userRatedGames))
 
-        return JsonResponse(recommendation, safe=False)
+
+
+        return JsonResponse({'recommendations' : recommendation, 
+                             'retrain' : retrain}, safe=False)
     
 
 

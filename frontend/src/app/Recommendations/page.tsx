@@ -61,6 +61,12 @@ const Recommendations = () => {
                 const data = await response.json();
                 console.log(data);
 
+                const retrain = data.retrain;
+
+                if(retrain){
+                    alert('Please wait for admin to retrain model to get your new recommendations.');
+                }
+
                 const recommendationSet: gameRecommendations[] = [];
                 for(let i = 0; i<data.gameName.length; i++){
                     console.log(data.imgURL[i])
