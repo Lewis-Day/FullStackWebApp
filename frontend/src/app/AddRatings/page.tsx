@@ -144,7 +144,7 @@ const AddRatings = () => {
 
 
     return(
-        <div className="bg-gray-700 min-h-screen w-full py-5 ">
+        <div className="bg-gray-700 min-h-screen py-5 ">
             <div className="navbar bg-white rounded-md mx-auto max-w-screen-xl">
                 <div className="flex-1">
                     <Link href="/Home" className="btn btn-ghost text-xl text-black">VGR</Link>
@@ -176,15 +176,17 @@ const AddRatings = () => {
                 </div>
             </div>
 
-            <h2 className="mx-[7.5rem] text-3xl text-gray-100 font-bold py-5">Add Game Ratings</h2>
+            <div className="flex flex-col justify-self-center w-full">
 
-            <div className="mockup-window border-base-300 border mx-[7.5rem] max-w-screen-xl p-4 mt-5 bg-white text-black">
+            <h2 className="text-3xl text-gray-100 font-bold py-5">Add Game Ratings</h2>
+
+            <div className="mockup-window border-base-300 border max-w-screen-xl p-4 mt-5 bg-white text-black">
                 <p className="pl-5">Add extra games here to your recommendation profile.</p>
                 <p className="pl-5">The games you rate will improve and personalise your recommendations.</p>
                 <p className="pl-5">For each game you search for, you will need to give it a 1-5 star rating.</p>
             </div>
 
-            <div className="mx-[7.5rem] mt-5">
+            <div className="mt-5">
                 <fieldset className="fieldset w-xs bg-white border border-base-300 p-4 rounded-box">
                     <h3 className="text-xl font-bold pb-2">Search for a game</h3>
                     <div className="join">
@@ -236,6 +238,7 @@ const AddRatings = () => {
                     </div>
                 </div>
             </div>)}
+            </div>
         </div>
     );
 };

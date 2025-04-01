@@ -125,7 +125,7 @@ const Recommendations = () => {
 
             
 
-            <div className="flex flex-col justify-self-center">
+            <div className="flex flex-col justify-self-center items-start flex-wrap">
 
                 <h2 className=" text-3xl text-gray-100 font-bold py-5">Your Recommendations</h2>
 
