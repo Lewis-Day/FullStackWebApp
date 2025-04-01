@@ -251,7 +251,7 @@ const Social = () => {
     }
 
     return(
-        <div className="bg-gray-700 h-full w-full pt-5 ">
+        <div className="bg-gray-700 min-h-screen w-full pt-5 ">
             <div className="navbar bg-white rounded-md mx-auto max-w-screen-xl">
                 <div className="flex-1">
                     <Link href="/Home" className="btn btn-ghost text-xl text-black">VGR</Link>
@@ -283,7 +283,9 @@ const Social = () => {
                 </div>
             </div>
 
-            <h2 className="mx-28 text-3xl text-gray-100 font-bold py-5">Social</h2>
+            <div className="flex flex-col justify-self-center">
+
+            <h2 className="text-3xl text-gray-100 font-bold py-5">Social</h2>
 
             <div className="flex flex-row justify-start pb-5">
                 <ul className="menu bg-base-200 rounded-box w-56 h-[80vh] mx-28">
@@ -358,6 +360,9 @@ const Social = () => {
                     </form>
 
                 </div>
+
+            </div>
+
 
             </div>
 
