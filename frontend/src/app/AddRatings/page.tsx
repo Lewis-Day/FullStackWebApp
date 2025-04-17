@@ -9,6 +9,8 @@ import Cookies from "js-cookie";
 interface gameSearch{
     id: number,
     name: string, 
+    url: string,
+    releaseDate : string,
 }
 
 interface gameForReview{
@@ -52,10 +54,42 @@ const AddRatings = () => {
             });
             
             const responseData = await response.json();
-            console.log(responseData.games);
-            setGameData(responseData.games);
+            // console.log(responseData);
+            let editedData : Array<gameSearch>= []
 
-            console.log(gameData);
+            console.log(responseData);
+
+            if (responseData && responseData.games && Array.isArray(responseData.games)) {
+
+                for(let i : number = 0; i < responseData.games.length; i++){
+
+                    let releaseYearStr : string = "";
+
+                    console.log(responseData.games[i]);
+
+                    if("first_release_date" in responseData.games[i]){
+                        const date = new Date(responseData.games[i].first_release_date * 1000)
+                        let releaseYear = date.getFullYear();
+                        releaseYearStr = releaseYear.toString();
+                    }
+                    else{
+                        releaseYearStr = "N/A";
+                    }
+
+                    let data = {
+                        id: responseData.games[i].id,
+                        url: responseData.games[i].cover.url,
+                        name: responseData.games[i].name,
+                        releaseDate: releaseYearStr,
+                    }
+
+                    editedData.push(data);
+
+
+                }
+                setGameData(editedData);
+
+            }
             setShowSearchResults(true);
         }
 
@@ -176,17 +210,17 @@ const AddRatings = () => {
                 </div>
             </div>
 
-            <div className="flex flex-col justify-self-center w-full">
+            <div className="flex flex-col justify-self-center items-start flex-wrap w-full max-w-screen-xl mx-auto">
 
             <h2 className="text-3xl text-gray-100 font-bold py-5">Add Game Ratings</h2>
 
-            <div className="mockup-window border-base-300 border max-w-screen-xl p-4 mt-5 bg-white text-black">
+            <div className="mockup-window border-base-300 border p-4 mt-5 bg-white text-black w-full max-w-screen-xl mx-auto">
                 <p className="pl-5">Add extra games here to your recommendation profile.</p>
                 <p className="pl-5">The games you rate will improve and personalise your recommendations.</p>
                 <p className="pl-5">For each game you search for, you will need to give it a 1-5 star rating.</p>
             </div>
 
-            <div className="mt-5">
+            <div className="mt-5 w-full max-w-screen-xl mx-auto">
                 <fieldset className="fieldset w-xs bg-white border border-base-300 p-4 rounded-box">
                     <h3 className="text-xl font-bold pb-2">Search for a game</h3>
                     <div className="join">
@@ -196,7 +230,7 @@ const AddRatings = () => {
                 </fieldset>
             </div>
 
-            {showSearchResults && (<ul className="list bg-white rounded-box shadow-md mx-[7.5rem] mt-5">
+            {showSearchResults && (<ul className="list bg-white rounded-box shadow-md mt-5 w-full max-w-screen-xl mx-auto">
   
                 <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">Search Results</li>
 
@@ -204,16 +238,18 @@ const AddRatings = () => {
                 
                     <li key={games.id} className="list-row flex items-center px-4 py-3 border-t border-base-200">
                         <div className="w-10 text-4xl font-thin opacity-30 tabular-nums">0{index+1}</div>
+                        <div><img className="size-10 rounded-box" src={games.url}/></div>
                         <div className="flex-1 px-4">
                             <div>{games.name}</div>
+                            <div className="text-xs uppercase font-semibold opacity-60">{games.releaseDate}</div>
                         </div>
                         <button className="btn btn-square btn-ghost hover:scale-[1.01]" onClick={() => fetchSelectedGame(games.id)}>Select</button>
                     </li>
                 ))}
             </ul>)}
 
-            {showReview && (<div className="flex flex-row justify-center">
-                <div className="card lg:card-side bg-white shadow-xl w-[50rem] transition-transform mt-5 mb-5">
+            {showReview && (<div className="flex flex-row justify-center w-full max-w-screen-xl mx-auto">
+                <div className="card lg:card-side bg-white shadow-xl transition-transform mt-5 mb-5">
 
                     
                     <figure className="w-[16rem] h-[22rem] flex-shrink-0">
