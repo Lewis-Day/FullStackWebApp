@@ -26,6 +26,35 @@ const fetchToken = async () : Promise<string | null> => {
 
 };
 
+const fetchPlatformNames = async (platforms) : Promise<string | null> => {
+
+    const token = await fetchToken();
+
+    try{
+
+        const response = await fetch("https://api.igdb.com/v4/games", {
+            method: "POST", 
+            headers: {
+                'Accept': 'application/json', 
+                'Client-ID': process.env.CLIENT_ID!, 
+                'Authorization': 'Bearer ' + token,
+            },
+            body: `fields id, cover.url, name, first_release_date, platforms; search "${gameName}"; limit 5;`,
+            
+        });
+
+        const games = await response.json();
+        // console.log(games);
+
+        return games
+    }
+
+    catch(error){
+        console.error("Error: ", error);
+    }
+
+};
+
 export async function GET(request : Request) {
 
     const token = await fetchToken();
@@ -43,12 +72,17 @@ export async function GET(request : Request) {
                 'Client-ID': process.env.CLIENT_ID!, 
                 'Authorization': 'Bearer ' + token,
             },
-            body: `fields id, name; search "${gameName}"; limit 5;`,
+            body: `fields id, cover.url, name, first_release_date, platforms; search "${gameName}"; limit 5;`,
             
         });
 
         const games = await response.json();
-        console.log(games);
+        // console.log(games);
+
+        // for(let i : number = 0; i < games.length; i++){
+        //     let platforms = fetchPlatformNames(games[i].platforms);
+        //     games.platforms = platforms;
+        // }
 
         return NextResponse.json({games});
     }

@@ -165,10 +165,21 @@ class deleteConversation(APIView):
         sender = request.data.get('user1')
         receiver = request.data.get('user2')
 
+        print(sender, " ", receiver)
+
+        try:
+            sender = User.objects.get(username=sender)
+            receiver = User.objects.get(username=receiver)
+        
+        except User.DoesNotExist:
+            return Response({'error': 'No user with that username'}, status=status.HTTP_404_NOT_FOUND)
+
         query = Q(user1 = sender, user2 = receiver) | Q(user1 = receiver, user2 = sender)
 
         currentConversation = conversationModel.objects.get(query)
 
-        currentConversation.delete()
+        print(currentConversation)
+
+        # currentConversation.delete()
 
         return Response({'message':'Chat deleted'}, status=status.HTTP_200_OK)

@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 interface gameSearch{
     id: number,
     name: string, 
+    url: string,
+    releaseDate : string,
 }
 
 interface gameForReview{
@@ -48,10 +50,44 @@ const InitialRatings = () => {
             });
             
             const responseData = await response.json();
-            console.log(responseData.games);
-            setGameData(responseData.games);
+            // console.log(responseData);
+            let editedData : Array<gameSearch>= []
 
-            console.log(gameData);
+            console.log(responseData);
+
+            if (responseData && responseData.games && Array.isArray(responseData.games)) {
+
+                for(let i : number = 0; i < responseData.games.length; i++){
+
+                    let releaseYearStr : string = "";
+
+                    console.log(responseData.games[i]);
+
+                    if("first_release_date" in responseData.games[i]){
+                        const date = new Date(responseData.games[i].first_release_date * 1000)
+                        let releaseYear = date.getFullYear();
+                        releaseYearStr = releaseYear.toString();
+                    }
+                    else{
+                        releaseYearStr = "N/A";
+                    }
+
+                    let data = {
+                        id: responseData.games[i].id,
+                        url: responseData.games[i].cover.url,
+                        name: responseData.games[i].name,
+                        releaseDate: releaseYearStr,
+                    }
+
+                    editedData.push(data);
+
+
+                }
+                setGameData(editedData);
+
+            }
+
+            
             setShowSearchResults(true);
         }
 
@@ -140,7 +176,7 @@ const InitialRatings = () => {
     }
 
     return(
-        <div className="bg-gray-700 min-h-screen w-full py-5 ">
+        <div className="bg-gray-700 min-h-screen w-full pt-5 ">
             <div className="navbar bg-white rounded-md mx-auto max-w-screen-xl">
                 <div className="flex-1">
                     <Link href="/Home" className="btn btn-ghost text-xl text-black">VGR</Link>
@@ -154,67 +190,72 @@ const InitialRatings = () => {
                 </div>
             </div>
 
-            <h2 className="mx-[7.5rem] text-3xl text-gray-100 font-bold py-5">Initial Ratings</h2>
+            <div className="flex flex-col justify-self-center items-start flex-wrap w-full max-w-screen-xl mx-auto">
 
-            <div className="mockup-window border-base-300 border mx-[7.5rem] max-w-screen-xl p-4 mt-5 bg-white text-black">
-                <p className="text-xl font-bold pl-5">Welcome to VGR!</p>
-                <p className="pl-5">Now that you have created your account, you need to rate some games!</p>
-                <p className="pl-5">The games you rate will create your game recommedations.</p>
-                <p className="pl-5">You will need to rate 5 games and for each game you search for, you will need to give it a 1-5 star rating.</p>
-            </div>
+                <h2 className="text-3xl text-gray-100 font-bold py-5">Initial Ratings</h2>
 
-            <div className="mx-[7.5rem] mt-5">
-                <fieldset className="fieldset w-xs bg-white border border-base-300 p-4 rounded-box">
-                    <h3 className="text-xl font-bold pb-2">Search for a game</h3>
-                    <div className="join">
-                        <input type="text" className="input join-item w-[25rem] border border-gray-300" placeholder="Game Name" value={gameName} onChange={(e)=>setGameName(e.target.value)}/>
-                        <button className="btn join-item hover:scale-[1.01]" onClick={fetchGames}>Search</button>
-                    </div>
-                </fieldset>
-            </div>
-
-            {showSearchResults && (<ul className="list bg-white rounded-box shadow-md mx-[7.5rem] mt-5">
-  
-                <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">Search Results</li>
-
-                {gameData.map((games, index) => (
-                
-                    <li key={games.id} className="list-row flex items-center px-4 py-3 border-t border-base-200">
-                        <div className="w-10 text-4xl font-thin opacity-30 tabular-nums">0{index+1}</div>
-                        <div className="flex-1 px-4">
-                            <div>{games.name}</div>
-                        </div>
-                        <button className="btn btn-square btn-ghost hover:scale-[1.01]" onClick={() => fetchSelectedGame(games.id)}>Select</button>
-                    </li>
-                ))}
-            </ul>)}
-
-            {showReview && (<div className="flex flex-row justify-center">
-                <div className="card lg:card-side bg-white shadow-xl w-[50rem] transition-transform mt-5 mb-5">
-
-                    
-                    <figure className="w-[16rem] h-[22rem] flex-shrink-0">
-                        <img src={reviewGame?.imgURL} alt="Img" className="object-cover w-full h-full"/>
-                    </figure>
-                    <div className="card-body">
-                        <h2 className="card-title">{reviewGame?.name}</h2>
-                        <p className="text-gray-600">Release Date: {reviewGame?.releaseDate}</p>
-                        <p className="text-gray-600">{reviewGame?.description}</p>
-
-                        <div className="rating">
-                            <input type="radio" name="rating-1" value="1" className="mask mask-star" aria-label="1 star" />
-                            <input type="radio" name="rating-1" value="2" className="mask mask-star" aria-label="2 star" />
-                            <input type="radio" name="rating-1" value="3" className="mask mask-star" aria-label="3 star" />
-                            <input type="radio" name="rating-1" value="4" className="mask mask-star" aria-label="4 star" />
-                            <input type="radio" name="rating-1" value="5" className="mask mask-star" aria-label="5 star" />
-                        </div>
-
-                        <div className="card-actions justify-end mt-4">
-                            <button className="btn btn-primary hover:scale-[1.01]" onClick={() => saveRating(reviewGame?.id)}>Submit Rating</button>
-                        </div>
-                    </div>
+                <div className="mockup-window border-base-300 border p-4 mt-5 bg-white text-black w-full max-w-screen-xl mx-auto">
+                    <p className="text-xl font-bold pl-5">Welcome to VGR!</p>
+                    <p className="pl-5">Now that you have created your account, you need to rate some games!</p>
+                    <p className="pl-5">The games you rate will create your game recommedations.</p>
+                    <p className="pl-5">You will need to rate 5 games and for each game you search for, you will need to give it a 1-5 star rating.</p>
                 </div>
-            </div>)}
+
+                <div className="mt-5 w-full max-w-screen-xl mx-auto">
+                    <fieldset className="fieldset w-xs bg-white border border-base-300 p-4 rounded-box">
+                        <h3 className="text-xl font-bold pb-2">Search for a game</h3>
+                        <div className="join">
+                            <input type="text" className="input join-item w-[25rem] border border-gray-300" placeholder="Game Name" value={gameName} onChange={(e)=>setGameName(e.target.value)}/>
+                            <button className="btn join-item hover:scale-[1.01]" onClick={fetchGames}>Search</button>
+                        </div>
+                    </fieldset>
+                </div>
+
+                {showSearchResults && (<ul className="list bg-white rounded-box shadow-md mt-5 w-full max-w-screen-xl mx-auto">
+    
+                    <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">Search Results</li>
+
+                    {gameData.map((games, index) => (
+                    
+                        <li key={games.id} className="list-row flex items-center px-4 py-3 border-t border-base-200">
+                            <div className="w-10 text-4xl font-thin opacity-30 tabular-nums">0{index+1}</div>
+                            <div><img className="size-10 rounded-box" src={games.url}/></div>
+                            <div className="flex-1 px-4">
+                                <div>{games.name}</div>
+                                <div className="text-xs uppercase font-semibold opacity-60">{games.releaseDate}</div>
+                            </div>
+                            <button className="btn btn-square btn-ghost hover:scale-[1.01]" onClick={() => fetchSelectedGame(games.id)}>Select</button>
+                        </li>
+                    ))}
+                </ul>)}
+
+                {showReview && (<div className="flex flex-row justify-center w-full max-w-screen-xl mx-auto">
+                    <div className="card lg:card-side bg-white shadow-xl transition-transform mt-5 mb-5">
+
+                        
+                        <figure className="w-[16rem] h-[22rem] flex-shrink-0">
+                            <img src={reviewGame?.imgURL} alt="Img" className="object-cover w-full h-full"/>
+                        </figure>
+                        <div className="card-body">
+                            <h2 className="card-title">{reviewGame?.name}</h2>
+                            <p className="text-gray-600">Release Date: {reviewGame?.releaseDate}</p>
+                            <p className="text-gray-600">{reviewGame?.description}</p>
+
+                            <div className="rating">
+                                <input type="radio" name="rating-1" value="1" className="mask mask-star" aria-label="1 star" />
+                                <input type="radio" name="rating-1" value="2" className="mask mask-star" aria-label="2 star" />
+                                <input type="radio" name="rating-1" value="3" className="mask mask-star" aria-label="3 star" />
+                                <input type="radio" name="rating-1" value="4" className="mask mask-star" aria-label="4 star" />
+                                <input type="radio" name="rating-1" value="5" className="mask mask-star" aria-label="5 star" />
+                            </div>
+
+                            <div className="card-actions justify-end mt-4">
+                                <button className="btn btn-primary hover:scale-[1.01]" onClick={() => saveRating(reviewGame?.id)}>Submit Rating</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>)}
+            </div>
         </div>
     );
 };
