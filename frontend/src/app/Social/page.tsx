@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 
 interface User{
@@ -69,11 +69,7 @@ const Social = () => {
                 setFriends([]);
             }
         };
-
-        fetchFriends(loggedInUser)
-
         
-
         const fetchChats = async (searchUser:string) => {
 
 
@@ -109,9 +105,18 @@ const Social = () => {
             }
         };
 
-        fetchChats(loggedInUser)
+        if(loggedInUser){
+            fetchFriends(loggedInUser);
+            fetchChats(loggedInUser);
+        }
+        else{
+            setFriends([]);
+            setChats([]);
+        }
 
-    }, []);
+        
+
+    }, [loggedInUser, token]);
 
     const newConversation = async () => {
 
@@ -210,45 +215,66 @@ const Social = () => {
     function chatClick(chat:string){
 
         setCurrentChat(chat);
-        getMessages();
+        // getMessages();
 
     }
 
-    const getMessages = async () => {
+    const getMessages = useCallback(async () => {
 
-        const data = {
-            user1 : loggedInUser,
-            user2 : currentChat,
+        if (!currentChat) {
+            setChatMessages([]); 
+            return;
         }
 
-        const submit = await fetch(`http://localhost:8000/api/getMessages/?user1=${encodeURIComponent(data.user1)}&user2=${encodeURIComponent(data.user2)}`, {
-            method:'GET',
-            headers:{
-                Authorization: `Bearer ${token}`,
+        if(loggedInUser){
+
+            const data = {
+                user1 : loggedInUser,
+                user2 : currentChat,
             }
 
-        });
+            const submit = await fetch(`http://localhost:8000/api/getMessages/?user1=${encodeURIComponent(data.user1)}&user2=${encodeURIComponent(data.user2)}`, {
+                method:'GET',
+                headers:{
+                    Authorization: `Bearer ${token}`,
+                }
 
-        if(submit.status == 401){
-            redirect('/Login/');
-        }
+            });
+
+            if(submit.status == 401){
+                redirect('/Login/');
+            }
 
 
-        if(submit.status == 200){
-            console.log(submit);
-            const response = await submit.json()
-            console.log(response);
-            setChatMessages(response);
+            if(submit.status == 200){
+                console.log(submit);
+                const response = await submit.json()
+                console.log(response);
+                setChatMessages(response);
 
-            console.log(response[0].message);
-            console.log(chatMessages[0].message)
+                // console.log(response[0].message);
+                // console.log(chatMessages[0].message)
 
+            }
+            else{
+                console.log(submit);
+            }
         }
         else{
-            console.log(submit);
+            setChatMessages([]);
         }
 
-    }
+    }, [currentChat, loggedInUser, token]);
+
+
+    useEffect(() => {
+        if (currentChat){
+            getMessages();
+        } 
+        else{
+            setChatMessages([]);
+        }
+    }, [currentChat, loggedInUser, token, getMessages]);
 
     return(
         <div className="bg-gray-700 min-h-screen w-full pt-5 ">
@@ -306,7 +332,7 @@ const Social = () => {
                         ) : (
                         <ul>
                             {chats.map((chat) => (
-                                <li key={chat}>
+                                <li key={chat.username}>
                                     <div className="flex flex-row justify-between" onClick={() => chatClick(chat.username)}>
                                         {chat.username}
 
