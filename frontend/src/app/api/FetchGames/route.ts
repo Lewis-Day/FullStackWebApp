@@ -26,33 +26,32 @@ const fetchToken = async () : Promise<string | null> => {
 
 };
 
-const fetchPlatformNames = async (platforms) : Promise<string | null> => {
+const fetchPlatformNames = async (platforms) : Promise<string[] | null> => {
 
     const token = await fetchToken();
 
     try{
 
-        const response = await fetch("https://api.igdb.com/v4/games", {
+        const response = await fetch("https://api.igdb.com/v4/platforms", {
             method: "POST", 
             headers: {
                 'Accept': 'application/json', 
                 'Client-ID': process.env.CLIENT_ID!, 
                 'Authorization': 'Bearer ' + token,
             },
-            body: `fields id, cover.url, name, first_release_date, platforms; search "${gameName}"; limit 5;`,
+            body: `fields name; where id = "${platforms}";`,
             
         });
 
-        const games = await response.json();
-        // console.log(games);
+        const platforms_res = await response.json();
+        console.log(platforms_res);
 
-        return games
+        return platforms_res;
     }
 
     catch(error){
         console.error("Error: ", error);
     }
-
 };
 
 export async function GET(request : Request) {
@@ -77,12 +76,13 @@ export async function GET(request : Request) {
         });
 
         const games = await response.json();
-        // console.log(games);
 
-        // for(let i : number = 0; i < games.length; i++){
-        //     let platforms = fetchPlatformNames(games[i].platforms);
-        //     games.platforms = platforms;
-        // }
+        console.log(games);
+
+        for(let i : number = 0; i < games.length; i++){
+            let platforms = fetchPlatformNames(games[i].platforms);
+            games.platforms = platforms;
+        }
 
         return NextResponse.json({games});
     }
