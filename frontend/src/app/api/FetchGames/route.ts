@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+
+
 const fetchToken = async () : Promise<string | null> => {
 
     try{
@@ -26,35 +28,65 @@ const fetchToken = async () : Promise<string | null> => {
 
 };
 
-const fetchPlatformNames = async (platforms) : Promise<string[] | null> => {
-
+const fetchPlatformNames = async (platforms : string[]) : Promise<string[] | null> => {
+    
+   
     const token = await fetchToken();
+
+    let platNames : string[] = []
 
     try{
 
-        const response = await fetch("https://api.igdb.com/v4/platforms", {
-            method: "POST", 
-            headers: {
-                'Accept': 'application/json', 
-                'Client-ID': process.env.CLIENT_ID!, 
-                'Authorization': 'Bearer ' + token,
-            },
-            body: `fields name; where id = "${platforms}";`,
-            
-        });
+        for(let i = 0; i < platforms.length; i++){
 
-        const platforms_res = await response.json();
-        console.log(platforms_res);
+            let intPlat : number = +platforms[i]
 
-        return platforms_res;
+            const response = await fetch("https://api.igdb.com/v4/platforms", {
+                method: "POST", 
+                headers: {
+                    'Accept': 'application/json', 
+                    'Client-ID': process.env.CLIENT_ID!, 
+                    'Authorization': 'Bearer ' + token,
+                },
+                body: `fields name; where id = ${intPlat};`,
+                
+            });
+
+            const platforms_res = await response.json();
+            console.log(platforms_res);
+
+            for (let platform of platforms_res) {
+                if (platform && platform.name) {
+                    platNames.push(platform.name);
+                }
+                else{
+                    platNames.push("N/A");
+                }
+            }
+        }
     }
 
     catch(error){
         console.error("Error: ", error);
     }
+
+    console.log(platNames);
+
+    return platNames;
 };
 
 export async function GET(request : Request) {
+
+    interface gameSearch{
+        id: number,
+        name: string, 
+        url: string,
+        releaseDate : string,
+        platforms : string[]
+    }
+
+    let responseDataArray : gameSearch[] = [];
+
 
     const token = await fetchToken();
 
@@ -71,7 +103,7 @@ export async function GET(request : Request) {
                 'Client-ID': process.env.CLIENT_ID!, 
                 'Authorization': 'Bearer ' + token,
             },
-            body: `fields id, cover.url, name, first_release_date, platforms; search "${gameName}"; limit 5;`,
+            body: `fields id, cover.url, name, first_release_date, platforms; search "${gameName}"; limit 10;`,
             
         });
 
@@ -80,11 +112,20 @@ export async function GET(request : Request) {
         console.log(games);
 
         for(let i : number = 0; i < games.length; i++){
-            let platforms = fetchPlatformNames(games[i].platforms);
-            games.platforms = platforms;
+            let platforms = await fetchPlatformNames(games[i].platforms);
+
+            let data = {
+                id: games[i].id,
+                url: games[i].cover.url,
+                name: games[i].name,
+                releaseDate: games[i].first_release_date,
+                platforms: platforms || ["N/A"],
+            }
+
+            responseDataArray.push(data);
         }
 
-        return NextResponse.json({games});
+        return NextResponse.json({responseDataArray});
     }
 
     catch(error){
