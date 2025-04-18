@@ -11,6 +11,7 @@ interface gameSearch{
     name: string, 
     url: string,
     releaseDate : string,
+    platforms : string[]
 }
 
 interface gameForReview{
@@ -59,16 +60,17 @@ const AddRatings = () => {
 
             console.log(responseData);
 
-            if (responseData && responseData.games && Array.isArray(responseData.games)) {
+            if (responseData && responseData.responseDataArray && Array.isArray(responseData.responseDataArray)) {
 
-                for(let i : number = 0; i < responseData.games.length; i++){
+                for(let i : number = 0; i < responseData.responseDataArray.length; i++){
 
                     let releaseYearStr : string = "";
 
-                    console.log(responseData.games[i]);
+                    console.log("returned from FetchGames");
+                    console.log(responseData.responseDataArray[i]);
 
-                    if("first_release_date" in responseData.games[i]){
-                        const date = new Date(responseData.games[i].first_release_date * 1000)
+                    if("releaseDate" in responseData.responseDataArray[i]){
+                        const date = new Date(responseData.responseDataArray[i].releaseDate * 1000)
                         let releaseYear = date.getFullYear();
                         releaseYearStr = releaseYear.toString();
                     }
@@ -77,11 +79,14 @@ const AddRatings = () => {
                     }
 
                     let data = {
-                        id: responseData.games[i].id,
-                        url: responseData.games[i].cover.url,
-                        name: responseData.games[i].name,
+                        id: responseData.responseDataArray[i].id,
+                        url: responseData.responseDataArray[i].url,
+                        name: responseData.responseDataArray[i].name,
                         releaseDate: releaseYearStr,
+                        platforms: responseData.responseDataArray[i].platforms,
                     }
+
+                    console.log(data);
 
                     editedData.push(data);
 
@@ -90,6 +95,8 @@ const AddRatings = () => {
                 setGameData(editedData);
 
             }
+
+            
             setShowSearchResults(true);
         }
 
@@ -237,11 +244,14 @@ const AddRatings = () => {
                 {gameData.map((games, index) => (
                 
                     <li key={games.id} className="list-row flex items-center px-4 py-3 border-t border-base-200">
-                        <div className="w-10 text-4xl font-thin opacity-30 tabular-nums">0{index+1}</div>
+                        <div className="w-10 text-4xl font-thin opacity-30 tabular-nums">{index+1}</div>
                         <div><img className="size-10 rounded-box" src={games.url}/></div>
                         <div className="flex-1 px-4">
                             <div>{games.name}</div>
                             <div className="text-xs uppercase font-semibold opacity-60">{games.releaseDate}</div>
+                            {games.platforms && games.platforms.length > 0 && (
+                                <div className="text-xs opacity-70">Platforms: {games.platforms.join(', ')}</div>
+                            )}
                         </div>
                         <button className="btn btn-square btn-ghost hover:scale-[1.01]" onClick={() => fetchSelectedGame(games.id)}>Select</button>
                     </li>
