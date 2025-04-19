@@ -45,6 +45,10 @@ const Profile = () => {
     });
 
     useEffect(() => {
+
+        if (!loggedInUser) {
+            redirect('/Login/'); 
+        }
         
         const fetchUserInfo = async (searchUser:string) => {
 
