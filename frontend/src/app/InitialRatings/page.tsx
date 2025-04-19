@@ -169,15 +169,17 @@ const InitialRatings = () => {
         
         const rating = document.querySelector<HTMLInputElement>('input[name="rating-1"]:checked');
 
-            const newRating : newReview = {
-                gameID : id, 
-                rating : parseInt(rating.value, 10), 
-            }
+            if(rating){
+                const newRating : newReview = {
+                    gameID : id, 
+                    rating : parseInt(rating.value, 10), 
+                }
 
-            setGameReview((prevReviews) => [...prevReviews, newRating]);
-            setShowReview(false);
-            setShowSearchResults(false);
-            setGameName('');
+                setGameReview((prevReviews) => [...prevReviews, newRating]);
+                setShowReview(false);
+                setShowSearchResults(false);
+                setGameName('');
+            }
     }
 
     return(
@@ -259,7 +261,7 @@ const InitialRatings = () => {
                             </div>
 
                             <div className="card-actions justify-end mt-4">
-                                <button className="btn btn-primary hover:scale-[1.01]" onClick={() => saveRating(reviewGame?.id)}>Submit Rating</button>
+                                <button className="btn btn-primary hover:scale-[1.01]" onClick={() => reviewGame?.id && saveRating(reviewGame.id)}>Submit Rating</button>
                             </div>
                         </div>
                     </div>
