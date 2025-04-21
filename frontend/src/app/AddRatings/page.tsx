@@ -188,31 +188,31 @@ const AddRatings = () => {
 
 
     return(
-        <div className="bg-gray-700 min-h-screen py-5 ">
-            <div className="navbar bg-white rounded-md mx-auto max-w-screen-xl">
+        <div className="bg-black min-h-screen py-5 ">
+            <div className="navbar bg-gray-800 bg-opacity-75 backdrop-blur-md rounded-md mx-auto max-w-screen-xl">
                 <div className="flex-1">
-                    <Link href="/Home" className="btn btn-ghost text-xl text-black">VGR</Link>
+                    <Link href="/Home" className="btn btn-ghost text-xl text-gray-100 hover:bg-gray-500 hover:text-cyan-400">VGR</Link>
                 </div>
                 <div>
-                    <ul className="menu menu-horizontal text-black">
+                    <ul className="menu menu-horizontal text-gray-100">
                         <li>
-                            <Link href="/Recommendations/">Recommendations</Link>
+                            <Link href="/Recommendations/" className="hover:bg-gray-500 hover:text-cyan-400">Recommendations</Link>
                         </li>
 
                         <li>
-                            <Link href="/Social/">Social</Link>
+                            <Link href="/Social/" className="hover:bg-gray-500 hover:text-cyan-400">Social</Link>
                         </li>
 
                         <li>
-                            <Link href="/AddRatings/">Add Ratings</Link>
+                            <Link href="/AddRatings/" className="hover:bg-gray-500 hover:text-cyan-400">Add Ratings</Link>
                         </li>
 
                         <li>
                             <details>
                                 <summary>{localStorage.getItem('user')}</summary>
-                                <ul className="bg-base-100 rounded-t-none p-2">
-                                    <li><Link href="/Profile/">Profile</Link></li>
-                                    <li><Link href="/Logout/">Logout</Link></li>
+                                <ul className="bg-base-100 rounded-t-none p-2 bg-gray-800">
+                                    <li><Link href="/Profile/" className="hover:bg-gray-500 hover:text-cyan-400">Profile</Link></li>
+                                    <li><Link href="/Logout/" className="hover:bg-gray-500 hover:text-cyan-400">Logout</Link></li>
                                 </ul>
                             </details>
                         </li>
@@ -224,65 +224,65 @@ const AddRatings = () => {
 
             <h2 className="text-3xl text-gray-100 font-bold py-5">Add Game Ratings</h2>
 
-            <div className="mockup-window border-base-300 border p-4 mt-5 bg-white text-black w-full max-w-screen-xl mx-auto">
+            <div className="mockup-window p-4 mt-5 bg-gray-900 text-gray-100 bg-opacity-75 backdrop-blur-md w-full max-w-screen-xl mx-auto">
                 <p className="pl-5">Add extra games here to your recommendation profile.</p>
                 <p className="pl-5">The games you rate will improve and personalise your recommendations.</p>
                 <p className="pl-5">For each game you search for, you will need to give it a 1-5 star rating.</p>
             </div>
 
             <div className="mt-5 w-full max-w-screen-xl mx-auto">
-                <fieldset className="fieldset w-xs bg-white border border-base-300 p-4 rounded-box">
-                    <h3 className="text-xl font-bold pb-2">Search for a game</h3>
+                <fieldset className="fieldset w-xs bg-gray-900 bg-opacity-75 backdrop-blur-md p-4 rounded-box">
+                    <h3 className="text-xl font-bold pb-2 text-gray-100">Search for a game</h3>
                     <div className="join">
-                        <input type="text" className="input join-item w-[25rem] border border-gray-300" placeholder="Game Name" value={gameName} onChange={(e)=>setGameName(e.target.value)}/>
-                        <button className="btn join-item hover:scale-[1.01]" onClick={fetchGames}>Search</button>
+                        <input type="text" className="input join-item w-[25rem]" placeholder="Game Name" value={gameName} onChange={(e)=>setGameName(e.target.value)}/>
+                        <button className="btn join-item hover:scale-[1.01] bg-cyan-400 text-gray-100" onClick={fetchGames}>Search</button>
                     </div>
                 </fieldset>
             </div>
 
-            {showSearchResults && (<ul className="list bg-white rounded-box shadow-md mt-5 w-full max-w-screen-xl mx-auto">
+            {showSearchResults && (<ul className="list bg-gray-900 bg-opacity-75 backdrop-blur-md shadow-md rounded-box mt-5 w-full max-w-screen-xl mx-auto">
   
-                <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">Search Results</li>
+                <li className="p-4 pb-2 text-md opacity-60 tracking-wide text-gray-100">Search Results</li>
 
                 {gameData.map((games, index) => (
                 
-                    <li key={games.id} className="list-row flex items-center px-4 py-3 border-t border-base-200">
-                        <div className="w-10 text-4xl font-thin opacity-30 tabular-nums">{index+1}</div>
+                    <li key={games.id} className="list-row flex items-center px-4 py-3 border-t border-black">
+                        <div className="w-10 text-4xl font-thin opacity-30 tabular-nums text-white">{index+1}</div>
                         <div><img className="size-10 rounded-box" src={games.url}/></div>
                         <div className="flex-1 px-4">
-                            <div>{games.name}</div>
-                            <div className="text-xs uppercase font-semibold opacity-60">{games.releaseDate}</div>
+                            <div className="text-gray-100">{games.name}</div>
+                            <div className="text-xs uppercase font-semibold opacity-60 text-gray-100">{games.releaseDate}</div>
                             {games.platforms && games.platforms.length > 0 && (
-                                <div className="text-xs opacity-70">Platforms: {games.platforms.join(', ')}</div>
+                                <div className="text-xs opacity-70 text-gray-100">Platforms: {games.platforms.join(', ')}</div>
                             )}
                         </div>
-                        <button className="btn btn-square btn-ghost hover:scale-[1.01]" onClick={() => fetchSelectedGame(games.id)}>Select</button>
+                        <button className="btn btn-square btn-ghost hover:scale-[1.01] text-cyan-400" onClick={() => fetchSelectedGame(games.id)}>Select</button>
                     </li>
                 ))}
             </ul>)}
 
             {showReview && (<div className="flex flex-row justify-center w-full max-w-screen-xl mx-auto">
-                <div className="card lg:card-side bg-white shadow-xl transition-transform mt-5 mb-5">
+                <div className="card lg:card-side bg-gray-900 bg-opacity-75 backdrop-blur-md shadow-xl transition-transform mt-5 mb-5">
 
                     
                     <figure className="w-[16rem] h-[22rem] flex-shrink-0">
                         <img src={reviewGame?.imgURL} alt="Img" className="object-cover w-full h-full"/>
                     </figure>
                     <div className="card-body">
-                        <h2 className="card-title">{reviewGame?.name}</h2>
-                        <p className="text-gray-600">Release Date: {reviewGame?.releaseDate}</p>
-                        <p className="text-gray-600">{reviewGame?.description}</p>
+                        <h2 className="card-title text-gray-100">{reviewGame?.name}</h2>
+                        <p className="text-gray-300">Release Date: {reviewGame?.releaseDate}</p>
+                        <p className="text-gray-300">{reviewGame?.description}</p>
 
                         <div className="rating">
-                            <input type="radio" name="rating-1" value="1" className="mask mask-star" aria-label="1 star" />
-                            <input type="radio" name="rating-1" value="2" className="mask mask-star" aria-label="2 star"  />
-                            <input type="radio" name="rating-1" value="3" className="mask mask-star" aria-label="3 star" />
-                            <input type="radio" name="rating-1" value="4" className="mask mask-star" aria-label="4 star" />
-                            <input type="radio" name="rating-1" value="5" className="mask mask-star" aria-label="5 star" />
+                            <input type="radio" name="rating-1" value="1" className="mask mask-star bg-white" aria-label="1 star" />
+                            <input type="radio" name="rating-1" value="2" className="mask mask-star bg-white" aria-label="2 star"  />
+                            <input type="radio" name="rating-1" value="3" className="mask mask-star bg-white" aria-label="3 star" />
+                            <input type="radio" name="rating-1" value="4" className="mask mask-star bg-white" aria-label="4 star" />
+                            <input type="radio" name="rating-1" value="5" className="mask mask-star bg-white" aria-label="5 star" />
                         </div>
 
                         <div className="card-actions justify-end mt-4">
-                            <button className="btn btn-primary hover:scale-[1.01]" onClick={() => reviewGame?.id && saveRating(reviewGame.id)}>Submit Rating</button>
+                            <button className="btn bg-cyan-400 hover:scale-[1.05] border-none text-black" onClick={() => reviewGame?.id && saveRating(reviewGame.id)}>Submit Rating</button>
                         </div>
                     </div>
                 </div>

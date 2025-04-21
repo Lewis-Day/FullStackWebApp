@@ -502,31 +502,31 @@ const Profile = () => {
     
 
     return(
-        <div className="bg-gray-700 h-full w-full pt-5 pb-5">
-            <div className="navbar bg-white rounded-md mx-auto max-w-screen-xl">
+        <div className="bg-black h-full w-full pt-5 pb-5">
+            <div className="navbar bg-gray-800 bg-opacity-75 backdrop-blur-md rounded-md mx-auto max-w-screen-xl">
                 <div className="flex-1">
-                    <Link href="/Home" className="btn btn-ghost text-xl text-black">VGR</Link>
+                    <Link href="/Home" className="btn btn-ghost text-xl text-gray-100 hover:bg-gray-500 hover:text-cyan-400">VGR</Link>
                 </div>
                 <div>
                     <ul className="menu menu-horizontal text-black">
                         <li>
-                            <Link href="/Recommendations/">Recommendations</Link>
+                            <Link href="/Recommendations/" className="hover:bg-gray-500 hover:text-cyan-400 text-gray-100">Recommendations</Link>
                         </li>
 
                         <li>
-                            <Link href="/Social/">Social</Link>
+                            <Link href="/Social/" className="hover:bg-gray-500 hover:text-cyan-400 text-gray-100">Social</Link>
                         </li>
 
                         <li>
-                            <Link href="/AddRatings/">Add Ratings</Link>
+                            <Link href="/AddRatings/" className="hover:bg-gray-500 hover:text-cyan-400 text-gray-100">Add Ratings</Link>
                         </li>
 
                         <li>
                             <details>
-                                <summary>{localStorage.getItem('user')}</summary>
-                                <ul className="bg-base-100 rounded-t-none p-2">
-                                    <li><Link href="/Profile/">Profile</Link></li>
-                                    <li><Link href="/Logout/">Logout</Link></li>
+                                <summary className="hover:bg-gray-500 hover:text-cyan-400 text-gray-100">{localStorage.getItem('user')}</summary>
+                                <ul className="bg-gray-900 rounded-t-none p-2">
+                                    <li><Link href="/Profile/" className="hover:bg-gray-500 hover:text-cyan-400 text-gray-100">Profile</Link></li>
+                                    <li><Link href="/Logout/" className="hover:bg-gray-500 hover:text-cyan-400 text-gray-100">Logout</Link></li>
                                 </ul>
                             </details>
                         </li>
@@ -536,44 +536,44 @@ const Profile = () => {
 
             <h2 className="mx-28 text-3xl text-gray-100 font-bold py-5">Your Profile</h2>
 
-            <div className="rounded-md mx-auto max-w-screen-xl bg-white h-[60vh] p-2">
+            <div className="rounded-md mx-auto max-w-screen-xl bg-gray-900 shadow-md p-6 mb-8">
 
                 {user.username != '' ? (
                     <>
-                <form onSubmit={formSubmit} className="flex flex-row justify-between pb-5">
-                    <fieldset>Username:</fieldset>
-                    <input type="text" name="username" onChange={handleChange} placeholder={user.username} className="bg-white h-[2.5rem]"/>
-                    <button type="submit" className="btn w-[8rem] text-black bg-white hover:scale-[1.025] transition-transform">Change Username</button>
+                <form onSubmit={formSubmit} className="flex items-center gap-4 mb-3">
+                    <fieldset className="w-32 font-semibold text-gray-300">Username:</fieldset>
+                    <input type="text" name="username" onChange={handleChange} placeholder={user.username} className="input input-bordered bg-gray-800 text-white flex-1"/>
+                    <button type="submit" className="btn bg-cyan-500 text-black hover:bg-cyan-400 transition-colors hover:scale-[1.025]">Change Username</button>
                 </form>
 
-                <form onSubmit={formSubmit} className="flex flex-row justify-between pb-5">
-                    <fieldset>Email:</fieldset>
-                    <input type="email" name='email' onChange={handleChange} placeholder={user.email} className="bg-white h-[2.5rem]"/>
-                    <button type="submit" className="btn w-[8rem] text-black bg-white hover:scale-[1.025] transition-transform">Change Email</button>
+                <form onSubmit={formSubmit} className="flex items-center gap-4 mb-3">
+                    <fieldset className="w-32 font-semibold text-gray-300">Email:</fieldset>
+                    <input type="email" name='email' onChange={handleChange} placeholder={user.email} className="input input-bordered bg-gray-800 text-white flex-1"/>
+                    <button type="submit" className="btn bg-cyan-500 text-black hover:bg-cyan-400 transition-colors hover:scale-[1.025]">Change Email</button>
                 </form>
 
-                <form onSubmit={formSubmit} className="flex flex-row justify-between pb-5">
-                    <fieldset>Date of Birth:</fieldset>
-                    <input type="date" name='dob' onChange={handleChange} defaultValue={user.dob} className="bg-white h-[2.5rem]"/>
-                    <button type="submit" className="btn w-[8rem] text-black bg-white hover:scale-[1.025] transition-transform">Change Date of Birth</button>
+                <form onSubmit={formSubmit} className="flex items-center gap-4 mb-3">
+                    <fieldset className="w-32 font-semibold text-gray-300">Date of Birth:</fieldset>
+                    <input type="date" name='dob' onChange={handleChange} defaultValue={user.dob} className="input input-bordered bg-gray-800 text-white flex-1"/>
+                    <button type="submit" className="btn bg-cyan-500 text-black hover:bg-cyan-400 transition-colors hover:scale-[1.025]">Change Date of Birth</button>
                 </form>
 
-                <form onSubmit={formSubmit} className="flex flex-row justify-between pb-5">
-                    <fieldset>First Name:</fieldset>
-                    <input type="text" name='firstName' onChange={handleChange} placeholder={user.firstName} className="bg-white h-[2.5rem]"/>
-                    <button type="submit" className="btn w-[8rem] text-black bg-white hover:scale-[1.025] transition-transform">Change First Name</button>
+                <form onSubmit={formSubmit} className="flex items-center gap-4 mb-3">
+                    <fieldset className="w-32 font-semibold text-gray-300">First Name:</fieldset>
+                    <input type="text" name='firstName' onChange={handleChange} placeholder={user.firstName} className="input input-bordered bg-gray-800 text-white flex-1"/>
+                    <button type="submit" className="btn bg-cyan-500 text-black hover:bg-cyan-400 transition-colors hover:scale-[1.025]">Change First Name</button>
                 </form>
 
-                <form onSubmit={formSubmit} className="flex flex-row justify-between pb-5">
-                    <fieldset>Last Name:</fieldset>
-                    <input type="text" name='lastName' onChange={handleChange} placeholder={user.lastName} className="bg-white h-[2.5rem]"/>
-                    <button type="submit" className="btn w-[8rem] text-black bg-white hover:scale-[1.025] transition-transform">Change Last Name</button>
+                <form onSubmit={formSubmit} className="flex items-center gap-4 mb-3">
+                    <fieldset className="w-32 font-semibold text-gray-300">Last Name:</fieldset>
+                    <input type="text" name='lastName' onChange={handleChange} placeholder={user.lastName} className="input input-bordered bg-gray-800 text-white flex-1"/>
+                    <button type="submit" className="btn bg-cyan-500 text-black hover:bg-cyan-400 transition-colors hover:scale-[1.025]">Change Last Name</button>
                 </form>
 
-                <form onSubmit={formChangePassword} className="flex flex-row justify-between pb-5">
-                    <fieldset>Password:</fieldset>
-                    <input type="text" name='password'  placeholder='Enter new password...' className="bg-white h-[2.5rem]" onChange={(e) => setNewPassword(e.target.value)}/>
-                    <button type="submit" className="btn w-[8rem] text-black bg-white hover:scale-[1.025] transition-transform">Change Password</button>
+                <form onSubmit={formChangePassword} className="flex items-center gap-4 mb-3">
+                    <fieldset className="w-32 font-semibold text-gray-300">Password:</fieldset>
+                    <input type="text" name='password'  placeholder='Enter new password...' className="input input-bordered bg-gray-800 text-white flex-1" onChange={(e) => setNewPassword(e.target.value)}/>
+                    <button type="submit" className="btn bg-cyan-500 text-black hover:bg-cyan-400 transition-colors hover:scale-[1.025]">Change Password</button>
                 </form>
 
                 </>
@@ -583,34 +583,34 @@ const Profile = () => {
 
             </div>
 
-            <div className="rounded-lg mx-auto max-w-screen-xl bg-white shadow-lg p-6 mt-5">
+            <div className="rounded-lg mx-auto max-w-screen-xl bg-gray-900 shadow-lg p-6 mt-5">
                 <form action="GET" onSubmit={formGetUsers} className="flex items-center gap-3">
                     <fieldset>
-                        <h2 className="text-xl font-bold mb-3">Add Friends:</h2>
+                        <h2 className="text-xl font-bold mb-3 text-gray-100 pt-2">Add Friends:</h2>
                     </fieldset>
-                    <input className="flex-1 px-4 py-2 border border-gray-300 rounded-lg" type="text" placeholder="Friend Username..." onChange={(e) => setSearch(e.target.value)}/>
-                    <button type="submit" className="px-4 py-2 bg-blue-500 rounded-md text-white">Search</button>
+                    <input className="flex-1 px-4 py-2 input input-bordered rounded-lg bg-gray-800" type="text" placeholder="Friend Username..." onChange={(e) => setSearch(e.target.value)}/>
+                    <button type="submit" className="btn bg-cyan-500 text-black hover:bg-cyan-400 transition-colors hover:scale-[1.025]">Search</button>
                 </form>
 
                 {foundUser && (
-                    <div className="mt-4 p-4 bg-gray-100 rounded-lg flex items-center justify-between">
-                        <p className="font-medium">User: {foundUser}</p>
-                        <button className="px-4 py-2 bg-green-500 rounded-md text-white" onClick={() => formSendFriendRequest(foundUser)}>Add Friend</button>
+                    <div className="mt-4 p-4 bg-gray-700 rounded-lg flex items-center justify-between">
+                        <p className="font-medium text-gray-100">User: {foundUser}</p>
+                        <button className="px-4 py-2 bg-green-500 hover:bg-green-700 rounded-md text-white transition-colors hover:scale-[1.025]" onClick={() => formSendFriendRequest(foundUser)}>Add Friend</button>
                     </div>
                 )}
             </div>
 
 
-            <div className="rounded-md mx-auto max-w-screen-xl bg-white p-2 mt-5">
+            <div className="rounded-md mx-auto max-w-screen-xl bg-gray-900 shadow-lg p-2 mt-5">
 
-                <h2 className="text-xl font-bold mb-3">My Friends: </h2>
+                <h2 className="text-xl font-bold mb-3 text-gray-100">My Friends: </h2>
 
                 {friends.length > 0 ? (
                     <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {friends.map((friend) => (
-                            <li key={friend.username} className="flex items-center justify-between bg-gray-100 p-3 rounded-lg shadow-sm">
-                                <div className="font-medium">{friend.username}</div>
-                                <button className="bg-red-500 p-2 rounded-md" onClick={() => formRemoveFriend(friend.username)}>Remove Friend</button>
+                            <li key={friend.username} className="flex items-center justify-between bg-gray-700 p-3 rounded-lg shadow-sm">
+                                <div className="font-medium font-semibold text-gray-300">{friend.username}</div>
+                                <button className="btn bg-red-500 p-2 rounded-md hover:bg-red-700 transition-colors hover:scale-[1.025]" onClick={() => formRemoveFriend(friend.username)}>Remove Friend</button>
                             </li>
                         ))}
                     </ul>
@@ -625,18 +625,18 @@ const Profile = () => {
         
 
 
-            <div className="rounded-md mx-auto max-w-screen-xl bg-white p-2 mt-5">
+            <div className="rounded-md mx-auto max-w-screen-xl bg-gray-900 shadow-lg p-2 mt-5">
 
-                <h2 className="text-xl font-bold mb-3">Friend Requests: </h2>
+                <h2 className="text-xl font-bold mb-3 text-gray-100">Friend Requests: </h2>
 
                 {friendRequests.length > 0 ?(
                     <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {friendRequests.map((friend) => (
-                            <li key={friend.username} className="flex items-center justify-between bg-gray-100 p-3 rounded-lg shadow-sm">
+                            <li key={friend.username} className="flex items-center justify-between bg-gray-700 p-3 rounded-lg shadow-sm">
                                 <div className="font-medium">{friend.username}</div>
                                 <div>
-                                    <button className="bg-green-300 p-2 rounded-md mx-1" onClick={() => acceptRequest(friend.username)}>Accept</button>
-                                    <button className="bg-red-300 p-2 rounded-md mx-1" onClick={() => declineRequest(friend.username)}>Decline</button>
+                                    <button className="bg-green-300 p-2 rounded-md mx-1 btn hover:bg-green-500 transition-colors hover:scale-[1.025]" onClick={() => acceptRequest(friend.username)}>Accept</button>
+                                    <button className="bg-red-300 p-2 rounded-md mx-1 btn hover:bg-red-700 transition-colors hover:scale-[1.025]" onClick={() => declineRequest(friend.username)}>Decline</button>
                                 </div>
                                 
                             </li>
@@ -648,16 +648,16 @@ const Profile = () => {
 
             </div>
 
-            <div className="rounded-md mx-auto max-w-screen-xl bg-white p-2 mt-5">
+            <div className="rounded-md mx-auto max-w-screen-xl bg-gray-900 p-2 mt-5">
 
-                <h2 className="text-xl font-bold mb-3">Sent Friend Requests: </h2>
+                <h2 className="text-xl font-bold mb-3 text-gray-100">Sent Friend Requests: </h2>
 
                 {sentFriendRequests.length > 0 ?(
                     <ul>
                         {sentFriendRequests.map((friend) => (
                             <li key={friend.username} className="flex items-center justify-between bg-gray-100 p-3 rounded-lg shadow-sm">
                                 <div className="font-medium">{friend.username}</div>
-                                <button className="bg-orange-300 p-2 rounded-md mx-1" onClick={() => deleteRequest(friend.username)}>Cancel</button>
+                                <button className="bg-orange-300 p-2 rounded-md mx-1 btn hover:bg-orange-500 transition-colors hover:scale-[1.025]" onClick={() => deleteRequest(friend.username)}>Cancel</button>
                             </li>
                         ))}
                     </ul>

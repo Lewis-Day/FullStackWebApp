@@ -180,6 +180,6 @@ class deleteConversation(APIView):
 
         print(currentConversation)
 
-        # currentConversation.delete()
+        currentConversation.delete()
 
         return Response({'message':'Chat deleted'}, status=status.HTTP_200_OK)

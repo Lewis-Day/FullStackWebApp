@@ -91,31 +91,31 @@ const Recommendations = () => {
         }, []);
 
     return(
-        <div className="bg-gray-700 min-h-screen w-full pt-5 ">
-            <div className="navbar bg-white rounded-md mx-auto max-w-screen-xl">
+        <div className="bg-black min-h-screen w-full pt-5 ">
+            <div className="navbar bg-gray-800 bg-opacity-75 backdrop-blur-md rounded-md mx-auto max-w-screen-xl">
                 <div className="flex-1">
-                    <Link href="/Home" className="btn btn-ghost text-xl text-black">VGR</Link>
+                    <Link href="/Home" className="btn btn-ghost text-xl text-gray-100 hover:bg-gray-500 hover:text-cyan-400">VGR</Link>
                 </div>
                 <div>
-                    <ul className="menu menu-horizontal text-black">
+                    <ul className="menu menu-horizontal px-1 text-gray-100">
                         <li>
-                            <Link href="/Recommendations/">Recommendations</Link>
+                            <Link href="/Recommendations/" className="hover:bg-gray-500 hover:text-cyan-400">Recommendations</Link>
                         </li>
 
                         <li>
-                            <Link href="/Social/">Social</Link>
+                            <Link href="/Social/" className="hover:bg-gray-500 hover:text-cyan-400">Social</Link>
                         </li>
 
                         <li>
-                            <Link href="/AddRatings/">Add Ratings</Link>
+                            <Link href="/AddRatings/" className="hover:bg-gray-500 hover:text-cyan-400">Add Ratings</Link>
                         </li>
 
                         <li>
                             <details>
                                 <summary>{localStorage.getItem('user')}</summary>
-                                <ul className="bg-base-100 rounded-t-none p-2">
-                                    <li><Link href="/Profile/">Profile</Link></li>
-                                    <li><Link href="/Logout/">Logout</Link></li>
+                                <ul className="bg-gray-800 rounded-t-none p-2">
+                                    <li><Link href="/Profile/" className="hover:bg-gray-500 hover:text-cyan-400">Profile</Link></li>
+                                    <li><Link href="/Logout/" className="hover:bg-gray-500 hover:text-cyan-400">Logout</Link></li>
                                 </ul>
                             </details>
                         </li>
@@ -129,7 +129,7 @@ const Recommendations = () => {
 
                 <h2 className=" text-3xl text-gray-100 font-bold py-5">Your Recommendations</h2>
 
-                <div className="card lg:card-side bg-base-100 shadow-xl w-[50rem] mt-5 hover:scale-[1.025] transition-transform">
+                <div className="card lg:card-side bg-gray-800 bg-opacity-75 backdrop-blur-md shadow-xl w-[50rem] mt-5 hover:scale-[1.025] transition-transform">
 
                     {gameData.length > 0 ? (
                         <>
@@ -139,11 +139,11 @@ const Recommendations = () => {
                                 alt="Img" className="object-cover w-full h-full"/>
                             </figure>
                             <div className="card-body flex-grow">
-                                <h2 className="card-title">{gameData[index].name}</h2>
-                                <p>{gameData[index].description}</p>
+                                <h2 className="card-title text-gray-100">{gameData[index].name}</h2>
+                                <p className="text-gray-100">{gameData[index].description}</p>
 
                                 <div>
-                                    <p className="flex flex-row justify-end">{index + 1}</p>
+                                    <p className="flex flex-row justify-end text-cyan-400">{index + 1}</p>
                                 </div>
                             </div>
                         </>
@@ -153,9 +153,9 @@ const Recommendations = () => {
                 </div>
 
                 <div className="join ml-[20rem] pt-5">
-                    <button className="join-item btn hover:scale-[1.025] transition-transform" onClick={buttonPressBack}>«</button>
-                    <button className="join-item btn" style={{pointerEvents:'none'}}>Game {index + 1}</button>
-                    <button className="join-item btn hover:scale-[1.025] transition-transform" onClick={buttonPressForward}>»</button>
+                    <button className="join-item btn hover:scale-[1.025] transition-transform bg-gray-800 text-cyan-400 bg-opacity-75 backdrop-blur-md" onClick={buttonPressBack}>«</button>
+                    <button className="join-item btn  bg-gray-800 text-cyan-400 bg-opacity-75 backdrop-blur-md" style={{pointerEvents:'none'}}>Game {index + 1}</button>
+                    <button className="join-item btn hover:scale-[1.025] transition-transform bg-gray-800 text-cyan-400 bg-opacity-75 backdrop-blur-md" onClick={buttonPressForward}>»</button>
                 </div>
             </div>
         </div>
