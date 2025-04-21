@@ -277,31 +277,31 @@ const Social = () => {
     }, [currentChat, loggedInUser, token, getMessages]);
 
     return(
-        <div className="bg-gray-700 min-h-screen w-full pt-5 ">
-            <div className="navbar bg-white rounded-md mx-auto max-w-screen-xl">
+        <div className="bg-black min-h-screen w-full pt-5 ">
+            <div className="navbar bg-gray-800 bg-opacity-75 backdrop-blur-md rounded-md mx-auto max-w-screen-xl">
                 <div className="flex-1">
-                    <Link href="/Home" className="btn btn-ghost text-xl text-black">VGR</Link>
+                    <Link href="/Home" className="btn btn-ghost text-xl text-gray-100">VGR</Link>
                 </div>
                 <div>
                     <ul className="menu menu-horizontal text-black">
                         <li>
-                            <Link href="/Recommendations/">Recommendations</Link>
+                            <Link href="/Recommendations/" className="text-gray-100 hover:text-cyan-400">Recommendations</Link>
                         </li>
 
                         <li>
-                            <Link href="/Social/">Social</Link>
+                            <Link href="/Social/" className="text-gray-100 hover:text-cyan-400">Social</Link>
                         </li>
 
                         <li>
-                            <Link href="/AddRatings/">Add Ratings</Link>
+                            <Link href="/AddRatings/" className="text-gray-100 hover:text-cyan-400">Add Ratings</Link>
                         </li>
 
                         <li>
                             <details>
-                                <summary>{localStorage.getItem('user')}</summary>
-                                <ul className="bg-base-100 rounded-t-none p-2">
-                                    <li><Link href="/Profile/">Profile</Link></li>
-                                    <li><Link href="/Logout/">Logout</Link></li>
+                                <summary className="text-gray-100 hover:text-cyan-400">{localStorage.getItem('user')}</summary>
+                                <ul className="bg-gray-900 rounded-t-none p-2">
+                                    <li><Link href="/Profile/" className="text-gray-100 hover:text-cyan-400">Profile</Link></li>
+                                    <li><Link href="/Logout/" className="text-gray-100 hover:text-cyan-400">Logout</Link></li>
                                 </ul>
                             </details>
                         </li>
@@ -313,30 +313,33 @@ const Social = () => {
 
             <h2 className="text-3xl text-gray-100 font-bold py-5">Social</h2>
 
-            <div className="flex flex-row justify-start pb-5">
-                <ul className="menu bg-base-200 rounded-box w-56 h-[80vh] mx-28">
-                    <div>
-                        <label>Select a Friend to Chat With:</label><br></br>
-                        <select name="friends" id="friends" onChange={(e)=>setNewChatFriend(e.target.value)}>
+            <div className="flex flex-row justify-start pb-5 space-x-8">
+                <ul className="menu bg-gray-900 rounded-md rounded-box p-6 w-72 h-[80vh] overflow-y-auto">
+                    <div className="mb-4">
+                        <label className="text-sm font-bold mb-2 text-gray-400">Select a Friend to Chat With:</label><br></br>
+                        <select name="friends" id="friends" onChange={(e)=>setNewChatFriend(e.target.value)} className="select select-bordered w-full bg-gray-700 text-white">
                             <option value="">Select a Friend</option>
                             {friends.map((friend) => (
                                 <option key={friend.username} value={friend.username}>{friend.username}</option>
                             ))}
                         </select>
-                        <button className="btn bg-gray-500" onClick={newConversation} disabled={!newChatFriend}>
+                        <button className="btn bg-cyan-500 text-gray-100 mt-2 w-full hover:bg-cyan-600" onClick={newConversation} disabled={!newChatFriend}>
                             New Chat
                         </button>
                     </div>
+
+                    <div className="divider text-gray-600">Chats</div>
+
                     {chats.length === 0 ? (
-                        <p>No Chats Found</p> 
+                        <p className="text-gray-500">No Chats Found</p> 
                         ) : (
                         <ul>
                             {chats.map((chat) => (
                                 <li key={chat.username}>
-                                    <div className="flex flex-row justify-between" onClick={() => chatClick(chat.username)}>
-                                        {chat.username}
+                                    <div className={`flex justify-between p-2 rounded-md cursor-pointer border border-gray-800 ${currentChat === chat.username ? 'bg-gray-500' : 'hover:bg-gray-500'}`} onClick={() => chatClick(chat.username)}>
+                                        <span className="text-white">{chat.username}</span> 
 
-                                        <button className="btn btn-square" onClick={deleteChat} disabled={currentChat == ''}>
+                                        <button className="btn btn-square border border-gray-800" onClick={deleteChat} disabled={currentChat == ''}>
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 className="h-6 w-6"
@@ -357,22 +360,24 @@ const Social = () => {
                     )}
                 </ul>
 
-                <div className="w-[50rem] h-[80vh] bg-white rounded-xl flex flex-col justify-between p-1">
+                <div className="w-[50rem] h-[80vh] bg-gray-900 rounded-xl flex flex-col justify-between p-6">
                     <div>
-                        <h1>Chat with {currentChat}</h1>
+                        <h1 className="text-xl font-semibold text-gray-100 mb-4">Chat with {currentChat}</h1>
                     </div>
 
-                    <div className="overflow-y-auto">
+                    <div className="overflow-y-auto mb-4">
                         {chatMessages.length == 0 ? (
-                            <p>No messages found</p>
+                            <p className="text-gray-500 flex flex-row justify-center">No messages found</p>
                         ) : (
-                            chatMessages.map((msg, idx) => (     
+                               chatMessages.map((msg, idx) => (     
                                 <div key={idx} className={`chat ${msg.sendingUser.username == loggedInUser && "chat-start"} ${msg.sendingUser.username != loggedInUser && "chat-end"}`}>
                                     <div className="chat-header">
-                                        {msg.sendingUser.username}
-                                        <time className="text-xs opacity-50 pl-2">{msg.messageTime}</time>
+                                        {/* {msg.sendingUser.username}
+                                        <time className="text-xs opacity-50 pl-2">{msg.messageTime}</time> */}
+                                        <span className="font-semibold text-sm text-cyan-400">{msg.sendingUser.username}</span>
+                                        <time className="text-xs opacity-50 pl-2 text-cyan-400">{msg.messageTime}</time>
                                     </div>
-                                    <div className="chat-bubble bg-blue-500">{msg.message}</div>
+                                    <div className="chat-bubble bg-blue-500 text-black">{msg.message}</div>
                                 </div>
                             ))
                         )}
@@ -380,9 +385,9 @@ const Social = () => {
 
                     
 
-                    <form onSubmit={addMessage} className="">
-                        <input type="text" placeholder="Type your message here..." className="w-[40rem] h-[3rem] ml-[1rem]" onChange={(e) => setMessage(e.target.value)}/>
-                        <button type="submit" className="btn w-[8rem] text-black bg-white hover:scale-[1.025] transition-transform">Send</button>
+                    <form onSubmit={addMessage} className="flex items-center">
+                        <input type="text" placeholder="Type your message here..." className="input input-bordered bg-gray-700 text-white w-full mr-2" onChange={(e) => setMessage(e.target.value)}/>
+                        <button type="submit" className="btn bg-cyan-400 text-black hover:bg-cyan-600 hover:scale-[1.01] transition-transform">Send</button>
                     </form>
 
                 </div>

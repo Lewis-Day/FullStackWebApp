@@ -56,14 +56,14 @@ const Login = () => {
 
 
     return(
-        <div className="bg-gray-700 h-screen w-full pt-5 ">
-            <div className="navbar bg-white rounded-md mx-auto max-w-screen-xl">
+        <div className="bg-black h-screen w-full pt-5 ">
+            <div className="navbar bg-gray-800 bg-opacity-75 backdrop-blur-md rounded-md mx-auto max-w-screen-xl">
                 <div className="flex-1">
-                    <Link href="/Home" className="btn btn-ghost text-xl text-black">VGR</Link>
+                    <Link href="/Home" className="btn btn-ghost text-xl text-gray-100 hover:bg-gray-500 hover:text-cyan-400">VGR</Link>
                 </div>
                 <div className="flex-none">
-                    <ul className="menu menu-horizontal px-1 text-black">
-                    <li><Link href="/SignUp">Sign Up</Link></li>
+                    <ul className="menu menu-horizontal px-1 text-gray-100">
+                    <li><Link href="/SignUp" className="hover:bg-gray-500 hover:text-cyan-400">Sign Up</Link></li>
                     </ul>
                 </div>
             </div>
@@ -84,7 +84,7 @@ const Login = () => {
                     <path
                     d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
                 </svg>
-                    <input type="text" className="bg-white" placeholder="Username" required onChange={(e) => setUsername(e.target.value)}/>
+                    <input type="text" className="bg-white placeholder-gray-500" placeholder="Username" required onChange={(e) => setUsername(e.target.value)}/>
                 </label>
                 
                 <label className="input input-bordered flex items-center gap-2 bg-white mb-10 w-[35rem]">
@@ -98,16 +98,16 @@ const Login = () => {
                     d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
                     clipRule="evenodd" />
                 </svg>
-                <input type="password" className="" placeholder="Password" required onChange={(e) => setPassword(e.target.value)}/>
+                <input type="password" className="bg-white placeholder-gray-500" placeholder="Password" required onChange={(e) => setPassword(e.target.value)}/>
                 </label>
 
-                <Link href="/ForgotPassword" className="flex flex-row justify-end pb-5 text-white font-bold">Forgot Password?</Link>
+                <Link href="/ForgotPassword" className="flex flex-row justify-end pb-5 text-cyan-400 font-bold">Forgot Password?</Link>
 
                 <div className="flex justify-center">
-                    <button type="submit" className="btn w-[8rem] text-black bg-white hover:scale-[1.025] transition-transform">Login</button>
+                    <button type="submit" className="btn w-[8rem] text-gray-100 hover:bg-cyan-600 hover:scale-[1.025] transition-transform duration-200 shadow-md bg-cyan-400">Login</button>
                 </div>
 
-                <h3 className="flex flex-row justify-start pt-5 text-white">Don't Have an Account? &nbsp;<Link href="/SignUp" className="font-bold">Sign Up</Link></h3>
+                <h3 className="flex flex-row justify-start pt-5 text-gray-100">Don't Have an Account? &nbsp;<Link href="/SignUp" className="font-bold text-cyan-400">Sign Up</Link></h3>
 
                 
             </form>
