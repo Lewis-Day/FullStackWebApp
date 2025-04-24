@@ -21,6 +21,8 @@ const Recommendations = () => {
     }
 
     const [gameData, setGameData] = useState<gameRecommendations[]>([]);
+    const [wildcardData, setWildcardData] = useState<gameRecommendations[]>([]);
+    const [wildCardStatus, setWildCardStatus] = useState(false);
     const [index, setIndex] = useState(0);
 
     const buttonPressBack = () => {
@@ -42,6 +44,41 @@ const Recommendations = () => {
         }
         
     };
+
+    const fetchWildCard = async () => {
+        
+        try{
+            const response = await fetch("../api/Wildcard/", {
+                method:'GET',
+                headers:{
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+
+            if(response.status == 401){
+                redirect('/Login/')
+            }
+            const data = await response.json();
+
+            const wildcardSet: gameRecommendations[] = [];
+            for(let i = 0; i<data.gameName.length; i++){
+                console.log(data.imgURL[i])
+                wildcardSet.push({
+                    name: data.gameName[i],
+                    description: data.gameDescription[i],
+                    imgURL: data.imgURL[i],
+
+                });
+            }
+            setWildcardData(wildcardSet);
+            setWildCardStatus(true);
+        }
+
+        catch(error){
+            console.error("Error: ", error);
+        }
+        
+    }; 
 
     useEffect(() => {
     
@@ -157,7 +194,43 @@ const Recommendations = () => {
                     <button className="join-item btn  bg-gray-800 text-cyan-400 bg-opacity-75 backdrop-blur-md" style={{pointerEvents:'none'}}>Game {index + 1}</button>
                     <button className="join-item btn hover:scale-[1.025] transition-transform bg-gray-800 text-cyan-400 bg-opacity-75 backdrop-blur-md" onClick={buttonPressForward}>»</button>
                 </div>
+
+                <div className="mt-10 w-full flex justify-center">
+                    <button
+                            className={"btn bg-cyan-400 text-gray-900 hover:bg-cyan-500 hover:text-gray-100 transition-colors"}
+                            onClick={fetchWildCard}>
+                            Generate Wildcard Recommendation
+                    </button>
+                </div>
+
+                {wildCardStatus && (
+
+                    <div className="card lg:card-side bg-gray-800 bg-opacity-75 backdrop-blur-md shadow-xl w-[50rem] mt-5 hover:scale-[1.025] transition-transform">
+
+                        {wildcardData.length > 0 ? (
+                            <>
+                                <figure className="relative w-[16.5rem] h-[22rem] overflow-hidden flex-shrink-0">
+                                    <img
+                                    src={wildcardData[index].imgURL}
+                                    alt="Img" className="object-cover w-full h-full"/>
+                                </figure>
+                                <div className="card-body flex-grow">
+                                    <h2 className="card-title text-gray-100">{wildcardData[index].name}</h2>
+                                    <p className="text-gray-100">{wildcardData[index].description}</p>
+                                {/* 
+                                    <div>
+                                        <p className="flex flex-row justify-end text-cyan-400">{index + 1}</p>
+                                    </div> */}
+                                </div>
+                            </>
+                        ) : (
+                            <div className="skeleton h-[22rem] w-[16.5rem]"></div>
+                        )}
+                    </div>
+                )}
             </div>
+
+            
         </div>
     );
     

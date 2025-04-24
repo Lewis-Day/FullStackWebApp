@@ -55,7 +55,7 @@ class recommendationsView(APIView):
         game = ds['games']
 
         # load my model saved from earlier
-        model = tf.keras.models.load_model('/home/lewisday/projects/tf/kerasModel.keras')
+        model = tf.keras.models.load_model('/home/lewisday/projects/tf/FullStackWebApp/FullStackWebApp/MLModels/evaluateModel2lessbatch.keras')
 
         # Convert to NumPy arrays
         user_array = np.array(ds['user'])
@@ -406,3 +406,17 @@ class addRatingsView(APIView):
         return Response({'message':'New User Created'}, status=status.HTTP_201_CREATED)
     
 
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+class wildCardView(APIView):
+
+    def get(self, request):
+
+        user = request.user
+
+        gameIDFile = pd.read_csv("/home/lewisday/projects/tf/FullStackWebApp/FullStackWebApp/helperFiles/FactorisedtoGameID.csv")
+
+        wildcard = random.choice(gameIDFile['gameID'].tolist())
+
+        return JsonResponse({"wildcard" : wildcard}, safe=False)
+    

@@ -342,6 +342,8 @@ const Profile = () => {
         if(submit.status == 201){
             console.log(submit);
             alert("Friend Request Sent");
+            setFoundUser(''); 
+            setSearch(''); 
         }
         else{
             console.log(submit);
@@ -534,7 +536,10 @@ const Profile = () => {
                 </div>
             </div>
 
-            <h2 className="mx-28 text-3xl text-gray-100 font-bold py-5">Your Profile</h2>
+
+            <h2 className="mx-[20rem] text-3xl text-gray-100 font-bold py-5">Your Profile</h2>
+
+            
 
             <div className="rounded-md mx-auto max-w-screen-xl bg-gray-900 shadow-md p-6 mb-8">
 
@@ -633,7 +638,7 @@ const Profile = () => {
                     <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {friendRequests.map((friend) => (
                             <li key={friend.username} className="flex items-center justify-between bg-gray-700 p-3 rounded-lg shadow-sm">
-                                <div className="font-medium">{friend.username}</div>
+                                <div className="font-medium font-semibold text-gray-300">{friend.username}</div>
                                 <div>
                                     <button className="bg-green-300 p-2 rounded-md mx-1 btn hover:bg-green-500 transition-colors hover:scale-[1.025]" onClick={() => acceptRequest(friend.username)}>Accept</button>
                                     <button className="bg-red-300 p-2 rounded-md mx-1 btn hover:bg-red-700 transition-colors hover:scale-[1.025]" onClick={() => declineRequest(friend.username)}>Decline</button>
@@ -653,10 +658,10 @@ const Profile = () => {
                 <h2 className="text-xl font-bold mb-3 text-gray-100">Sent Friend Requests: </h2>
 
                 {sentFriendRequests.length > 0 ?(
-                    <ul>
+                    <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {sentFriendRequests.map((friend) => (
-                            <li key={friend.username} className="flex items-center justify-between bg-gray-100 p-3 rounded-lg shadow-sm">
-                                <div className="font-medium">{friend.username}</div>
+                            <li key={friend.username} className="flex items-center justify-between bg-gray-700 p-3 rounded-lg shadow-sm">
+                                <div className="font-medium font-semibold text-gray-300">{friend.username}</div>
                                 <button className="bg-orange-300 p-2 rounded-md mx-1 btn hover:bg-orange-500 transition-colors hover:scale-[1.025]" onClick={() => deleteRequest(friend.username)}>Cancel</button>
                             </li>
                         ))}
