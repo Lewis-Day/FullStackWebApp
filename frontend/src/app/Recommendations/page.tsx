@@ -7,9 +7,21 @@ import { redirect } from "next/navigation";
 
 
 interface gameRecommendations{
+    id : string,
     name: string,
     description: string, 
     imgURL: string,
+    releaseDate: string,
+    platforms: String[][],
+}
+
+interface wildCardGameRecommendations{
+    id: string,
+    name: string,
+    description: string, 
+    imgURL: string,
+    releaseDate: string,
+    platforms: string[],
 }
 
 const Recommendations = () => {
@@ -21,7 +33,7 @@ const Recommendations = () => {
     }
 
     const [gameData, setGameData] = useState<gameRecommendations[]>([]);
-    const [wildcardData, setWildcardData] = useState<gameRecommendations[]>([]);
+    const [wildcardData, setWildcardData] = useState<wildCardGameRecommendations[]>([]);
     const [wildCardStatus, setWildCardStatus] = useState(false);
     const [index, setIndex] = useState(0);
 
@@ -60,22 +72,104 @@ const Recommendations = () => {
             }
             const data = await response.json();
 
-            const wildcardSet: gameRecommendations[] = [];
+            console.log(data);
+
+            const wildcardSet: wildCardGameRecommendations[] = [];
             for(let i = 0; i<data.gameName.length; i++){
                 console.log(data.imgURL[i])
+
                 wildcardSet.push({
+                    id: data.ids[i],
                     name: data.gameName[i],
                     description: data.gameDescription[i],
                     imgURL: data.imgURL[i],
+                    releaseDate: data.releaseDate[i],
+                    platforms : data.platformsRet,
 
-                });
+                });             
             }
+            console.log(wildcardSet);
             setWildcardData(wildcardSet);
             setWildCardStatus(true);
         }
 
         catch(error){
             console.error("Error: ", error);
+        }
+        
+    }; 
+
+
+    const saveRecommendation = async (index : number) => {
+        
+        try{
+            const response = await fetch("http://localhost:8000/api/saveRecommendation/", {
+                method:'POST',
+                headers:{
+                    'Content-Type' : 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+
+                body: JSON.stringify({
+                    gameid: gameData[index].id,
+                    name : gameData[index].name,
+                    release : gameData[index].releaseDate,
+                    platforms : gameData[index].platforms.join(', '),
+                }),
+            });
+
+
+            if(response.ok){
+                alert("Saved Recommendation");
+            }
+            else{
+                alert("Error saving recommendation");
+            }
+        }
+
+
+    
+
+        catch(error){
+            console.error("Error: ", error);
+            alert("An error happened...")
+        }
+        
+    }; 
+
+    const saveRecommendationWild = async () => {
+        
+        try{
+            const response = await fetch("http://localhost:8000/api/saveRecommendation/", {
+                method:'POST',
+                headers:{
+                    'Content-Type' : 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+
+                body: JSON.stringify({
+                    gameid: wildcardData[0].id,
+                    name : wildcardData[0].name,
+                    release : wildcardData[0].releaseDate,
+                    platforms : wildcardData[0].platforms.join(', '),
+                }),
+            });
+
+
+            if(response.ok){
+                alert("Saved Recommendation");
+            }
+            else{
+                alert("Error saving recommendation");
+            }
+        }
+
+
+    
+
+        catch(error){
+            console.error("Error: ", error);
+            alert("An error happened...")
         }
         
     }; 
@@ -108,9 +202,12 @@ const Recommendations = () => {
                 for(let i = 0; i<data.gameName.length; i++){
                     console.log(data.imgURL[i])
                     recommendationSet.push({
+                        id : data.ids[i],
                         name: data.gameName[i],
                         description: data.gameDescription[i],
                         imgURL: data.imgURL[i],
+                        releaseDate: data.releaseDate[i],
+                        platforms: data.platforms[i],
 
                     });
                 }
@@ -137,6 +234,10 @@ const Recommendations = () => {
                     <ul className="menu menu-horizontal px-1 text-gray-100">
                         <li>
                             <Link href="/Recommendations/" className="hover:bg-gray-500 hover:text-cyan-400">Recommendations</Link>
+                        </li>
+
+                        <li>
+                            <Link href="/SavedRecommendations/" className="hover:bg-gray-500 hover:text-cyan-400">Saved Recommendations</Link>
                         </li>
 
                         <li>
@@ -181,10 +282,18 @@ const Recommendations = () => {
                             </figure>
                             <div className="card-body flex-grow">
                                 <h2 className="card-title text-gray-100">{gameData[index].name}</h2>
+                                <div className="text-xs uppercase font-semibold opacity-60 text-gray-100">{gameData[index].releaseDate}</div>
+                                {gameData[index].platforms && gameData[index].platforms.length > 0 && (
+                                        <div className="text-xs opacity-70 text-gray-100">Platforms: {gameData[index].platforms.join(', ')}</div>
+                                    )}
                                 <p className="text-gray-100">{gameData[index].description}</p>
 
-                                <div>
-                                    <p className="flex flex-row justify-end text-cyan-400">{index + 1}</p>
+                                <div className="flex justify-between items-center mt-4">
+                                    <p className="text-cyan-400">{index + 1}</p>
+                                    <button
+                                        className="btn bg-cyan-400 text-white hover:bg-cyan-500 transition-colors"
+                                        onClick={() => saveRecommendation(index)}
+                                    >Save this Recommendation</button>
                                 </div>
                             </div>
                         </>
@@ -209,22 +318,29 @@ const Recommendations = () => {
 
                 {wildCardStatus && (
 
-                    <div className="card lg:card-side bg-gray-800 bg-opacity-75 backdrop-blur-md shadow-xl w-[50rem] mt-5 hover:scale-[1.025] transition-transform">
+                    <div className="card lg:card-side bg-gray-800 bg-opacity-75 backdrop-blur-md shadow-xl w-[50rem] mt-5 hover:scale-[1.025] transition-transform mb-5">
 
                         {wildcardData.length > 0 ? (
                             <>
                                 <figure className="relative w-[16.5rem] h-[22rem] overflow-hidden flex-shrink-0">
                                     <img
-                                    src={wildcardData[index].imgURL}
+                                    src={wildcardData[0].imgURL}
                                     alt="Img" className="object-cover w-full h-full"/>
                                 </figure>
                                 <div className="card-body flex-grow">
-                                    <h2 className="card-title text-gray-100">{wildcardData[index].name}</h2>
-                                    <p className="text-gray-100">{wildcardData[index].description}</p>
-                                {/* 
-                                    <div>
-                                        <p className="flex flex-row justify-end text-cyan-400">{index + 1}</p>
-                                    </div> */}
+                                    <h2 className="card-title text-gray-100">{wildcardData[0].name}</h2>
+                                    <div className="text-xs uppercase font-semibold opacity-60 text-gray-100">{wildcardData[0].releaseDate}</div>
+                                    {wildcardData[0].platforms && wildcardData[0].platforms.length > 0 && (
+                                        <div className="text-xs opacity-70 text-gray-100">Platforms: {wildcardData[0].platforms.join(', ')}</div>
+                                    )}
+                                    <p className="text-gray-100">{wildcardData[0].description}</p>
+
+                                    <div className="flex justify-between items-center mt-4">
+                                        <button
+                                            className="btn bg-cyan-400 text-white hover:bg-cyan-500 transition-colors"
+                                            onClick={() => saveRecommendationWild()}
+                                        >Save this Recommendation</button>
+                                    </div>
                                 </div>
                             </>
                         ) : (

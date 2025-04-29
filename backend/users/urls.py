@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import userCreationView, loginView, fetchUsersView, changeUserDataView, changePasswordView, forgotPasswordView, addFriendView, deleteFriend, acceptRequestView, declineFriendRequest, listFriendRequests, listFriends, listSentFriendRequests, deleteFriendRequest, logoutView
+from .views import userCreationView, loginView, fetchUsersView, changeUserDataView, changePasswordView, forgotPasswordView, addFriendView, deleteFriend, acceptRequestView, declineFriendRequest, listFriendRequests, listFriends, listSentFriendRequests, deleteFriendRequest, logoutView, setUserStatus, getUserStatus
 
 urlpatterns = [
     path('api/signup/', userCreationView.as_view(), name='signup'),
@@ -18,4 +18,6 @@ urlpatterns = [
     path('api/getFriends/', listFriends.as_view(), name='getFriends'),
     path('api/getFriendRequests/', listFriendRequests.as_view(), name='getFriendRequests'),
     path('api/getSentFriendRequests/', listSentFriendRequests.as_view(), name='getSentFriendRequests'),
+    path('api/setStatus/', setUserStatus.as_view(), name='setStatus'),
+    path('api/getStatus/', getUserStatus.as_view(), name='getStatus'),
 ]
