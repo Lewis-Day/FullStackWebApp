@@ -27,6 +27,53 @@ const fetchToken = async () : Promise<string | null> => {
 
 };
 
+const fetchPlatformNames = async (platforms : string[]) : Promise<string[] | null> => {
+    
+   
+    const token = await fetchToken();
+
+    let platNames : string[] = []
+
+    try{
+
+        for(let i = 0; i < platforms.length; i++){
+
+            let intPlat : number = +platforms[i]
+
+            const response = await fetch("https://api.igdb.com/v4/platforms", {
+                method: "POST", 
+                headers: {
+                    'Accept': 'application/json', 
+                    'Client-ID': process.env.CLIENT_ID!, 
+                    'Authorization': 'Bearer ' + token,
+                },
+                body: `fields name; where id = ${intPlat};`,
+                
+            });
+
+            const platforms_res = await response.json();
+            console.log(platforms_res);
+
+            for (let platform of platforms_res) {
+                if (platform && platform.name) {
+                    platNames.push(platform.name);
+                }
+                else{
+                    platNames.push("N/A");
+                }
+            }
+        }
+    }
+
+    catch(error){
+        console.error("Error: ", error);
+    }
+
+    console.log(platNames);
+
+    return platNames;
+};
+
 export async function GET(request : Request) {
 
     const userToken = request.headers.get("Authorization");
@@ -53,9 +100,12 @@ export async function GET(request : Request) {
         console.log('recommendations');        
         console.log(recommendations);
 
+        const ids : String[] = []
         const imgURL : String[] = []
         const gameName : String[] = []
         const gameDescription : String[] = []
+        const releaseDate : String[] = []
+        const platforms : String[][] = []
 
         for(let i = 0; i<recommendations.length; i++){
             console.log(recommendations[i]);
@@ -68,7 +118,7 @@ export async function GET(request : Request) {
                     'Client-ID': process.env.CLIENT_ID!, 
                     'Authorization': 'Bearer ' + token,
                 },
-                body: `fields: cover.url, name, summary; where: id = ${recommendations[i]};`,
+                body: `fields: id, cover.url, name, summary, first_release_date, platforms; where: id = ${recommendations[i]};`,
                 
             });
 
@@ -84,6 +134,32 @@ export async function GET(request : Request) {
             }
             gameName.push(url[0].name);
             gameDescription.push(url[0].summary);
+            ids.push(url[0].id);
+
+            let releaseYearStr : string = "";
+
+            if("first_release_date" in url[0]){
+                const date = new Date(url[0].first_release_date * 1000)
+                let releaseYear = date.getFullYear();
+                releaseYearStr = releaseYear.toString();
+            }
+            else{
+                releaseYearStr = "N/A";
+            }
+
+            releaseDate.push(releaseYearStr);
+
+            let platformsRet = await fetchPlatformNames(url[0].platforms);
+
+            if (platformsRet) {
+                let tempPlat : String[] = [];
+
+                for(let i = 0; i<platformsRet.length; i++){
+                    tempPlat.push(platformsRet[i]);
+                }
+                platforms.push(tempPlat);
+            }
+
 
         }
         console.log(imgURL)
@@ -92,7 +168,7 @@ export async function GET(request : Request) {
 
         console.log({imgURL, gameName, gameDescription})
 
-        return NextResponse.json({imgURL, gameName, gameDescription, retrain});
+        return NextResponse.json({ids, imgURL, gameName, gameDescription, releaseDate, platforms, retrain});
         
     }
 

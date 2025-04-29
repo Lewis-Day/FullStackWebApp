@@ -200,6 +200,10 @@ const AddRatings = () => {
                         </li>
 
                         <li>
+                            <Link href="/SavedRecommendations/" className="hover:bg-gray-500 hover:text-cyan-400">Saved Recommendations</Link>
+                        </li>
+
+                        <li>
                             <Link href="/Social/" className="hover:bg-gray-500 hover:text-cyan-400">Social</Link>
                         </li>
 

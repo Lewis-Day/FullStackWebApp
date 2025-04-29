@@ -22,6 +22,12 @@ class userwithID(models.Model):
             self.recID = nextID()
         super().save(*args, **kwargs)
 
+
+class userStatus(models.Model):
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    status = models.CharField(max_length=200, blank=True, null=True)
+
 class userFriends(models.Model):
     user1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='person1')
     user2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='person2')

@@ -32,6 +32,7 @@ const Profile = () => {
     const [search, setSearch] = useState('');
     const [foundUser, setFoundUser] = useState('');
     const [friends, setFriends] = useState<friendInfo[]>([]);
+    const [status, setStatus] = useState<string[]>([]);
     const [friendRequests, setFriendRequests] = useState<friendInfo[]>([]);
     const [sentFriendRequests, setSentFriendRequests] = useState<friendInfo[]>([]);
 
@@ -64,6 +65,19 @@ const Profile = () => {
                 }
                 else{
                     setFriends(data);
+
+                    const statusArray : string[] = [];
+                    
+                    for(const friend of data){
+                        const status = await fetchStatus(friend.username);
+                        if(status){
+                            statusArray.push(status);
+                        }
+                        else{
+                            statusArray.push("No Status Set")
+                        }
+                    }
+                    setStatus(statusArray);
                 }
                 
             }
@@ -71,10 +85,39 @@ const Profile = () => {
             catch(error){
                 console.error("Error: ", error);
                 setFriends([]);
+                setStatus([]);
             }
         };
 
         fetchFriends(loggedInUser);
+
+        const fetchStatus = async (searchUser:string) => {
+
+
+            try{
+                const userinforesponse = await fetch(`http://127.0.0.1:8000/api/getStatus/?username=${encodeURIComponent(searchUser)}`, {
+                    method:'GET',
+                    headers:{
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+
+                if(userinforesponse.status == 401){
+                    redirect('/Login/');
+                }
+        
+                const data = await userinforesponse.json();        
+                console.log(data);
+
+                return data.status;
+            }
+
+            catch(error){
+                console.error("Error: ", error);
+            }
+        };
+
+        
 
         
         const fetchFriendRequests = async (searchUser:string) => {
@@ -151,14 +194,6 @@ const Profile = () => {
         
                 
     }, []);
-
-    // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     const { name, value } = e.target;
-    //     setUser((prevData) => ({
-    //         ...prevData,
-    //         [name]: value,
-    //     }));
-    // };
 
     const formGetUsers = async (e : React.FormEvent) => {
         e.preventDefault();
@@ -384,9 +419,13 @@ const Profile = () => {
                     <Link href="/Home" className="btn btn-ghost text-xl text-gray-100 hover:bg-gray-500 hover:text-cyan-400">VGR</Link>
                 </div>
                 <div>
-                    <ul className="menu menu-horizontal text-black">
+                    <ul className="menu menu-horizontal text-gray-100">
                         <li>
-                            <Link href="/Recommendations/" className="hover:bg-gray-500 hover:text-cyan-400 text-gray-100">Recommendations</Link>
+                            <Link href="/Recommendations/" className="hover:bg-gray-500 hover:text-cyan-400 ">Recommendations</Link>
+                        </li>
+
+                        <li>
+                            <Link href="/SavedRecommendations/" className="hover:bg-gray-500 hover:text-cyan-400">Saved Recommendations</Link>
                         </li>
 
                         <li>
@@ -441,10 +480,13 @@ const Profile = () => {
 
                 {friends.length > 0 ? (
                     <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {friends.map((friend) => (
-                            <li key={friend.username} className="flex items-center justify-between bg-gray-700 p-3 rounded-lg shadow-sm">
-                                <div className="font-medium font-semibold text-gray-300">{friend.username}</div>
-                                <button className="btn bg-red-500 p-2 rounded-md hover:bg-red-700 transition-colors hover:scale-[1.025]" onClick={() => formRemoveFriend(friend.username)}>Remove Friend</button>
+                        {friends.map((friend, index) => (
+                            <li key={friend.username} className="bg-gray-700 p-3 rounded-lg shadow-sm">
+                                <div className="flex items-center justify-between mb-1">
+                                    <div className="font-medium font-semibold text-gray-300">{friend.username}</div>
+                                    <button className="btn bg-red-500 p-2 rounded-md hover:bg-red-700 transition-colors hover:scale-[1.025]" onClick={() => formRemoveFriend(friend.username)}>Remove Friend</button>
+                                </div>
+                                <div>{status[index] && <div className="text-gray-400 text-sm">{status ? `Playing ${status[index]}` : ""}</div>}</div>
                             </li>
                         ))}
                     </ul>

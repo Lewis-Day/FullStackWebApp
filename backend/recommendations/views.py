@@ -13,7 +13,7 @@ import requests
 import numpy as np
 import os
 from users.models import userwithID, User
-from .models import NewRatings
+from .models import NewRatings, savedRecommendations
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -419,4 +419,61 @@ class wildCardView(APIView):
         wildcard = random.choice(gameIDFile['gameID'].tolist())
 
         return JsonResponse({"wildcard" : wildcard}, safe=False)
+    
+
+
+
+
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+class addSavedRecommendation(APIView):
+
+    def post(self, request):
+
+        user = request.user
+        gameid = request.data.get("gameid")
+        name = request.data.get("name")
+        release = request.data.get("release")
+        platforms = request.data.get("platforms")
+
+        try:
+            savedRecommendation = savedRecommendations.objects.create(
+                user = user,
+                gameid = gameid,
+                name = name,
+                release = release,
+                platforms = platforms,
+            )
+            return Response({"message" : "saved successfully"}, status = status.HTTP_200_OK)
+        
+        except Exception as e:
+            return Response({"error" : str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+    
+
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+class getSavedRecommendation(APIView):
+
+    def get(self, request):
+
+        user = request.user
+
+        userSaved = savedRecommendations.objects.filter(user = user)
+        savedData = []
+        for saved in userSaved:
+            savedData.append(
+                {
+                    "id" : saved.gameid,
+                    "name" : saved.name,
+                    "release" : saved.release,
+                    "platforms" : saved.platforms,
+
+                }
+            )
+        
+        return Response(savedData, status=status.HTTP_200_OK)
+
+
     

@@ -283,9 +283,13 @@ const Social = () => {
                     <Link href="/Home" className="btn btn-ghost text-xl text-gray-100">VGR</Link>
                 </div>
                 <div>
-                    <ul className="menu menu-horizontal text-black">
+                    <ul className="menu menu-horizontal text-gray-100">
                         <li>
-                            <Link href="/Recommendations/" className="text-gray-100 hover:text-cyan-400">Recommendations</Link>
+                            <Link href="/Recommendations/" className="hover:text-cyan-400">Recommendations</Link>
+                        </li>
+
+                        <li>
+                            <Link href="/SavedRecommendations/" className="hover:bg-gray-500 hover:text-cyan-400">Saved Recommendations</Link>
                         </li>
 
                         <li>

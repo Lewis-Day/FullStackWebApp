@@ -6,7 +6,7 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework.permissions import AllowAny
-from .models import userWithDOB, userFriends, FriendStatus, userwithID
+from .models import userWithDOB, userFriends, FriendStatus, userwithID, userStatus
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -352,7 +352,7 @@ class listFriends(APIView):
 
         else:
 
-            return Response([], status=status.HTTP_200_OK)    
+            return Response([], status=status.HTTP_400_BAD_REQUEST)    
 
 
 @authentication_classes([JWTAuthentication])
@@ -383,7 +383,7 @@ class listFriendRequests(APIView):
 
         else:
 
-            return Response([], status=status.HTTP_200_OK)    
+            return Response([], status=status.HTTP_400_BAD_REQUEST)    
         
 
 @authentication_classes([JWTAuthentication])
@@ -412,5 +412,51 @@ class listSentFriendRequests(APIView):
 
         else:
 
-            return Response([], status=status.HTTP_200_OK)    
+            return Response([], status=status.HTTP_400_BAD_REQUEST)    
+
+
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+class setUserStatus(APIView):
+    def post(self, request):
+
+        username = request.data.get('username')
+        gameName = request.data.get('game')
+
+        user = User.objects.get(username=username)
+
+        if user is not None:
+            try:
+                newUserStatus = userStatus.objects.get(user=user)
+                newUserStatus.status = gameName
+                newUserStatus.save()
+                return Response({'message': "success"}, status=status.HTTP_200_OK)
+            
+            except userStatus.DoesNotExist:
+                userStatus.objects.create(user=user, status=gameName)
+                return Response({'message': "success"}, status=status.HTTP_200_OK)
+
+
+        else:
+            return Response([], status=status.HTTP_400_BAD_REQUEST) 
+
+
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+class getUserStatus(APIView):
+    def get(self, request):
+
+        username = request.query_params.get('username')  
+
+
+        user = User.objects.get(username = username)
+
+        if user is not None:
+           newUserStatus = userStatus.objects.get(user=user)
+           game = newUserStatus.status
+           return Response({'status' : game}, status=status.HTTP_200_OK)
+
+        else:
+
+            return Response([], status=status.HTTP_400_BAD_REQUEST)
 
