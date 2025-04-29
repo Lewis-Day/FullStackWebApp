@@ -1,5 +1,3 @@
-from django.shortcuts import render
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -7,7 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework.permissions import AllowAny
 from .models import userWithDOB, userFriends, FriendStatus, userwithID, userStatus
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate
 from django.db.models import Q
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
@@ -16,6 +14,13 @@ from rest_framework.decorators import authentication_classes, permission_classes
 
 # Create your views here.
 
+
+# View to create a new user
+# Get all values passed through in POST and store in variables
+# Ensure users have unique usernames and ensure email hasn't been used before to create an account
+# Create a new instance of the User model
+    # Use the make_password() function to hash the password correctly
+# Create an instance of the userwithDOB and userwithID models, using the user model just created   
 class userCreationView(APIView):
 
     permission_classes = [AllowAny]
@@ -49,6 +54,10 @@ class userCreationView(APIView):
         return Response({'message':'New User Created'}, status=status.HTTP_201_CREATED)
     
 
+# View for login
+# Authenticate the user with the username and password passed using POST
+# If the user is able to be authenticated, refresh the token and get the usre object
+# Return the access token for authentication and the user's username
 class loginView(APIView):
 
     def post(self, request):
@@ -70,10 +79,16 @@ class loginView(APIView):
         else:
             return Response({'message':'User Authentication Unsuccessful'}, status=status.HTTP_400_BAD_REQUEST)
 
+# Logout view
+# Just returns as there's no backend functionality for it
 class logoutView(APIView):
     def post(self, request): 
         return Response({'message':'Logout Successful'}, status=status.HTTP_200_OK)   
 
+# View for fetching user information
+# Fetch the user from the Django User model
+# Fetch the userWithDOB entry using the user just found
+# Organise data requried in JSON format to return
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 class fetchUsersView(APIView):
@@ -95,6 +110,13 @@ class fetchUsersView(APIView):
         
         return Response(user_info, status=status.HTTP_200_OK)
 
+# View for changing the user's username
+# Collect all the data from the POST request and store in variables
+# Fetch the user entry using the old username passed
+# If the user exists:
+    # Set all data for the user entry
+    # Save user
+    # Update the userWithDOB and save
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 class changeUserDataView(APIView):
@@ -130,6 +152,11 @@ class changeUserDataView(APIView):
         else:
             return Response({'message':'User Data Change Unsuccessful'}, status=status.HTTP_400_BAD_REQUEST)
 
+# View for changing user's password
+# Get the username and password from the POST request
+# If the user exists:
+    # Set the new password using the make_password() function to correctly hash the password
+    # Update the user entry
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])        
 class changePasswordView(APIView):
