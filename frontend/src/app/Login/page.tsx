@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
 import Cookies from "js-cookie";
 
@@ -18,6 +18,10 @@ const Login = () => {
         localStorage.clear();
 
         e.preventDefault();
+
+        if(username == "admin"){
+            redirect("http://localhost:8000/admin/")
+        }
 
         const formData = {
             username,

@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import recommendationsView, initialRatingsView, addRatingsView, wildCardView, addSavedRecommendation, getSavedRecommendation
 
+# URL paths for each of the class views in recommendations app
 urlpatterns = [
     path('api/recommendations/', recommendationsView.as_view(), name='recommendations'),
     path('api/initialRatings/', initialRatingsView.as_view(), name='initialRatings'),

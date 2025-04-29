@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import userCreationView, loginView, fetchUsersView, changeUserDataView, changePasswordView, forgotPasswordView, addFriendView, deleteFriend, acceptRequestView, declineFriendRequest, listFriendRequests, listFriends, listSentFriendRequests, deleteFriendRequest, logoutView, setUserStatus, getUserStatus
 
+# URL paths for each of the class views in users app
 urlpatterns = [
     path('api/signup/', userCreationView.as_view(), name='signup'),
     path('api/login/', loginView.as_view(), name='login'),

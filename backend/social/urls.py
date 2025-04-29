@@ -1,6 +1,8 @@
 from django.urls import path
 
 from .views import addMessage, getMessages, createConversation, getConversations, deleteConversation
+
+# URL paths for each of the class views in social app
 urlpatterns = [
     path('api/createChat/', createConversation.as_view(), name='newChat'),
     path('api/sendMessage/', addMessage.as_view(), name='addMessage'),

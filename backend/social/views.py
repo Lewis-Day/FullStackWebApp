@@ -1,6 +1,3 @@
-from datetime import datetime
-from django.shortcuts import render
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -9,12 +6,15 @@ from django.db.models import Q
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
 from users.models import User
 
 
 # Create your views here.
 
+# View to create a new conversation
+# Ensures that the users creating the conversation exist in the User model
+# Create the query to find whether a conversation exists between the users - either user started it
+# If the conversation doesn't exist then create a new instance in the conversation model
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 class createConversation(APIView):
@@ -42,7 +42,12 @@ class createConversation(APIView):
         )
 
         return Response({'message':'Chat created'}, status=status.HTTP_201_CREATED)
-        
+
+# View to add a message to the message model 
+# Get data passed through POST and set to variables
+# Ensure the users exist, otherwise the query cannot be made
+# Query using the sender and receiver to find whether a conversation exists between them - only one has to make it
+# Once the conversation has been found between users, add a new instance of the message model
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 class addMessage(APIView):
@@ -72,6 +77,14 @@ class addMessage(APIView):
 
         return Response({'message':'Message saved'}, status=status.HTTP_201_CREATED)
 
+# View for getting messages for a particular conversation
+# Get the users and ensure that they exist
+# Query to find the conversation using the users given
+# Get all the messages for the conversation found and sort by time
+# For each message found, 
+    # Get the message info ready to be returned
+    # Requires getting data from all previous steps to build the message data - users and conversations
+# Return the list of messages
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 class getMessages(APIView):
@@ -130,6 +143,12 @@ class getMessages(APIView):
         return Response(messages, status=status.HTTP_200_OK)
 
 
+# View to get conversations that users have created
+# Query to find all instances of conversations that the user has created
+# If there are conversations that the user has:
+    # Create a list for storing the usernames of the users the user is chatting with
+    # Depending on where the user is in terms of user1 in the conversation or user2 in the conversation, add the other user to the list
+    # Return the list of the users the user has been chatting with (the individual conversations)
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 class getConversations(APIView):
@@ -157,6 +176,10 @@ class getConversations(APIView):
         else:
             return Response([], status=status.HTTP_200_OK)
 
+# View to delete a conversation between two users
+# Get users and make sure they exist
+# Query to find the conversation - as it will only be listed under one of the users
+# Once the conversation has been found, delete it 
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])    
 class deleteConversation(APIView):
