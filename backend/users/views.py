@@ -180,7 +180,10 @@ class changePasswordView(APIView):
         else:
             return Response({'message':'Password Change Unsuccessful'}, status=status.HTTP_400_BAD_REQUEST)
         
-
+# View to process the forgot password
+# Checks user exists with user model and gets the dob model of the user
+# Ensures all of the data provided is the same as what the user gave
+# If same then user password change takes place and saves the user model
 class forgotPasswordView(APIView):
 
     def post(self, request):
@@ -209,7 +212,13 @@ class forgotPasswordView(APIView):
         
         else:
             return Response({'message':'User cannot be found, unsuccessful password change'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+#View for adding friends
+#  Ensures users aren't trying to friend themself
+# Gets user model for each user
+# Queries to find whether a friendship exists
+# If it already exists and friend previously declined, change status to requested
+# If friendship doesn't exist then a new entry in the userFriends model is created
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 class addFriendView(APIView):
@@ -244,7 +253,12 @@ class addFriendView(APIView):
                 return Response({'message':'Friendship already exists'}, status=status.HTTP_400_BAD_REQUEST)    
         else:
             return Response({'message':'Cannot friend yourself, error'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+# View for accepting a friend request
+# Ensures the friends aren't trying to accept a request for themself
+# Get entries for each user from user model
+# Find friendship from userFriends model
+# If it exists, set status to accepted and save    
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 class acceptRequestView(APIView):
@@ -271,6 +285,11 @@ class acceptRequestView(APIView):
         else:
             return Response({'message':'Cannot friend yourself, error'}, status=status.HTTP_400_BAD_REQUEST)
 
+# View for declining a friend request
+# Ensures the friends aren't trying to decline a request for themself
+# Get entries for each user from user model
+# Find friendship from userFriends model
+# If it exists, set status to declined and save 
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])        
 class declineFriendRequest(APIView):
@@ -296,7 +315,12 @@ class declineFriendRequest(APIView):
                 return Response({'message':'No Friend Request Pending'}, status=status.HTTP_400_BAD_REQUEST)    
         else:
             return Response({'message':'Cannot friend yourself, error'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+# View for deleting a friend request
+# Ensures the friends aren't trying to delete a request for themself
+# Get entries for each user from user model
+# Find friendship from userFriends model
+# If it exists, delete the entry in the userFriends model         
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 class deleteFriendRequest(APIView):
@@ -320,7 +344,12 @@ class deleteFriendRequest(APIView):
                 return Response({'message':'No Friend Request Pending'}, status=status.HTTP_400_BAD_REQUEST)    
         else:
             return Response({'message':'Cannot friend yourself, error'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+# View for removing a friend
+# Ensures the friends aren't trying to remove themself as a friend
+# Get entries for each user from user model
+# Find friendship from userFriends model
+# If it exists, delete the userFriends entry in model        
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 class deleteFriend(APIView):
@@ -345,7 +374,11 @@ class deleteFriend(APIView):
         else:
             return Response({'message':'Cannot friend yourself, error'}, status=status.HTTP_400_BAD_REQUEST)
 
-
+# View to get friends of a user
+# Get user object
+# Filter using a query to find all friends of a user
+# If at least one exists, create a list to save list of friends
+# Add the friend of the user to the list - may be user1 or user2 of the friendship so a check is done
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 class listFriends(APIView):
@@ -381,7 +414,10 @@ class listFriends(APIView):
 
             return Response([], status=status.HTTP_400_BAD_REQUEST)    
 
-
+# View to list the friend requests incoming for a user 
+# Fetch user entry from user model
+# Filter userFriends model to get all users that match the user and have status requested
+# Add all users to the list to return to the frontend
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])        
 class listFriendRequests(APIView):
@@ -412,7 +448,10 @@ class listFriendRequests(APIView):
 
             return Response([], status=status.HTTP_400_BAD_REQUEST)    
         
-
+# View to friend request outgoing for the user (they have sent)
+# Fetch user entry from user model
+# Filter userFriends model to get all users that match the user and have status requested
+# Add all users to the list to return to the frontend
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 class listSentFriendRequests(APIView):
@@ -441,7 +480,10 @@ class listSentFriendRequests(APIView):
 
             return Response([], status=status.HTTP_400_BAD_REQUEST)    
 
-
+# View to set the user's status
+# Get the user model
+# If the user exists, try getting the userStatus entry for that user  then set the game status as the new game and save
+# If the userStatus entry doesn't exist, create a new entry with the user and the game passed in
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 class setUserStatus(APIView):
@@ -467,7 +509,10 @@ class setUserStatus(APIView):
         else:
             return Response([], status=status.HTTP_400_BAD_REQUEST) 
 
-
+# View to fetch the user's status
+# Get the user model
+# If the user exists, get the userStatus entry from the model and get the status field
+# Return the status field
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 class getUserStatus(APIView):

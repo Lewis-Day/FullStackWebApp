@@ -1,7 +1,5 @@
 import random
-from django.shortcuts import render
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
 from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework import status
@@ -22,10 +20,13 @@ from dotenv import load_dotenv
 
 # Create your views here.
 
+# View for managing all types of recommendations (collaborative and content based used for cold start)
+# Comments will be for each function to make it clearer to understand
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 class recommendationsView(APIView):
 
+    # Function for getting the game predictions for a user (their recommendations based on the trained TensorFlow model)
     def collaborativeFiltering(self, userToRecommend):
 
         db_path = os.path.abspath('/home/lewisday/projects/tf/FullStackWebApp/FullStackWebApp/database/dataset.db')
@@ -90,7 +91,8 @@ class recommendationsView(APIView):
         return igdbids
     
 
-    
+    # Function for getting my token to allow access to IGDB API
+    # Gets my credentials from the env file in the frontend to send to an API to get the token
     def token(self):
 
         load_dotenv(dotenv_path="../../frontend/.env.local")
@@ -111,7 +113,8 @@ class recommendationsView(APIView):
         token = response.json()['access_token']
         return token
     
-
+    # Function for getting the genres for a game from the IGDB API
+    # Calls the API to get genre and if no genre is found 'No Genre' is returned
     def getGameGenres(self, auth, gid):
 
         id = os.getenv("CLIENT_ID")
@@ -141,7 +144,17 @@ class recommendationsView(APIView):
                 return None
     
 
-    
+    # Function for managing the genres of games in the file and one hot encoding
+    # Get token from token function
+
+    # For each game given, get its genres
+    # if genre is 'No Genre' then 'NoGenre' is used
+    # For each genre given, if it doesn't already exist in file, add it
+
+    # For each game, mark a 1 in the column for the genres applying for that game
+    # Initialise new genre columns with zeros
+    # Ensure file is updated accordingly with new data and add zeros where necessary to complete columns
+    # Append changes to file and save
     def fetchExtraGenres(self, games):
 
         token = self.token()
@@ -188,7 +201,12 @@ class recommendationsView(APIView):
         appended.to_csv('/home/lewisday/projects/tf/FullStackWebApp/FullStackWebApp/helperFiles/gameGenres.csv', index=False)
 
 
+    # Function for managing the content-based filtering algorithm 
+    # For each game provided, get it's cosine similarity by providing its genres
+    # Sort the recommendations in descending order and remove ones for the game rated
+    # Get the top five, create a list and if they are unique, add to set
 
+    # Once all fetched, create a list from the set, randomly sample 5 from the selection
     def contentBasedAlgorithm(self, file, game):
 
         uniqueRecommendations = set()
@@ -218,7 +236,10 @@ class recommendationsView(APIView):
 
             
 
-    
+    # Function for managing the content-based filtering
+    # If the game doesn't exist in the file, genres don't exist for that game and are required for recommendations
+    # If thre are no genres to fetch, the content-based filering algorithm is called and recommendations returned
+    # If there are genres to get, they are fetched first, then recommendations can be called and results returned
     def contentBasedFilteringBase(self, gameToRecommend):
 
         file = pd.read_csv('/home/lewisday/projects/tf/FullStackWebApp/FullStackWebApp/helperFiles/gameGenres.csv')
@@ -240,7 +261,8 @@ class recommendationsView(APIView):
         return recommendations
     
 
-    
+    # Function to check whether the user exists in the collaborative filtering database
+    # Returns true/false whether the user exists or not (their id is in the database)
     def userExists(self, userToRecommend):
 
         db_path = os.path.abspath('/home/lewisday/projects/tf/FullStackWebApp/FullStackWebApp/database/dataset.db')
@@ -254,9 +276,10 @@ class recommendationsView(APIView):
         else:
             return False
 
-
+    # Function for fetching recommendations and managing logic
     def get(self, request):
 
+        # Get the recommendation id (recID) of the user based on their entry in the user model
         user = request.user
         uidUser = userwithID.objects.get(user = user)
         uid = uidUser.recID
@@ -264,18 +287,24 @@ class recommendationsView(APIView):
         print(uidUser)
         print(uid)
 
+        # Variable to send to user to notify if they need to wait for collaborative recommendations due to retrain time
         retrain = False
 
         userToRecommend = uid
 
+        # Find if the user exists in the collaborative database and if they do use collaborative filtering
         collabOrContent = self.userExists(userToRecommend)
 
         if(collabOrContent == True):
             recommendation = self.collaborativeFiltering(userToRecommend)
 
+        # User does not exist in the collaborative filtering database
         else:
+
+            # Find number of ratings the user has done to find out whether the collaborative filtering model needs to be retrained
             contentRatings = NewRatings.objects.filter(userID = userToRecommend).count()
 
+            # If it is equal to 10, then set up for collaborative retraining is done here - time to retrain
             if contentRatings >= 10:
                 factorisedFile = pd.read_csv("/home/lewisday/projects/tf/FullStackWebApp/FullStackWebApp/helperFiles/FactorisedtoGameID.csv")
 
@@ -286,29 +315,36 @@ class recommendationsView(APIView):
 
                 newGames = []
 
+                # Add any new game factorisations as the raw gameID from IGDB is not used
                 for game in ratedGames:
                     if game not in gamesInFile:
                         newGames.append({'factorised' : factorisedID, 'gameID' : game})
                         factorisedID = factorisedID + 1
                 
+                # If there are new games to add
                 if len(newGames) > 0:
+                    # Add new game factorisations and their corresponding ID to file
                     additions = pd.DataFrame(newGames)
                     additions.to_csv("/home/lewisday/projects/tf/FullStackWebApp/FullStackWebApp/helperFiles/FactorisedtoGameID.csv", mode='a', header=False, index=False)
 
+                    # Connect to database to add changes
                     db_path = os.path.abspath('/home/lewisday/projects/tf/FullStackWebApp/FullStackWebApp/database/dataset.db')
                     dbConn = sqlite3.connect(db_path)
 
                     factGameIDs = pd.read_csv("/home/lewisday/projects/tf/FullStackWebApp/FullStackWebApp/helperFiles/FactorisedtoGameID.csv")
 
+                    # Get the user's games and ratings in respective lists
                     newUserRatedGames = NewRatings.objects.filter(userID = userToRecommend).values_list('gameID', flat=True)
                     newUserRatings = NewRatings.objects.filter(userID = userToRecommend).values_list('rating', flat=True)
 
+                    # For each rating, factorise the 1-5 scale to a 0-1 scale for recommendations (what collaborative accepts)
                     for i in range(len(newUserRatedGames)):
 
                         newUserRatedGames[i] = factGameIDs.loc[factGameIDs['gameID'] == newUserRatedGames[i], 'factorised'].values[0]
                         newUserRatings[i] = (newUserRatings[i] - 1) / 4    
 
                     
+                    # Get all user game pairs from database and stored in set - therfore unique
                     ratingsInDB = dbConn.execute('SELECT userId, gameIdFact from ratings')
 
                     uniqueEntries = set()
@@ -320,38 +356,43 @@ class recommendationsView(APIView):
                     
                     ratingsToAdd = []
 
+                    # If the user and game pair are unique, add them to a list to add to the database
+                    # If they are not unique, don't add
                     for i in range(len(newUserRatedGames)):
 
                         if (newUserRatings[i], newUserRatedGames[i]) not in uniqueEntries:
                             ratingsToAdd.append((userToRecommend, newUserRatedGames[i], newUserRatings[i]))
 
-
+                    # Use the database cursor to add values and use the list of tuples of (userid, gameid, rating)
                     cursor = dbConn.cursor()
 
                     cursor.executemany('INSERT INTO ratings (userId, gameIdFact, userRating) VALUES (?, ?, ?)', ratingsToAdd)
 
+                    # Commit changes, close connection and signal that collaborative will need training
                     dbConn.commit()
 
                     dbConn.close()
 
                     retrain = True
 
-
-
-
-
+            # Get user ratings by finding all games they rated and pass to content-based filering to generate recommendations
             userRatedGamesObject = NewRatings.objects.filter(userID = userToRecommend)
             userRatedGames = userRatedGamesObject.values_list('gameID', flat=True)
             recommendation = self.contentBasedFilteringBase(list(userRatedGames))
 
 
-
+        # Return the recommendations and whether retraining needs to be done so user can be notified
         return JsonResponse({'recommendations' : recommendation, 
                              'retrain' : retrain}, safe=False)
     
 
 
-
+# View for allowing first time users to add their ratings
+# Doesn't need auth because users are first time users
+# Get the ratings passed from the frontend - list of game and rating pairs
+# Also gets the user passed from the frontend as no auth
+# Get the recommendation id from the userwithID model based on the user
+# For each rating of a game given, create a new entry in the NewRatings model
 class initialRatingsView(APIView):
 
     def post(self, request):
@@ -377,7 +418,10 @@ class initialRatingsView(APIView):
         return Response({'message':'New User Created'}, status=status.HTTP_201_CREATED)
     
     
-
+# View to allow users to add additonal game ratings
+# Get the ratings passed from the frontend - list of game and rating pairs
+# Get the recommendation id from the userwithID model based on the user
+# For each rating of a game given, create a new entry in the NewRatings model
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 class addRatingsView(APIView):
@@ -405,7 +449,9 @@ class addRatingsView(APIView):
             )
         return Response({'message':'New User Created'}, status=status.HTTP_201_CREATED)
     
-
+# Model for getting a wildcard recommendation
+# Read the CSV file of gameIDs 
+# Randomly select one id from the list and return to the frontend
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 class wildCardView(APIView):
@@ -421,9 +467,9 @@ class wildCardView(APIView):
         return JsonResponse({"wildcard" : wildcard}, safe=False)
     
 
-
-
-
+# View to add a recommendation that is saved by the user
+# Get all data sent from the frontend in variables
+# Create a new entry in the savedRecommendations model by adding all the required data
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 class addSavedRecommendation(APIView):
@@ -451,7 +497,9 @@ class addSavedRecommendation(APIView):
         
 
     
-
+# View for fetching the saved recommendations by the user
+# Get the user and filter the savedRecommendations model to find entries by that user
+# Append each entry by formatting the data in JSON format and return the whole list to the frontend
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 class getSavedRecommendation(APIView):
