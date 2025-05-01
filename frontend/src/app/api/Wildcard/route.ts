@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
-
-
+// Function to get token to allow access to the IGDB API
+// Uses the client ID and secret from the .env file
 const fetchToken = async () : Promise<string | null> => {
 
     try{
@@ -28,6 +28,11 @@ const fetchToken = async () : Promise<string | null> => {
 
 };
 
+// Function to get the platform names from IGDB through API call
+// The platforms provided as a list and the platform names are fetched individually
+// The platforms have to be cast to a number to be able to be put into the API call
+//  If no platform was returned, N/A is used instead
+// List is returned back
 const fetchPlatformNames = async (platforms : string[]) : Promise<string[] | null> => {
     
    
@@ -76,7 +81,14 @@ const fetchPlatformNames = async (platforms : string[]) : Promise<string[] | nul
 };
 
 
-export async function GET(request : Request) {
+// Function for managing GET requests
+// Function fetches the ID of the wildcard game from the backend 
+// Uses lists to hold the data returned from IGDB API, which is called to fetch all the game data
+// The URL that is returned for the images is built and modified to change t_thumb to t_cover_big so the correct image is fetched
+// The release date is modified from UNIX time to just the year
+// Platforms are fetched using the function above
+// All required data is sent to the front end as JSON
+export default async function GET(request : Request) {
 
 
     const userToken = request.headers.get("Authorization");

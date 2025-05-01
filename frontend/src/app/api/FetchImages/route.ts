@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+// Function to get token to allow access to the IGDB API
+// Uses the client ID and secret from the .env file
 const fetchToken = async () : Promise<string | null> => {
 
     try{
@@ -26,6 +28,9 @@ const fetchToken = async () : Promise<string | null> => {
 
 };
 
+// Function to get the game data and images from IGDB through API call
+// When the response for the game is returned from the API, the url for the image is formed and edited
+// https: is added to make a complete URL and replace t_thumb with t_cover_big to ensure the large cover image is returned for better image quality
 export async function GET(request : Request) {
 
     const token = await fetchToken();

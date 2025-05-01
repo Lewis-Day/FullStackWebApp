@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+// Function to get token to allow access to the IGDB API
+// Uses the client ID and secret from the .env file
 const fetchToken = async () : Promise<string | null> => {
 
     try{
@@ -26,6 +28,9 @@ const fetchToken = async () : Promise<string | null> => {
 
 };
 
+// Function to get the saved recommendations for the user from the backend
+// For each game returned, the image is fetched using the ID of the game as this is not stored in the model
+// The game data is prepared for the frontend in the interface format and pushed into an array, ready to be returned
 export async function GET(request : Request) {
 
     interface SavedRecos {
