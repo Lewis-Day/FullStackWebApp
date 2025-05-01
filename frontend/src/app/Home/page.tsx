@@ -5,11 +5,14 @@ import { useState, useEffect } from "react";
 
 const Home = () => {
 
+    // State variable for images
     const[imgs, setImgs] = useState <string[]>([]);
     let numImages: number = 10;
 
+    // Use effect ensures that it is fetched when the page loads
     useEffect(() => {
 
+        // Function for fetching the images that need to be displayed from the server side
         const fetchImgs = async () => {
 
             try{
@@ -30,7 +33,7 @@ const Home = () => {
     }, []);
 
 
-
+    // HTML page displayed
     return(
         <div className="bg-black h-screen w-full pt-5 ">
             <div className="navbar bg-gray-800 bg-opacity-75 backdrop-blur-md rounded-md mx-auto max-w-screen-xl">

@@ -1,7 +1,7 @@
-import { NextApiRequest, NextApiResponse } from "next";
 import { NextResponse } from "next/server";
 
-
+// Function to get token to allow access to the IGDB API
+// Uses the client ID and secret from the .env file
 const fetchToken = async () : Promise<string | null> => {
 
     try{
@@ -28,6 +28,10 @@ const fetchToken = async () : Promise<string | null> => {
 
 };
 
+// Function for managing GET requests
+// Function for fetching the top 20 games of popularity type 3 from IGDB API - games for the front page
+// Fetches the id of the games which are popular
+// Returns the JSON data
 export async function GET() {
 
     const token = await fetchToken();

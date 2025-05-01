@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
-
+// Function to get token to allow access to the IGDB API
+// Uses the client ID and secret from the .env file
 const fetchToken = async () : Promise<string | null> => {
 
     try{
@@ -27,6 +28,12 @@ const fetchToken = async () : Promise<string | null> => {
 
 };
 
+// Function for managing GET requests
+// Function for getting the id's of the popular games on IGDB to be displayed on the front page
+// Uses the file /Popularity to get the game info and this fetches the images - the id of the game
+// When the images are fetched, a URL is returned
+// The URL is formatted and t_thumb is replaced with t_cover_big to ensure the large cover image is used for better image quality
+// The URL of the image is returned
 export async function GET() {
 
     const token = await fetchToken();

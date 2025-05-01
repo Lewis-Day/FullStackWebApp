@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 
 
-
+// Function to get token to allow access to the IGDB API
+// Uses the client ID and secret from the .env file
 const fetchToken = async () : Promise<string | null> => {
 
     try{
@@ -28,6 +29,11 @@ const fetchToken = async () : Promise<string | null> => {
 
 };
 
+// Function to get the platform names from IGDB through API call
+// The platforms provided as a list and the platform names are fetched individually
+// The platforms have to be cast to a number to be able to be put into the API call
+//  If no platform was returned, N/A is used instead
+// List is returned back
 const fetchPlatformNames = async (platforms : string[]) : Promise<string[] | null> => {
     
    
@@ -75,6 +81,11 @@ const fetchPlatformNames = async (platforms : string[]) : Promise<string[] | nul
     return platNames;
 };
 
+
+// Function for managing the get request
+// Interface is used for prepping returned data ready for the front end
+// Calls IGDB API to fetch game data using token got earlier and based on the name of the game
+// Responses per game is prepped using the interface and pushed to a list, which is returned
 export async function GET(request : Request) {
 
     interface gameSearch{
