@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 
 const SignUp = () => {
 
+    // State variables for holding information entered when signing up
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -17,7 +18,9 @@ const SignUp = () => {
 
     const pageRouter = useRouter();
     
-
+    // Function for managing when the sign up form is submitted
+    // Sends data entered by user to the backend using POST
+    // If sign up is successful, page redirects to InitialRatings
     const formSubmit = async (e : React.FormEvent) => {
 
         e.preventDefault();
@@ -50,11 +53,13 @@ const SignUp = () => {
         }
         else{
             console.log(submit);
+            alert("Error occurred when trying to sign up")
         }
 
         
     };
 
+    // HTML page
     return(
         <div className="bg-black h-screen w-full pt-5">
             <div className="navbar bg-gray-800 bg-opacity-75 backdrop-blur-md rounded-md mx-auto max-w-screen-xl">

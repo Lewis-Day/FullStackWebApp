@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 
 
+// Inteface to manage the data returned
 interface SavedRecos {
     id : string,
     name: string,
@@ -18,6 +19,10 @@ interface SavedRecos {
 
 const AddRatings = () => {
 
+
+    // State variable used
+    // Token fetched for user authentication (protected page)
+    // Redirected if no token 
     const [savedRecs, setSavedRecs] = useState<SavedRecos[]>([]);
 
     const token = Cookies.get('access_token');
@@ -26,50 +31,49 @@ const AddRatings = () => {
         redirect('/Login/');
     }
 
-    
-
+    // Uses useEffect so the table of saved recommendations are displayed on page load
     useEffect(() => {
-
         
-
+        // Function to get the saved recommendations from the server side
+        // For each game that is returned in the response, format the data in the interface format and push to a list
         const fetchSavedRecommendations = async () => {
 
-            const token = Cookies.get('access_token');
+            // const token = Cookies.get('access_token');
             
 
-                try{
-                    const response = await fetch("../api/FetchSavedRecs/", {
-                        method:'GET',
-                        headers:{
-                            Authorization: `Bearer ${token}`,
-                        }
-                    });
-        
-                    if(response.status == 401){
-                        redirect('/Login/')
+            try{
+                const response = await fetch("../api/FetchSavedRecs/", {
+                    method:'GET',
+                    headers:{
+                        Authorization: `Bearer ${token}`,
                     }
-                    const data = await response.json();
-        
-                    console.log(data);
-        
-                    const saved: SavedRecos[] = [];
-                    for(let i = 0; i<data.holdingArray.length; i++){
-        
-                        saved.push({
-                            id : data.holdingArray[i].id,
-                            name: data.holdingArray[i].name,
-                            imgURL: data.holdingArray[i].imgURL,
-                            releaseDate: data.holdingArray[i].releaseDate,
-                            platforms: data.holdingArray[i].platforms,
-        
-                        });             
-                    }
-                    setSavedRecs(saved);
+                });
+    
+                if(response.status == 401){
+                    redirect('/Login/')
                 }
-        
-                catch(error){
-                    console.error("Error: ", error);
+                const data = await response.json();
+    
+                console.log(data);
+    
+                const saved: SavedRecos[] = [];
+                for(let i = 0; i<data.holdingArray.length; i++){
+    
+                    saved.push({
+                        id : data.holdingArray[i].id,
+                        name: data.holdingArray[i].name,
+                        imgURL: data.holdingArray[i].imgURL,
+                        releaseDate: data.holdingArray[i].releaseDate,
+                        platforms: data.holdingArray[i].platforms,
+    
+                    });             
                 }
+                setSavedRecs(saved);
+            }
+    
+            catch(error){
+                console.error("Error: ", error);
+            }
         }
 
         fetchSavedRecommendations();
@@ -78,6 +82,7 @@ const AddRatings = () => {
 
 
 
+    // HTML page
     return(
         <div className="bg-black min-h-screen py-5 ">
             <div className="navbar bg-gray-800 bg-opacity-75 backdrop-blur-md rounded-md mx-auto max-w-screen-xl">

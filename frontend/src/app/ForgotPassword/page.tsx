@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 
 const ForgotPassword = () => {
 
+    // State variables used when the user changes their password
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -15,7 +16,9 @@ const ForgotPassword = () => {
 
     const pageRouter = useRouter();
     
-
+    // Function that manages the submission of the reset password form
+    // Sends data to the backend to verify and process change as a POST request
+    // If successful change occurs, the user is redirected to Login page
     const formSubmit = async (e : React.FormEvent) => {
 
         e.preventDefault();
@@ -45,12 +48,13 @@ const ForgotPassword = () => {
         }
         else{
             console.log(submit);
+            alert("Error occurred when trying to change password");
         }
 
         
     };
     
-
+    // HTML page
     return(
         <div className="bg-black h-screen w-full pt-5 ">
             <div className="navbar bg-gray-800 bg-opacity-75 backdrop-blur-md rounded-md mx-auto max-w-screen-xl">

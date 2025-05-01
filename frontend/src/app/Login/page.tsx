@@ -7,12 +7,17 @@ import Cookies from "js-cookie";
 
 const Login = () => {
 
+    // State variables for managing username and passowrd
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
     const pageRouter = useRouter();
     
-
+    // Function for managing when the user submits the login form
+    // Redirects to the admin page when the user enters admin for username
+    // Username and password sent as POST request to backend
+    // The tokens for authentication are set in the Cookies and the username for tracking who is currently logged in
+    // Redirects to the Recommendations page on successful login
     const formSubmit = async (e : React.FormEvent) => {
 
         localStorage.clear();
@@ -53,12 +58,13 @@ const Login = () => {
         }
         else{
             console.log(submit);
+            alert("Error signing in, incorrect details used")
         }
     }
 
 
 
-
+    // HTML page
     return(
         <div className="bg-black h-screen w-full pt-5 ">
             <div className="navbar bg-gray-800 bg-opacity-75 backdrop-blur-md rounded-md mx-auto max-w-screen-xl">
