@@ -3,8 +3,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
+// Interfaces for managing formats of data returned from backend and server side
 interface gameSearch{
     id: number,
     name: string, 
@@ -30,7 +31,7 @@ const InitialRatings = () => {
 
     const pageRouter = useRouter();
         
-
+    // State variables used for holding data for this page
     const [gameName, setGameName] = useState('');
     const [gameData, setGameData] = useState<gameSearch[]>([]);
     const [showSearchResults, setShowSearchResults] = useState(false);
@@ -38,6 +39,11 @@ const InitialRatings = () => {
     const [reviewGame, setReviewGame] = useState<gameForReview | null>();
     const [gameReview, setGameReview] = useState<newReview[]>([]);
 
+
+    // Function for fetching games based on what the user searched
+    // Utilises the server side to get all of the data
+    // If the server side created a response, it is iterated through and the date is formatted and then the rest of the data is formatted and pushed to a list
+    // List is stored in a state variable to be used in the page below
     const fetchGames = async () => {
 
         if(!gameName){
@@ -101,6 +107,9 @@ const InitialRatings = () => {
         }
     };
 
+    // Function for fetching information about the selected game from the server side
+    // The response data is formatted correctly and stored in a state variable
+    // The unix date returned is changed into a format which is just the year
     const fetchSelectedGame = async (gameid : number) => {
 
         try{
@@ -129,6 +138,9 @@ const InitialRatings = () => {
         }
     };
 
+    // Function for the user rating being sent to the backend
+    // Format the data with the user appended
+    // Send to the backend as a POST request
     const sendRatings = async () => {
 
         console.log(gameReview);
@@ -161,6 +173,9 @@ const InitialRatings = () => {
         }
     };
 
+    // Function for converting the value of the star input into an integer to be sent to the backend
+    // Format the data, with the id of the game and the rating parsed as an integer in base 10
+    // Change it so search results are no longer displayed and call function above
     function saveRating(id: number): void {
 
         if(gameReview.length == 5){
@@ -182,6 +197,7 @@ const InitialRatings = () => {
             }
     }
 
+    // HTML page
     return(
         <div className="bg-black min-h-screen w-full pt-5 ">
             <div className="navbar bg-gray-800 bg-opacity-75 backdrop-blur-md rounded-md mx-auto max-w-screen-xl">
