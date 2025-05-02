@@ -88,7 +88,7 @@ const fetchPlatformNames = async (platforms : string[]) : Promise<string[] | nul
 // The release date is modified from UNIX time to just the year
 // Platforms are fetched using the function above
 // All required data is sent to the front end as JSON
-export default async function GET(request : Request) {
+export async function GET(request : Request) {
 
 
     const userToken = request.headers.get("Authorization");
@@ -96,7 +96,7 @@ export default async function GET(request : Request) {
     const token = await fetchToken();
 
     try{
-        const wildcardRecommendation = await fetch("http://127.0.0.1:8000/api/wildcardRecommendation", {
+        const wildcardRecommendation = await fetch("http://127.0.0.1:8000/api/wildcardRecommendation/", {
             method:'GET',
             headers:{
                 Authorization: `${userToken}`,
