@@ -56,7 +56,7 @@ class userCreationView(APIView):
 
 # View for login
 # Authenticate the user with the username and password passed using POST
-# If the user is able to be authenticated, refresh the token and get the usre object
+# If the user is able to be authenticated, refresh the token
 # Return the access token for authentication and the user's username
 class loginView(APIView):
 
@@ -69,7 +69,7 @@ class loginView(APIView):
 
         if user is not None:
             token = RefreshToken.for_user(user)
-            user = User.objects.get(username = username)
+            # user = User.objects.get(username = username)
 
             return Response({'message':'User Authentication Successful',
                              'user' : str(user.username),
@@ -97,7 +97,11 @@ class fetchUsersView(APIView):
 
         username = request.query_params.get('username')  
 
-        user = User.objects.get(username = username)
+        try:
+            user = User.objects.get(username = username)
+        except User.DoesNotExist:
+            return Response({'error':'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
+         
         userDob = userWithDOB.objects.get(user = user)
 
         user_info = {
@@ -132,25 +136,29 @@ class changeUserDataView(APIView):
         lname = newUserData.get('lastName')
         dob = newUserData.get('dob')
 
-        user = User.objects.get(username = uname)
 
-        if user is not None:
+        try:
 
-            user.username = username
-            user.email = email
-            user.first_name = fname
-            user.last_name = lname
-
-            user.save()
-
-            userDob = userWithDOB.objects.get(user = user)
-            userDob.DOB = dob
-            userDob.save()
-
-            return Response({'message':'User Data Change Successful'}, status=status.HTTP_200_OK)
-
-        else:
+            user = User.objects.get(username = uname)
+        
+        except User.DoesNotExist:
             return Response({'message':'User Data Change Unsuccessful'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.username = username
+        user.email = email
+        user.first_name = fname
+        user.last_name = lname
+
+        user.save()
+
+        userDob = userWithDOB.objects.get(user = user)
+        userDob.DOB = dob
+        userDob.save()
+
+        return Response({'message':'User Data Change Successful'}, status=status.HTTP_200_OK)
+
+   
+            
 
 # View for changing user's password
 # Get the username and password from the POST request
@@ -166,19 +174,20 @@ class changePasswordView(APIView):
         username = request.data.get('username')
         password = request.data.get('password')
 
+        try:
+            user = User.objects.get(username = username)
 
-        user = User.objects.get(username = username)
-
-        if user is not None:
-
-            user.set_password(make_password(password))
-
-            user.save()
-
-            return Response({'message':'Password Change Successful'}, status=status.HTTP_200_OK)
-        
-        else:
+        except User.DoesNotExist:
             return Response({'message':'Password Change Unsuccessful'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(make_password(password))
+
+        user.save()
+
+        return Response({'message':'Password Change Successful'}, status=status.HTTP_200_OK)
+        
+
+            
         
 # View to process the forgot password
 # Checks user exists with user model and gets the dob model of the user
@@ -193,25 +202,26 @@ class forgotPasswordView(APIView):
         dob = request.data.get('dob')
         password = request.data.get('password')
 
-        user = User.objects.get(username = username)
+        try:
+            user = User.objects.get(username = username)
+        except User.DoesNotExist:
+            return Response({'error':'User cannot be found, unsuccessful password change'}, status=status.HTTP_400_BAD_REQUEST)
         userDob = userWithDOB.objects.get(user = user)
 
-        if user is not None:
 
-            if user.email == email and userDob.DOB == dob:
+        if user.email == email and str(userDob.DOB) == dob:
 
 
-                user.set_password(make_password(password))
+            user.set_password(password)
 
-                user.save()
+            user.save()
 
-                return Response({'message':'Password Change Successful'}, status=status.HTTP_200_OK)
-            
-            else:
-                return Response({'message': 'User Details Cannot be Matched'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message':'Password Change Successful'}, status=status.HTTP_200_OK)
         
         else:
-            return Response({'message':'User cannot be found, unsuccessful password change'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'User Details Cannot be Matched'}, status=status.HTTP_401_UNAUTHORIZED)
+
+            
 
 #View for adding friends
 #  Ensures users aren't trying to friend themself
@@ -230,8 +240,11 @@ class addFriendView(APIView):
 
         if(friendUsername != userUsername):
 
-            u1 = User.objects.get(username = friendUsername)
-            u2 = User.objects.get(username = userUsername)
+            try:
+                u1 = User.objects.get(username = friendUsername)
+                u2 = User.objects.get(username = userUsername)
+            except User.DoesNotExist:
+                return Response({'error':'User not found'}, status=status.HTTP_400_BAD_REQUEST)
 
             query = Q(user1 = u1, user2 = u2) | Q(user1 = u2, user2 = u1)
             friendship = userFriends.objects.filter(query).first()
@@ -252,7 +265,7 @@ class addFriendView(APIView):
 
                 return Response({'message':'Friendship already exists'}, status=status.HTTP_400_BAD_REQUEST)    
         else:
-            return Response({'message':'Cannot friend yourself, error'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error':'Cannot friend yourself, error'}, status=status.HTTP_403_FORBIDDEN)
 
 # View for accepting a friend request
 # Ensures the friends aren't trying to accept a request for themself
@@ -268,9 +281,12 @@ class acceptRequestView(APIView):
         userUsername = request.data.get('ownUsername')
 
         if(friendUsername != userUsername):
-
-            u1 = User.objects.get(username = friendUsername)
-            u2 = User.objects.get(username = userUsername)
+            
+            try:
+                u1 = User.objects.get(username = friendUsername)
+                u2 = User.objects.get(username = userUsername)
+            except User.DoesNotExist:
+                return Response({'error':'User not found'}, status=status.HTTP_400_BAD_REQUEST) 
 
             friendship = userFriends.objects.filter(user1 = u1, user2 = u2, status = FriendStatus.REQUESTED).first()
             if friendship is not None:
@@ -283,7 +299,7 @@ class acceptRequestView(APIView):
 
                 return Response({'message':'No Friend Request Pending'}, status=status.HTTP_400_BAD_REQUEST)    
         else:
-            return Response({'message':'Cannot friend yourself, error'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error':'Cannot friend yourself, error'}, status=status.HTTP_403_FORBIDDEN)
 
 # View for declining a friend request
 # Ensures the friends aren't trying to decline a request for themself
@@ -300,8 +316,11 @@ class declineFriendRequest(APIView):
 
         if(friendUsername != userUsername):
 
-            u1 = User.objects.get(username = friendUsername)
-            u2 = User.objects.get(username = userUsername)
+            try:
+                u1 = User.objects.get(username = friendUsername)
+                u2 = User.objects.get(username = userUsername)
+            except User.DoesNotExist:
+                return Response({'error':'User not found'}, status=status.HTTP_400_BAD_REQUEST)
 
             friendship = userFriends.objects.filter(user1 = u1, user2 = u2, status = FriendStatus.REQUESTED).first()
             if friendship is not None:
@@ -314,7 +333,7 @@ class declineFriendRequest(APIView):
 
                 return Response({'message':'No Friend Request Pending'}, status=status.HTTP_400_BAD_REQUEST)    
         else:
-            return Response({'message':'Cannot friend yourself, error'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error':'Cannot friend yourself, error'}, status=status.HTTP_403_FORBIDDEN)
 
 # View for deleting a friend request
 # Ensures the friends aren't trying to delete a request for themself
@@ -331,8 +350,11 @@ class deleteFriendRequest(APIView):
 
         if(friendUsername != userUsername):
 
-            u1 = User.objects.get(username = friendUsername)
-            u2 = User.objects.get(username = userUsername)
+            try:
+                u1 = User.objects.get(username = friendUsername)
+                u2 = User.objects.get(username = userUsername)
+            except User.DoesNotExist:
+                return Response({'error':'User not found'}, status=status.HTTP_400_BAD_REQUEST)
 
             friendship = userFriends.objects.filter(user1 = u2, user2 = u1, status = FriendStatus.REQUESTED).first()
             if friendship is not None:
@@ -343,7 +365,7 @@ class deleteFriendRequest(APIView):
 
                 return Response({'message':'No Friend Request Pending'}, status=status.HTTP_400_BAD_REQUEST)    
         else:
-            return Response({'message':'Cannot friend yourself, error'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error':'Cannot friend yourself, error'}, status=status.HTTP_403_FORBIDDEN)
 
 # View for removing a friend
 # Ensures the friends aren't trying to remove themself as a friend
@@ -360,8 +382,11 @@ class deleteFriend(APIView):
 
         if(friendUsername != userUsername):
 
-            u1 = User.objects.get(username = friendUsername)
-            u2 = User.objects.get(username = userUsername)
+            try:
+                u1 = User.objects.get(username = friendUsername)
+                u2 = User.objects.get(username = userUsername)
+            except User.DoesNotExist:
+                return Response({'error':'User not found'}, status=status.HTTP_400_BAD_REQUEST)
 
             friendship = userFriends.objects.filter(Q(user1 = u1, user2 = u2) | Q(user1 = u2, user2 = u1), status = FriendStatus.ACCEPTED).first()
             if friendship is not None:
@@ -372,7 +397,7 @@ class deleteFriend(APIView):
 
                 return Response({'message':'No Friendship'}, status=status.HTTP_400_BAD_REQUEST)    
         else:
-            return Response({'message':'Cannot friend yourself, error'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error':'Cannot friend yourself, error'}, status=status.HTTP_403_FORBIDDEN)
 
 # View to get friends of a user
 # Get user object
@@ -386,8 +411,10 @@ class listFriends(APIView):
 
         username = request.query_params.get('username')  
 
-
-        u1 = User.objects.get(username = username)
+        try:
+            u1 = User.objects.get(username = username)
+        except User.DoesNotExist:
+            return Response({'error':'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
         friendship = userFriends.objects.filter(Q(user1 = u1) | Q(user2 = u1), status = FriendStatus.ACCEPTED).all()
         if friendship is not None:
@@ -412,7 +439,7 @@ class listFriends(APIView):
 
         else:
 
-            return Response([], status=status.HTTP_400_BAD_REQUEST)    
+            return Response([], status=status.HTTP_200_OK)    
 
 # View to list the friend requests incoming for a user 
 # Fetch user entry from user model
@@ -426,9 +453,12 @@ class listFriendRequests(APIView):
         username = request.query_params.get('username')  
 
 
-        u1 = User.objects.get(username = username)
+        try:
+            u1 = User.objects.get(username = username)
+        except User.DoesNotExist:
+            return Response({'error':'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        
         friendship = userFriends.objects.filter(user2 = u1, status = FriendStatus.REQUESTED).all()
-        print("FRIENDSHIP", friendship)
         if friendship is not None:
 
             friendList = []
@@ -439,14 +469,11 @@ class listFriendRequests(APIView):
                 }
                 friendList.append(user_info)
 
-                print(user_info)
-
-
             return Response(friendList, status=status.HTTP_200_OK)
 
         else:
 
-            return Response([], status=status.HTTP_400_BAD_REQUEST)    
+            return Response([], status=status.HTTP_200_OK)    
         
 # View to friend request outgoing for the user (they have sent)
 # Fetch user entry from user model
@@ -460,7 +487,11 @@ class listSentFriendRequests(APIView):
         username = request.query_params.get('username')  
 
 
-        u1 = User.objects.get(username = username)
+        try:
+            u1 = User.objects.get(username = username)
+        except User.DoesNotExist:
+            return Response({'error':'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        
         friendship = userFriends.objects.filter(user1 = u1, status = FriendStatus.REQUESTED).all()
         if friendship is not None:
 
@@ -478,7 +509,7 @@ class listSentFriendRequests(APIView):
 
         else:
 
-            return Response([], status=status.HTTP_400_BAD_REQUEST)    
+            return Response([], status=status.HTTP_200_OK)    
 
 # View to set the user's status
 # Get the user model
@@ -492,22 +523,22 @@ class setUserStatus(APIView):
         username = request.data.get('username')
         gameName = request.data.get('game')
 
-        user = User.objects.get(username=username)
-
-        if user is not None:
-            try:
-                newUserStatus = userStatus.objects.get(user=user)
-                newUserStatus.status = gameName
-                newUserStatus.save()
-                return Response({'message': "success"}, status=status.HTTP_200_OK)
-            
-            except userStatus.DoesNotExist:
-                userStatus.objects.create(user=user, status=gameName)
-                return Response({'message': "success"}, status=status.HTTP_200_OK)
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({'error':'User not found'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-        else:
-            return Response([], status=status.HTTP_400_BAD_REQUEST) 
+        try:
+            newUserStatus = userStatus.objects.get(user=user)
+            newUserStatus.status = gameName
+            newUserStatus.save()
+            return Response({'message': "success"}, status=status.HTTP_200_OK)
+        
+        except userStatus.DoesNotExist:
+            userStatus.objects.create(user=user, status=gameName)
+            return Response({'message': "success"}, status=status.HTTP_200_OK)
+
 
 # View to fetch the user's status
 # Get the user model
@@ -519,16 +550,18 @@ class getUserStatus(APIView):
     def get(self, request):
 
         username = request.query_params.get('username')  
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({'error':'User not found'}, status=status.HTTP_400_BAD_REQUEST)
 
+        try:
+            newUserStatus = userStatus.objects.get(user=user)
+            game = newUserStatus.status
+            return Response({'status' : game}, status=status.HTTP_200_OK)
+        
+        except userStatus.DoesNotExist:
+            return Response({'status' : ''}, status=status.HTTP_200_OK)
 
-        user = User.objects.get(username = username)
-
-        if user is not None:
-           newUserStatus = userStatus.objects.get(user=user)
-           game = newUserStatus.status
-           return Response({'status' : game}, status=status.HTTP_200_OK)
-
-        else:
-
-            return Response([], status=status.HTTP_400_BAD_REQUEST)
+ 
 

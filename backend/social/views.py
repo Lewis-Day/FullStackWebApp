@@ -66,8 +66,12 @@ class addMessage(APIView):
             return Response({'error': 'No user with that username'}, status=status.HTTP_404_NOT_FOUND)
 
         query = Q(user1 = sender.id, user2 = receiver.id) | Q(user1 = receiver.id, user2 = sender.id)
-
-        currentConversation = conversationModel.objects.get(query)
+    
+        try:
+            currentConversation = conversationModel.objects.get(query)
+        
+        except conversationModel.DoesNotExist:
+            return Response({'error': 'Conversation not found'}, status=status.HTTP_404_NOT_FOUND)
 
         message = messageModel.objects.create(
             conversation = currentConversation,
@@ -103,7 +107,11 @@ class getMessages(APIView):
 
         query = Q(user1 = sender.id, user2 = receiver.id) | Q(user1 = receiver.id, user2 = sender.id)
 
-        currentConversation = conversationModel.objects.get(query)
+        try:
+            currentConversation = conversationModel.objects.get(query)
+        
+        except conversationModel.DoesNotExist:
+            return Response({'error': 'Conversation not found'}, status=status.HTTP_404_NOT_FOUND)
 
         allMessages = messageModel.objects.filter(conversation = currentConversation)
         sortedMessages = allMessages.order_by('messageTime')
@@ -154,15 +162,17 @@ class getMessages(APIView):
 class getConversations(APIView):
     def get(self, request):
         sender = request.query_params.get('username')
-        sender = User.objects.get(username=sender)
 
+        try:
+            sender = User.objects.get(username=sender)
 
-        print(sender)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        
 
         query = Q(user1 = sender) | Q(user2 = sender)
 
         userConversations = conversationModel.objects.filter(query).all()
-        print(userConversations)
 
         if userConversations is not None:
 
@@ -173,8 +183,6 @@ class getConversations(APIView):
                     chats.append({"username" : chat.user2.username})
                 else:
                     chats.append({"username" : chat.user1.username})
-            
-            print(chats)
 
             return Response(chats, status=status.HTTP_200_OK)
 
@@ -193,8 +201,6 @@ class deleteConversation(APIView):
         sender = request.data.get('user1')
         receiver = request.data.get('user2')
 
-        print(sender, " ", receiver)
-
         try:
             sender = User.objects.get(username=sender)
             receiver = User.objects.get(username=receiver)
@@ -204,9 +210,11 @@ class deleteConversation(APIView):
 
         query = Q(user1 = sender, user2 = receiver) | Q(user1 = receiver, user2 = sender)
 
-        currentConversation = conversationModel.objects.get(query)
-
-        print(currentConversation)
+        try:
+            currentConversation = conversationModel.objects.get(query)
+        
+        except conversationModel.DoesNotExist:
+            return Response({'error': 'Conversation not found'}, status=status.HTTP_404_NOT_FOUND)
 
         currentConversation.delete()
 

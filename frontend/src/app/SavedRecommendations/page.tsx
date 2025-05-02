@@ -17,7 +17,7 @@ interface SavedRecos {
 
 
 
-const AddRatings = () => {
+const SavedRecommendations = () => {
 
 
     // State variable used
@@ -189,4 +189,4 @@ const AddRatings = () => {
     );
 };
 
-export default AddRatings;
+export default SavedRecommendations;
