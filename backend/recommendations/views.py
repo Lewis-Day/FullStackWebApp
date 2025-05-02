@@ -380,10 +380,12 @@ class recommendationsView(APIView):
             userRatedGames = userRatedGamesObject.values_list('gameID', flat=True)
             recommendation = self.contentBasedFilteringBase(list(userRatedGames))
 
+            print(recommendation)
+
 
         # Return the recommendations and whether retraining needs to be done so user can be notified
-        return JsonResponse({'recommendations' : recommendation, 
-                             'retrain' : retrain}, safe=False)
+        return Response({'recommendations' : recommendation, 
+                             'retrain' : retrain})
     
 
 
@@ -399,17 +401,15 @@ class initialRatingsView(APIView):
         user = request.data.get('user')
         ratings = request.data.get('ratings')
 
-        user = User.objects.get(username = user)
-        uidUser = userwithID.objects.get(user = user)
-
-        print(uidUser.recID)
-        print(ratings)
+        try:
+            user = User.objects.get(username = user)
+            uidUser = userwithID.objects.get(user = user)
+        
+        except User.DoesNotExist:
+            return Response({'error':'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        
 
         for rating in ratings:
-
-            print(uidUser.recID)
-            print(rating['gameID'])
-            print(rating['rating'])
             NewRatings.objects.create(
                 userID = uidUser.recID,
                 gameID = rating['gameID'],
@@ -431,23 +431,21 @@ class addRatingsView(APIView):
         user = request.user
         ratings = request.data.get('ratings')
 
-        user = User.objects.get(username = user)
-        uidUser = userwithID.objects.get(user = user)
-
-        print(uidUser.recID)
-        print(ratings)
+        try:
+            user = User.objects.get(username = user)
+            uidUser = userwithID.objects.get(user = user)
+        
+        except User.DoesNotExist:
+            return Response({'error':'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
         for rating in ratings:
 
-            print(uidUser.recID)
-            print(rating['gameID'])
-            print(rating['rating'])
             NewRatings.objects.create(
                 userID = uidUser.recID,
                 gameID = rating['gameID'],
                 rating = rating['rating'],
             )
-        return Response({'message':'New User Created'}, status=status.HTTP_201_CREATED)
+        return Response({'message':'New Ratings Added'}, status=status.HTTP_201_CREATED)
     
 # Model for getting a wildcard recommendation
 # Read the CSV file of gameIDs 
@@ -464,7 +462,7 @@ class wildCardView(APIView):
 
         wildcard = random.choice(gameIDFile['gameID'].tolist())
 
-        return JsonResponse({"wildcard" : wildcard}, safe=False)
+        return Response({"wildcard" : wildcard}, status=status.HTTP_200_OK)
     
 
 # View to add a recommendation that is saved by the user
@@ -482,18 +480,16 @@ class addSavedRecommendation(APIView):
         release = request.data.get("release")
         platforms = request.data.get("platforms")
 
-        try:
-            savedRecommendation = savedRecommendations.objects.create(
-                user = user,
-                gameid = gameid,
-                name = name,
-                release = release,
-                platforms = platforms,
-            )
-            return Response({"message" : "saved successfully"}, status = status.HTTP_200_OK)
-        
-        except Exception as e:
-            return Response({"error" : str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        savedRecommendation = savedRecommendations.objects.create(
+            user = user,
+            gameid = gameid,
+            name = name,
+            release = release,
+            platforms = platforms,
+        )
+        return Response({"message" : "saved successfully"}, status = status.HTTP_201_CREATED)
+
         
 
     
@@ -509,6 +505,7 @@ class getSavedRecommendation(APIView):
         user = request.user
 
         userSaved = savedRecommendations.objects.filter(user = user)
+
         savedData = []
         for saved in userSaved:
             savedData.append(
