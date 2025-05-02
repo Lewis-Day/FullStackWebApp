@@ -114,7 +114,7 @@ export async function GET(request : Request) {
                 'Client-ID': process.env.CLIENT_ID!, 
                 'Authorization': 'Bearer ' + token,
             },
-            body: `fields id, cover.url, name, first_release_date, platforms; search "${gameName}"; limit 10;`,
+            body: `fields id, cover.url, name, first_release_date, platforms; search "${gameName}"; limit 5;`,
             
         });
 

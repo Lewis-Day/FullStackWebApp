@@ -174,6 +174,7 @@ const AddRatings = () => {
         if(submit.status == 201){
             console.log(submit);
             setGameName('');
+            alert('Rating Saved');
         }
         else{
             console.log(submit);

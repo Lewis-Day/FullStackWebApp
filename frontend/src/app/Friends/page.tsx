@@ -10,7 +10,7 @@ interface friendInfo{
     username: string,
 }
 
-var currentUsername:string;
+// var loggedInUser:string;
 
 const Friends = () => {
 
@@ -242,7 +242,7 @@ const Friends = () => {
 
         const sendData = {
             username : friendUsername, 
-            ownUsername : currentUsername,
+            ownUsername : loggedInUser,
         };
 
         const submit = await fetch('http://localhost:8000/api/addFriend/', {
@@ -284,7 +284,7 @@ const Friends = () => {
 
         const sendData = {
             username : friendUsername, 
-            ownUsername : currentUsername,
+            ownUsername : loggedInUser,
         };
 
         const submit = await fetch('http://localhost:8000/api/deleteFriend/', {
@@ -324,7 +324,7 @@ const Friends = () => {
 
         const sendData = {
             username: friendUsername,
-            ownUsername: currentUsername,
+            ownUsername: loggedInUser,
         };
 
         const submit = await fetch('http://localhost:8000/api/acceptRequest/', {
@@ -364,10 +364,10 @@ const Friends = () => {
 
         const sendData = {
             username : friendUsername, 
-            ownUsername : currentUsername,
+            ownUsername : loggedInUser,
         };
 
-        const submit = await fetch('http://localhost:8000/api/deleteRequest/', {
+        const submit = await fetch('http://localhost:8000/api/declineRequest/', {
             method:'POST',
 
             headers:{
@@ -404,7 +404,7 @@ const Friends = () => {
 
         const sendData = {
             username : friendUsername, 
-            ownUsername : currentUsername,
+            ownUsername : loggedInUser,
         };
 
         const submit = await fetch('http://localhost:8000/api/deleteRequest/', {
@@ -487,7 +487,7 @@ const Friends = () => {
                     <fieldset>
                         <h2 className="text-xl font-bold mb-3 text-gray-100 pt-2">Add Friends:</h2>
                     </fieldset>
-                    <input className="flex-1 px-4 py-2 input input-bordered rounded-lg bg-gray-800" type="text" placeholder="Friend Username..." onChange={(e) => setSearch(e.target.value)}/>
+                    <input className="flex-1 px-4 py-2 input input-bordered rounded-lg bg-gray-800 text-gray-100" type="text" placeholder="Friend Username..." onChange={(e) => setSearch(e.target.value)}/>
                     <button type="submit" className="btn bg-cyan-500 text-black hover:bg-cyan-400 transition-colors hover:scale-[1.025]">Search</button>
                 </form>
 

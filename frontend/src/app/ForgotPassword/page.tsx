@@ -42,7 +42,7 @@ const ForgotPassword = () => {
 
         // const response = await submit.json();
 
-        if(submit.status == 201){
+        if(submit.status == 200){
             console.log(submit);
             pageRouter.push('/Login')
         }

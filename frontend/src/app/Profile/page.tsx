@@ -29,7 +29,7 @@ const Profile = () => {
 
     // Used for user authentication
     const token = Cookies.get('access_token');
-    const loggedInUser = localStorage.getItem('user');
+    let loggedInUser = localStorage.getItem('user');
 
     // State variables used
     const [gameName, setGameName] = useState('');
@@ -168,6 +168,9 @@ const Profile = () => {
             body: JSON.stringify(sendData),
 
         });
+
+        localStorage.setItem('user', user.username);
+        loggedInUser = localStorage.getItem('user');
 
         if(submit.status == 401){
             redirect('/Login/');
@@ -323,7 +326,7 @@ const Profile = () => {
             redirect('/Login/');
         }
 
-        if(submit.status == 201){
+        if(submit.status == 200){
             console.log(submit);
             alert("Status has been set");
         }
