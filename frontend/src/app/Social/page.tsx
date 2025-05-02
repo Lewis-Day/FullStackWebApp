@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 
+// Interfaces for formatting returned data
 interface User{
     username:string
 }
@@ -23,6 +24,7 @@ interface friendInfo{
 const Social = () => {
     let loggedInUser = localStorage.getItem('user');
 
+    // State variable used
     const [message, setMessage] = useState('');
     const [chatMessages, setChatMessages] = useState<message[]>([]);
     const [friends, setFriends] = useState<friendInfo[]>([]);
@@ -30,13 +32,18 @@ const Social = () => {
     const [chats, setChats] = useState<friendInfo[]>([]);
     const [currentChat, setCurrentChat] = useState('');
 
+    // Token for user authentication
     const token = Cookies.get('access_token');
 
     if(!token){
         redirect('/Login/');
     }
 
+    // useEffect is used so data is fetched on the condition of having a token and a loggedInUser
     useEffect(() => {
+
+        // Function to fetch a user's friends so they are able to pick a new friend to chat with
+        // Data is fetched from the backend as a GET request and stored in a state variable
         const fetchFriends = async (searchUser:string) => {
 
 
@@ -70,11 +77,13 @@ const Social = () => {
             }
         };
         
+        // Function for fetching all the chats which the user currently 
+        // Fetched from the backend through GET and stored in a state variable
         const fetchChats = async (searchUser:string) => {
 
 
             try{
-                const chatResponse = await fetch(`http://127.0.0.1:8000/api/getFriends/?username=${encodeURIComponent(searchUser)}`, {
+                const chatResponse = await fetch(`http://127.0.0.1:8000/api/getConversations/?username=${encodeURIComponent(searchUser)}`, {
                     method:'GET',
                     headers:{
                         Authorization: `Bearer ${token}`,
@@ -105,6 +114,7 @@ const Social = () => {
             }
         };
 
+        // Ensures loggedInUser has a variable to prevent errors
         if(loggedInUser){
             fetchFriends(loggedInUser);
             fetchChats(loggedInUser);
@@ -118,6 +128,9 @@ const Social = () => {
 
     }, [loggedInUser, token]);
 
+
+    // Function to create a new chat between users
+    // Data required is sent to the backend through a POST request
     const newConversation = async () => {
 
         const data = {
@@ -149,6 +162,8 @@ const Social = () => {
 
     }
 
+    // Function to add a new message to a chat
+    // Data required is sent to the backend through a POST request
     const addMessage = async () => {
 
         const data = {
@@ -181,6 +196,8 @@ const Social = () => {
 
     }
 
+    // Function to delete a new chat between users
+    // Data required is sent to the backend through a POST request
     const deleteChat = async () => {
 
         const data = {
@@ -212,6 +229,7 @@ const Social = () => {
 
     }
 
+    // Function to set the current chat being selected so messages can be fetched
     function chatClick(chat:string){
 
         setCurrentChat(chat);
@@ -219,6 +237,9 @@ const Social = () => {
 
     }
 
+    // Function to get messages for a chat between users
+    // Data required is sent to the backend through a GET request
+    // This function only works on the condition that there is the following : currentChat, loggedInUser and token
     const getMessages = useCallback(async () => {
 
         if (!currentChat) {
@@ -267,6 +288,8 @@ const Social = () => {
     }, [currentChat, loggedInUser, token]);
 
 
+    // Use effect to ensure that get messages is only called on the following conditions: currentChat, loggedInUser, token and getMessages
+    // Ensures messages are fetched at the right time
     useEffect(() => {
         if (currentChat){
             getMessages();
@@ -276,6 +299,8 @@ const Social = () => {
         }
     }, [currentChat, loggedInUser, token, getMessages]);
 
+
+    // HTML page
     return(
         <div className="bg-black min-h-screen w-full pt-5 ">
             <div className="navbar bg-gray-800 bg-opacity-75 backdrop-blur-md rounded-md mx-auto max-w-screen-xl">

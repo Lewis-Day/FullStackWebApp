@@ -146,18 +146,23 @@ class getMessages(APIView):
 # View to get conversations that users have created
 # Query to find all instances of conversations that the user has created
 # If there are conversations that the user has:
-    # Create a list for storing the usernames of the users the user is chatting with
+    # Create a list for storing the usernames of the users the user is chatting with in object form as this is what frontend is expecting
     # Depending on where the user is in terms of user1 in the conversation or user2 in the conversation, add the other user to the list
     # Return the list of the users the user has been chatting with (the individual conversations)
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 class getConversations(APIView):
     def get(self, request):
-        sender = request.query_params.get('user1')
+        sender = request.query_params.get('username')
+        sender = User.objects.get(username=sender)
+
+
+        print(sender)
 
         query = Q(user1 = sender) | Q(user2 = sender)
 
         userConversations = conversationModel.objects.filter(query).all()
+        print(userConversations)
 
         if userConversations is not None:
 
@@ -165,9 +170,9 @@ class getConversations(APIView):
 
             for chat in userConversations:
                 if chat.user1 == sender:
-                    chats.append(chat.user2)
+                    chats.append({"username" : chat.user2.username})
                 else:
-                    chats.append(chat.user1)
+                    chats.append({"username" : chat.user1.username})
             
             print(chats)
 
