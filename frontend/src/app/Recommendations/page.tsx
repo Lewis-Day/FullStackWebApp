@@ -6,6 +6,7 @@ import Cookies from "js-cookie";
 import { redirect } from "next/navigation";
 
 
+// Interfaces for formatting returned data
 interface gameRecommendations{
     id : string,
     name: string,
@@ -26,17 +27,22 @@ interface wildCardGameRecommendations{
 
 const Recommendations = () => {
 
+
+    // Token for user authentication
     const token = Cookies.get('access_token');
 
     if(!token){
         redirect('/Login/');
     }
 
+    // State variables used
     const [gameData, setGameData] = useState<gameRecommendations[]>([]);
     const [wildcardData, setWildcardData] = useState<wildCardGameRecommendations[]>([]);
     const [wildCardStatus, setWildCardStatus] = useState(false);
     const [index, setIndex] = useState(0);
 
+    // Function for changing the index of fetching the game for the carosel of game recommendations
+    // Used for the back button
     const buttonPressBack = () => {
         if(index == 0){
             setIndex(gameData.length - 1);
@@ -47,6 +53,8 @@ const Recommendations = () => {
         
     };
 
+    // Function for changing the index of fetching the game for the carosel of game recommendations
+    // Used for the forward button
     const buttonPressForward = () => {
         if(index == gameData.length - 1){
             setIndex(0);
@@ -57,6 +65,12 @@ const Recommendations = () => {
         
     };
 
+
+    // Function for fetching the wildcard recommendation
+    // Data is fetched from the server side through GET request
+    // When data is returned through response
+    // Required data is formatted in interface format and pushed to a list
+    // List is saved to state variable also boolean variable is changed for displaying the wildcard recommendation
     const fetchWildCard = async () => {
         
         try{
@@ -100,6 +114,9 @@ const Recommendations = () => {
     }; 
 
 
+    // Function for saving a recommendation
+    // The game recommendation is sent to the backend through a POST request
+    // User is alerted when their recommendation gets saved
     const saveRecommendation = async (index : number) => {
         
         try{
@@ -137,6 +154,9 @@ const Recommendations = () => {
         
     }; 
 
+    // Function for saving a wildcard recommendation
+    // The game recommendation is sent to the backend through a POST request
+    // User is alerted when their recommendation gets saved
     const saveRecommendationWild = async () => {
         
         try{
@@ -174,8 +194,15 @@ const Recommendations = () => {
         
     }; 
 
+    // Uses useEffect so recommendations are fetched on page load
     useEffect(() => {
     
+        // Function for fetching the recommendations
+        // Data is fetched from the server side through GET request
+        // When data is returned through response
+        // Required data is formatted in interface format and pushed to a list
+        // List is saved to state variable 
+        // If collaborative model needs retraining, user is notified
         const fetchRecommendationInfo = async () => {
 
             try{
@@ -224,6 +251,7 @@ const Recommendations = () => {
             
         }, []);
 
+    // HTML page
     return(
         <div className="bg-black min-h-screen w-full pt-5 ">
             <div className="navbar bg-gray-800 bg-opacity-75 backdrop-blur-md rounded-md mx-auto max-w-screen-xl">

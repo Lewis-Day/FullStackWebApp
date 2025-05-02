@@ -6,16 +6,13 @@ import Cookies from "js-cookie";
 import { redirect } from "next/navigation";
 
 
+// Interfaces for managing and formatting returned data
 interface userInfo{
     username: string,
     email: string, 
     firstName: string,
     lastName: string, 
     dob: string,
-}
-
-interface friendInfo{
-    username: string,
 }
 
 interface gameSearch{
@@ -30,20 +27,16 @@ var currentUsername:string;
 
 const Profile = () => {
 
+    // Used for user authentication
     const token = Cookies.get('access_token');
     const loggedInUser = localStorage.getItem('user');
 
+    // State variables used
     const [gameName, setGameName] = useState('');
     const [showSearchResults, setShowSearchResults] = useState(false);
     const [gameData, setGameData] = useState<gameSearch[]>([]);
     const [status, setStatus] = useState('');
-
-    if(!token){
-        redirect('/Login/');
-    }
-
     const [newPassword, setNewPassword] = useState('');
-
     const [user, setUser] = useState<userInfo>({
         username: '',
         email: '', 
@@ -52,12 +45,22 @@ const Profile = () => {
         dob: '',
     });
 
+
+    if(!token){
+        redirect('/Login/');
+    }
+
+    // useEffect is used so these functions are run on page load
     useEffect(() => {
 
         if (!loggedInUser) {
             redirect('/Login/'); 
         }
         
+
+        // Function for fetching all of the user's information
+        // Data is fetched from the backend through a GET request
+        // Data returned is formatted and stored in a state variable
         const fetchUserInfo = async (searchUser:string) => {
 
 
@@ -98,6 +101,9 @@ const Profile = () => {
         fetchUserInfo(loggedInUser);
 
 
+        // Fucntion to manage the fetching of the user's game playing status
+        // The status is fetched from the backend through a GET request
+        // Status from response is stored in state variable
         const fetchStatus = async (searchUser:string) => {
 
 
@@ -130,6 +136,7 @@ const Profile = () => {
                 
     }, []);
 
+    // Function for managing the updating of values when the user changes their information
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setUser((prevData) => ({
@@ -138,6 +145,8 @@ const Profile = () => {
         }));
     };
 
+    // Function for managing the user changing their information
+    // Data is sent to the backend as a POST request
     const formSubmit = async (e : React.FormEvent) => {
 
         e.preventDefault();
@@ -176,6 +185,8 @@ const Profile = () => {
         
     };
 
+    // Function for managing the user changing their own password
+    // Password is sent to the backend through a POST request
     const formChangePassword = async (e : React.FormEvent) => {
 
         e.preventDefault();
@@ -216,6 +227,10 @@ const Profile = () => {
     };
 
 
+    // Function for fetching games based on what the user searched
+    // Utilises the server side to get all of the data
+    // If the server side created a response, it is iterated through and the date is formatted and then the rest of the data is formatted and pushed to a list
+    // List is stored in a state variable to be used in the page below
     const fetchGames = async () => {
 
         if(!gameName){
@@ -279,23 +294,9 @@ const Profile = () => {
         }
     };
 
-    const fetchSelectedGame = async (gameid : number) => {
-
-        try{
-            const response = await fetch(`../api/FetchImages/?id=${encodeURIComponent(gameid)}`, {
-                method:'GET',
-            });
-            
-            const responseData = await response.json();
-            console.log(responseData);
-            
-        }
-
-        catch(error){
-            console.error("Error: ", error);
-        }
-    };
-
+    // Function for setting and changing the user's game playing status
+    // Data is sent to the backend through a POST request
+    // User is alerted on success
     const setStatusFunction = async (game : string) => {
 
 
@@ -328,13 +329,14 @@ const Profile = () => {
         }
         else{
             console.log(submit);
+            alert("Error setting status");
         }
 
         
     };
 
     
-
+    // HTML page
     return(
         <div className="bg-black min-h-screen w-full pt-5 pb-5">
             <div className="navbar bg-gray-800 bg-opacity-75 backdrop-blur-md rounded-md mx-auto max-w-screen-xl">

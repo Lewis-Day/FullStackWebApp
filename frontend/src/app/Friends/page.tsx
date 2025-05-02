@@ -5,23 +5,16 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { redirect } from "next/navigation";
 
-
-interface userInfo{
-    username: string,
-    email: string, 
-    firstName: string,
-    lastName: string, 
-    dob: string,
-}
-
+// Interface for managing JSON response
 interface friendInfo{
     username: string,
 }
 
 var currentUsername:string;
 
-const Profile = () => {
+const Friends = () => {
 
+    // Checking user has authentication for this page (protected page)
     const token = Cookies.get('access_token');
     const loggedInUser = localStorage.getItem('user');
 
@@ -29,6 +22,7 @@ const Profile = () => {
         redirect('/Login/');
     }
     
+    // State variables used
     const [search, setSearch] = useState('');
     const [foundUser, setFoundUser] = useState('');
     const [friends, setFriends] = useState<friendInfo[]>([]);
@@ -36,12 +30,17 @@ const Profile = () => {
     const [friendRequests, setFriendRequests] = useState<friendInfo[]>([]);
     const [sentFriendRequests, setSentFriendRequests] = useState<friendInfo[]>([]);
 
+    // useEffect so this is called on page load
     useEffect(() => {
 
         if (!loggedInUser) {
             redirect('/Login/'); 
         }
 
+        // Function to fetch a user's friends
+        // Fetches data from the backend through GET request
+        // Once the user's friends are found, they are stored in a state variable
+        // For each friend, their game playing status is fetched from the function below
         const fetchFriends = async (searchUser:string) => {
 
             try{
@@ -91,6 +90,9 @@ const Profile = () => {
 
         fetchFriends(loggedInUser);
 
+
+        // Function to fetch the friends' game playing status from the backend through GET request
+        // Status returned for that user is returned and used in the function above
         const fetchStatus = async (searchUser:string) => {
 
 
@@ -119,7 +121,9 @@ const Profile = () => {
 
         
 
-        
+        // Function to fetch a user's friend requests - people that are requesting the current user as a friend
+        // Fetches data from the backend through a GET request
+        // Data returned is saved in a state variable
         const fetchFriendRequests = async (searchUser:string) => {
 
             try{
@@ -156,6 +160,9 @@ const Profile = () => {
         fetchFriendRequests(loggedInUser);
 
 
+        // Function to fetch a user's sent friend requests - requests they've sent to other people to be friends
+        // Fetches data from the backend through a GET request
+        // Data returned is saved in a state variable
         const fetchSentFriendRequests = async (searchUser:string) => {
 
 
@@ -195,6 +202,10 @@ const Profile = () => {
                 
     }, []);
 
+    // Function for searching for users
+    // Used when users want to search for a new friend to add
+    // Data is fetched from the backend using a GET request
+    // Data returned from the backend is stored in a state variable
     const formGetUsers = async (e : React.FormEvent) => {
         e.preventDefault();
 
@@ -223,6 +234,9 @@ const Profile = () => {
 
     }
 
+    // Function for when a user submits a friend request
+    // Data is sent to the backend for processing through a POST request
+    // On success or failure, the user is notified
     const formSendFriendRequest = async (friendUsername : string) => {
 
 
@@ -262,6 +276,9 @@ const Profile = () => {
         
     };
 
+    // Function for when a user wants to remove one of their friends
+    // Data is sent to the backend for processing through a POST request
+    // On success or failure, the user is notified
     const formRemoveFriend = async (friendUsername : string) => {
 
 
@@ -299,43 +316,49 @@ const Profile = () => {
         
     };
 
-    const acceptRequest = async (friendUsername : string) => {
+    // Function for when a user accepts a friend request
+    // Data is sent to the backend for processing through a POST request
+    // On success or failure, the user is notified
+    async function acceptRequest(friendUsername: string) {
 
 
         const sendData = {
-            username : friendUsername, 
-            ownUsername : currentUsername,
+            username: friendUsername,
+            ownUsername: currentUsername,
         };
 
         const submit = await fetch('http://localhost:8000/api/acceptRequest/', {
-            method:'POST',
+            method: 'POST',
 
-            headers:{
-                'Content-Type':'application/json',
+            headers: {
+                'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(sendData),
-
         });
 
-        if(submit.status == 401){
+        if (submit.status == 401) {
             redirect('/Login/');
         }
 
-       const response = await submit.json();
+        const response = await submit.json();
 
-        if(submit.status == 201){
+        if (submit.status == 201) {
             console.log(submit);
             alert("Friend Request Accepted");
         }
-        else{
+        else {
             console.log(submit);
             alert(response.message);
         }
 
-        
-    };
 
+    }
+
+
+    // Function for when a user declines a friend request
+    // Data is sent to the backend for processing through a POST request
+    // On success or failure, the user is notified
     const declineRequest = async (friendUsername : string) => {
 
 
@@ -373,6 +396,9 @@ const Profile = () => {
         
     };
 
+    // Function for when a user cancels a friend request - one that they've sent to another user
+    // Data is sent to the backend for processing through a POST request
+    // On success or failure, the user is notified
     const deleteRequest = async (friendUsername : string) => {
 
 
@@ -411,7 +437,7 @@ const Profile = () => {
     };
 
     
-
+    // HTML Page
     return(
         <div className="bg-black h-screen w-full pt-5 pb-5">
             <div className="navbar bg-gray-800 bg-opacity-75 backdrop-blur-md rounded-md mx-auto max-w-screen-xl">
@@ -549,4 +575,4 @@ const Profile = () => {
     
 };
 
-export default Profile;
+export default Friends;
