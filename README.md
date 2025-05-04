@@ -27,7 +27,7 @@ Step 2:
 Download and install Nvidia CUDA Toolkit and Nvidia cuDNN in WSL instance
 
 Step 3:
-Download the model from this link
+Download the trained model from this link https://drive.google.com/drive/folders/1FNlq0MzwR_HsqZuA7tAZZddbmfIap9cK?usp=sharing
 Add to the MLModels folder
 
 Step 4:
