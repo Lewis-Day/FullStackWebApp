@@ -1,5 +1,6 @@
 # FullStackWebApp
- FYP Recommendation Web App
+ FYP Recommendation Web App for VGR.
+ VGR is a video games recommendation app.
 
  Supporting Documents Source Code
  - backend - all backend Django files
