@@ -140,10 +140,13 @@ const Profile = () => {
     }, []);
 
     // Function for managing the updating of values when the user changes their information
+    // Extracts the name and value of the input elements
+    // Uses the setUser state variable to handle the storage of the data
+    // Updates the required field based on its name using the previous data collected, leaving the rest the same
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setUser((prevData) => ({
-            ...prevData,
+        const {name, value} = e.target;
+        setUser((previousData) => ({
+            ...previousData,
             [name]: value,
         }));
     };
