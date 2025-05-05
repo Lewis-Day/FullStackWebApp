@@ -20,6 +20,16 @@ frontend - all Next.js pages and route files</br>
     - Popularity/route.ts</br>
     - Wildcard/route.ts</br>
   - ForgotPassword/page.tsx</br>
+  - Friends/page.tsx</br>
+  - Home/page.tsx</br>
+  - InitialRatings/page.tsx</br>
+  - Login/page.tsx</br>
+  - Logout/page.tsx</br>
+  - Profile/page.tsx</br>
+  - Recommendations/page.tsx</br>
+  - SavedRecommendations/page.tsx</br>
+  - SignUp/page.tsx</br>
+  - Social/page.tsx</br>
 helperFiles - CSV files used</br>
   -  FactorisedtoGameID.csv</br>
   -  gameGenres.csv</br>
