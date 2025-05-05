@@ -2,29 +2,29 @@
  FYP Recommendation Web App for VGR.
  VGR is a video games recommendation app.
 
- Supporting Documents Source Code Files
-backend - all backend Django files
-    - recommendations/views.py
-    - social/views.py
-    - users/views.py
-database - recommendation system database
-   - dataset.db
-frontend - all Next.js pages and route files
-  - app/AddRatings/page.tsx
-  - app/api/
-    - FetchGames/route.ts
-    - FetchImages/route.ts
-    - FetchSavedRecs/route.ts
-    - GameName/route.ts
-    - PopularImgs/route.ts
-    - Popularity/route.ts
-    - Wildcard/route.ts
-  - ForgotPassword/page.tsx
-helperFiles - CSV files used
-  -  FactorisedtoGameID.csv
-  -  gameGenres.csv
- MLModels - trained machine learning model
-  - evaluateModel2lessbatch.keras 
+Supporting Documents Source Code Files </br>
+backend - all backend Django files</br>
+    - recommendations/views.py</br>
+    - social/views.py</br>
+    - users/views.py</br>
+database - recommendation system database</br>
+   - dataset.db</br>
+frontend - all Next.js pages and route files</br>
+  - app/AddRatings/page.tsx</br>
+  - app/api/</br>
+    - FetchGames/route.ts</br>
+    - FetchImages/route.ts</br>
+    - FetchSavedRecs/route.ts</br>
+    - GameName/route.ts</br>
+    - PopularImgs/route.ts</br>
+    - Popularity/route.ts</br>
+    - Wildcard/route.ts</br>
+  - ForgotPassword/page.tsx</br>
+helperFiles - CSV files used</br>
+  -  FactorisedtoGameID.csv</br>
+  -  gameGenres.csv</br>
+ MLModels - trained machine learning model</br>
+  - evaluateModel2lessbatch.keras </br>
 
 Executable file of this project cannot be generated so it will need to be run locally. 
 
