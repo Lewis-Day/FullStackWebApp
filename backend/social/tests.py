@@ -6,7 +6,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your tests here.
 
+# Used APITestCase from Django rest framework due to my tests requiring authentication
 
+# Testing createConversation
 class createConversationTest(APITestCase):
 
     def setUp(self):
@@ -53,6 +55,7 @@ class createConversationTest(APITestCase):
         self.assertEqual(response.data['error'], 'No user with that username')
 
 
+# Testing addMessage
 class addMessageTest(APITestCase):
 
     def setUp(self):
@@ -86,7 +89,7 @@ class addMessageTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data['error'], 'No user with that username')
 
-
+# Testing getMessages
 class getMessagesTest(APITestCase):
 
     def setUp(self):
@@ -123,7 +126,7 @@ class getMessagesTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data[0]['message'], 'Test')
 
-
+# Testing getConversations
 class getConversationsTest(APITestCase):
 
     def setUp(self):
@@ -155,7 +158,7 @@ class getConversationsTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, [{'username' : 'two'}])
 
-
+# Testing deleteConversation
 class deleteConversationTest(APITestCase):
 
     def setUp(self):
@@ -191,7 +194,7 @@ class deleteConversationTest(APITestCase):
         self.assertEqual(response.data['error'], 'No user with that username')
 
 
-
+# Testing when there's no conversation
 class conversationNotFound(APITestCase):
 
     def setUp(self):

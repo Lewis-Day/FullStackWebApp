@@ -8,6 +8,9 @@ from django.contrib.auth.hashers import make_password
 
 # Create your tests here.
 
+# Used APITestCase from Django rest framework due to my tests requiring authentication
+
+# Testing logoutView
 class LogoutTest(TestCase):
 
     def test(self):
@@ -15,6 +18,7 @@ class LogoutTest(TestCase):
         response = self.client.post(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+# Testing userCreationView
 class UserCreateTest(APITestCase):
 
     def setUp(self):
@@ -67,6 +71,7 @@ class UserCreateTest(APITestCase):
         self.assertEqual(response.data['error'], 'Email is used by another user')
 
 
+# Testing loginView
 class loginTest(APITestCase):
     def setUp(self):
         self.url = '/api/login/'
@@ -103,7 +108,7 @@ class loginTest(APITestCase):
         self.assertEqual(response.data['message'], 'User Authentication Unsuccessful')
 
 
-
+# Testing fetchUsersView
 class fetchUsersViewTest(APITestCase):
     def setUp(self):
 
@@ -143,6 +148,7 @@ class fetchUsersViewTest(APITestCase):
         self.assertEqual(response.data['error'], 'User does not exist')
 
 
+# Testing changeUserDataView
 class changeUserDataTest(APITestCase):
     def setUp(self):
 
@@ -194,7 +200,7 @@ class changeUserDataTest(APITestCase):
         response = self.client.post(self.url, udata, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-
+# Testing changePasswordView
 class changePasswordTest(APITestCase):
     def setUp(self):
 
@@ -239,7 +245,7 @@ class changePasswordTest(APITestCase):
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-
+# Testing forgotPasswordView
 class forgotPasswordTest(APITestCase):
 
     def setUp(self):
@@ -318,7 +324,7 @@ class forgotPasswordTest(APITestCase):
 
 
 
-
+# Testing addFriendView
 class addFriendTest(APITestCase):
 
     def setUp(self):
@@ -436,7 +442,7 @@ class addFriendTest(APITestCase):
 
 
 
-
+# Testing acceptRequestView
 class acceptFriendTest(APITestCase):
 
     def setUp(self):
@@ -533,7 +539,7 @@ class acceptFriendTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['error'], 'User not found')
 
-
+# Testing declineFriendRequest
 class declineFriendTest(APITestCase):
 
     def setUp(self):
@@ -632,7 +638,7 @@ class declineFriendTest(APITestCase):
 
 
 
-
+# Testing deleteFriendRequest
 class deleteFriendRequestTest(APITestCase):
 
     def setUp(self):
@@ -732,7 +738,7 @@ class deleteFriendRequestTest(APITestCase):
 
 
 
-
+# Testing deleteFriend
 class deleteFriendTest(APITestCase):
 
     def setUp(self):
@@ -831,7 +837,7 @@ class deleteFriendTest(APITestCase):
         self.assertEqual(response.data['error'], 'User not found')
 
 
-
+# Testing listFriends
 class listFriendsTest(APITestCase):
     def setUp(self):
 
@@ -893,6 +899,7 @@ class listFriendsTest(APITestCase):
         self.assertEqual(response.data['error'], 'User not found')
 
 
+# Testing listFriendRequests
 class listFriendsRequestedTest(APITestCase):
     def setUp(self):
 
@@ -953,7 +960,7 @@ class listFriendsRequestedTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data['error'], 'User not found')
 
-
+# Testing listSentFriendRequests
 class listFriendsRequestedSentTest(APITestCase):
     def setUp(self):
 
@@ -1015,7 +1022,7 @@ class listFriendsRequestedSentTest(APITestCase):
         self.assertEqual(response.data['error'], 'User not found')
 
 
-
+# Testing setUserStatus
 class setUserStatusTest(APITestCase):
 
     def setUp(self):
@@ -1077,6 +1084,7 @@ class setUserStatusTest(APITestCase):
         self.assertEqual(response.data['error'], 'User not found')
 
 
+# Testing getUserStatus
 class getStatusTest(APITestCase):
     def setUp(self):
 

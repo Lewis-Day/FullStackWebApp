@@ -14,6 +14,11 @@ from rest_framework.decorators import authentication_classes, permission_classes
 
 # Create your views here.
 
+# The following annotations/decorators are used above views where user authentication is required
+# These views are for pages which should be protected behind login - user must login to access them
+# @authentication_classes([JWTAuthentication])
+# @permission_classes([IsAuthenticated])
+
 
 # View to create a new user
 # Get all values passed through in POST and store in variables

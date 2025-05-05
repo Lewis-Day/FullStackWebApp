@@ -20,6 +20,11 @@ from dotenv import load_dotenv
 
 # Create your views here.
 
+# The following annotations/decorators are used above views where user authentication is required
+# These views are for pages which should be protected behind login - user must login to access them
+# @authentication_classes([JWTAuthentication])
+# @permission_classes([IsAuthenticated])
+
 # View for managing all types of recommendations (collaborative and content based used for cold start)
 # Comments will be for each function to make it clearer to understand
 @authentication_classes([JWTAuthentication])

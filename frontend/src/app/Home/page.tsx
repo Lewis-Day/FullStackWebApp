@@ -82,7 +82,7 @@ const Home = () => {
                 <div className="mockup-window max-w-screen-xl p-4 mt-5 bg-gray-900 text-gray-100 w-full">
                     <p className="text-xl font-bold pl-5 text-cyan-400">Welcome to VGR!</p>
                     <p className="pl-5">VGR is a video game recommendation system available to users of all platforms.</p>
-                    <p className="pl-5">Here you'll find popular games however, if you <Link href="/Login" className="text-cyan-400 hover:underline">logging in</Link> or <Link href="/SignUp" className="text-cyan-400 hover:underline">creating an account</Link>, you'll get personalised game recommedations.</p>
+                    <p className="pl-5">Here you'll find popular games however, if you <Link href="/Login" className="text-cyan-400 hover:underline">log in</Link> or <Link href="/SignUp" className="text-cyan-400 hover:underline">create an account</Link>, you'll get personalised game recommedations.</p>
                 </div>
             </div>
 
