@@ -5,6 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+// Uses modified components from DaisyUI
+// DaisyUI, “Components — Tailwind CSS Components,” daisyui.com. https://daisyui.com/components/ (accessed Feb. 18, 2025).
+
 // Interfaces for managing formats of data returned from backend and server side
 interface gameSearch{
     id: number,

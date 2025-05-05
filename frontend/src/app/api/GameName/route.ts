@@ -189,8 +189,6 @@ export async function GET(request : Request) {
 
     catch(error){
         console.error("Error: ", error);
-
-        // TEMP
-        return NextResponse.json({ error: "Internal server error" });
+        return NextResponse.json({ error: "Server error" });
     }
 };

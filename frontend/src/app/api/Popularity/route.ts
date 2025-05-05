@@ -36,9 +36,8 @@ export async function GET() {
 
     const token = await fetchToken();
 
-    // TEMP
     if (!token) {
-        return NextResponse.json({ error: "Failed to fetch access token" });
+        return NextResponse.json({ error: "Failed to fetch IGDB token" });
     }
 
     try{
@@ -51,19 +50,12 @@ export async function GET() {
             },
             body:'fields game_id,value,popularity_type; sort value desc; limit 20; where popularity_type = 3;',
         });
-
-        // TEMP 
-        if (!response.ok) {
-            throw new Error("Failed to fetch popularity score");
-        }
         const data = await response.json();
         return NextResponse.json(data);
     }
 
     catch(error){
         console.error("Error: ", error);
-
-        // TEMP
-        return NextResponse.json({ error: "Internal server error" });
+        return NextResponse.json({ error: "Server error" });
     }
 };

@@ -5,6 +5,9 @@ import { redirect } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 
+// Uses modified components from DaisyUI
+// DaisyUI, “Components — Tailwind CSS Components,” daisyui.com. https://daisyui.com/components/ (accessed Feb. 18, 2025).
+
 // Interfaces for formatting returned data
 interface User{
     username:string

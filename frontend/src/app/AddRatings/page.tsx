@@ -6,6 +6,9 @@ import { redirect } from "next/navigation";
 import { useState } from "react";
 import Cookies from "js-cookie";
 
+// Uses modified components from DaisyUI
+// DaisyUI, “Components — Tailwind CSS Components,” daisyui.com. https://daisyui.com/components/ (accessed Feb. 18, 2025).
+
 
 // Interfaces for managing formats of data returned from backend and server side
 interface gameSearch{
