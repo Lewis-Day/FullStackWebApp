@@ -61,7 +61,7 @@ You will need to generate values for these in order for the IGDB API to work.
 Instructions for getting these values can be found here https://api-docs.igdb.com/#getting-started
 
 Step 8:
-The following paths need updating in the following files to your exact path:
+The following paths need updating in the following files to your exact path for the files in the given paths:
 - backend/recommendations/views.py
     - lines: 32, 59, 81, 162, 201, 245, 255, 268, 309, 328, 331, 334, 461
 
