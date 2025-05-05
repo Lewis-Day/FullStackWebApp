@@ -4,12 +4,27 @@
 
  Supporting Documents Source Code Files
  - backend - all backend Django files
-    -    
+    - recommendations/views.py
+    - social/views.py
+    - users/views.py
  - database - recommendation system database
    - dataset.db 
  - frontend - all Next.js pages and route files
+  - app/AddRatings/page.tsx
+  - app/api/
+   - FetchGames/route.ts
+   - FetchImages/route.ts
+   - FetchSavedRecs/route.ts
+   - GameName/route.ts
+   - PopularImgs/route.ts
+   - Popularity/route.ts
+   - Wildcard/route.ts
+  - ForgotPassword/page.tsx    
  - helperFiles - CSV files used
+  -  FactorisedtoGameID.csv
+  -  gameGenres.csv
  - MLModels - trained machine learning model
+  - evaluateModel2lessbatch.keras 
 
 Executable file of this project cannot be generated so it will need to be run locally. 
 
