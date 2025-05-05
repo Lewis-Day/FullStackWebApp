@@ -12,13 +12,13 @@
  - frontend - all Next.js pages and route files
   - app/AddRatings/page.tsx
   - app/api/
-   - FetchGames/route.ts
-   - FetchImages/route.ts
-   - FetchSavedRecs/route.ts
-   - GameName/route.ts
-   - PopularImgs/route.ts
-   - Popularity/route.ts
-   - Wildcard/route.ts
+    - FetchGames/route.ts
+    - FetchImages/route.ts
+    - FetchSavedRecs/route.ts
+    - GameName/route.ts
+    - PopularImgs/route.ts
+    - Popularity/route.ts
+    - Wildcard/route.ts
   - ForgotPassword/page.tsx    
  - helperFiles - CSV files used
   -  FactorisedtoGameID.csv
