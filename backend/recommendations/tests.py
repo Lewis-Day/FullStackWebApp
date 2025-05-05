@@ -9,6 +9,9 @@ from django.contrib.auth.hashers import make_password
 
 # Create your tests here.
 
+# Used APITestCase from Django rest framework due to my tests requiring authentication
+
+# Testing initialRatingsView
 class initialRatingsTest(APITestCase):
 
     def setUp(self):
@@ -62,6 +65,7 @@ class initialRatingsTest(APITestCase):
         self.assertEqual(response.data['error'], 'User does not exist')
 
 
+# Testing addRatingsView
 class addRatingsTest(APITestCase):
 
     def setUp(self):
@@ -100,7 +104,7 @@ class addRatingsTest(APITestCase):
         self.assertEqual(response.data['message'], 'New Ratings Added')
 
 
-
+# Testing wildCardView
 class wildCardTest(APITestCase):
 
     def setUp(self):
@@ -132,6 +136,7 @@ class wildCardTest(APITestCase):
         self.assertIn('wildcard', response.data)
 
 
+# Testing addSavedRecommendation
 class addSavedRecommendationsTest(APITestCase):
 
     def setUp(self):
@@ -169,6 +174,7 @@ class addSavedRecommendationsTest(APITestCase):
         self.assertEqual(response.data['message'], 'saved successfully')
 
 
+# Testing getSavedRecommendation
 class getSavedRecommendationsTest(APITestCase):
 
     def setUp(self):
@@ -209,7 +215,7 @@ class getSavedRecommendationsTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(predicted, response.data)
 
-
+# Testing recommendationsView
 class getRecommendationsTest(APITestCase):
 
     def setUp(self):
