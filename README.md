@@ -73,14 +73,14 @@ The following paths need updating in the following files to your exact path for 
 
 Step 9:
 Two terminal instances will be needed (one for frontend and one for backend).
-In the terminal for the backend cd to the backend directory and run the command
+In the terminal for the backend (the one with venv activated) cd to the backend directory and run the command
 
 python manage.py runserver
 
 This command will start the Django server
 
 Step 10:
-In the second terminal cd to the frontend directory
+In the second terminal cd to the frontend directory (venv not required)
 
 Run the command
 npm install
