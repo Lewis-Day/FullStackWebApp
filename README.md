@@ -13,6 +13,7 @@ Executable file of this project cannot be generated so it will need to be run lo
 Instructions to set up and run the code
 
 Should ideally be installed on a machine with Nvidia Graphics Card for CUDA support and use WSL (Windows Subsystem for Linux).
+Minimum 8GB of VRAM on GPU, I used Nvidia RTX 2070 Super during development. 
 Tensorflow with GPU support only supports Linux and for Windows requires WSL. 
 Instructions are for using WSL with Ubuntu and Nvidia CUDA. 
 
@@ -24,7 +25,8 @@ Step 1:
 Paste folder into WSL Ubuntu
 
 Step 2:
-Download and install Nvidia CUDA Toolkit and Nvidia cuDNN in WSL instance
+Ensure drivers for Nvidia graphics card are installed on WSL instance. 
+CUDA and cuDNN toolkits shouldn't be required as Tensorflow CUDA should install everything but if not, download and install Nvidia CUDA Toolkit and Nvidia cuDNN in WSL instance.
 
 Step 3:
 Download the trained model from this link https://drive.google.com/drive/folders/1FNlq0MzwR_HsqZuA7tAZZddbmfIap9cK?usp=sharing
@@ -64,7 +66,10 @@ Instructions for getting these values can be found here https://api-docs.igdb.co
 Step 8:
 The following paths need updating in the following files to your exact path for the files in the given paths:
 - backend/recommendations/views.py
-    - lines: 32, 59, 81, 162, 201, 245, 255, 268, 309, 328, 331, 334, 461
+    - lines for SQLite db path in folder database: 37, 273, 336
+    - lines for trained model in MLModels folder: 64
+    - lines for gameGenres file in folder helperFiles: 167, 206, 250, 260, 
+    - file for FactorisedtoGameID file in folder helperFile: 86, 314, 333, 339, 466
 
 Step 9:
 Two terminal instances will be needed (one for frontend and one for backend).
