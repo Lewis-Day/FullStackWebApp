@@ -44,13 +44,14 @@ source venv/bin/activate
 
 Step 6:
 Install the following with pip (pip install):
-- Django
+- django
 - django-cors-headers
 - djangorestframework
 - djangorestframework-simplejwt
 - dotenv
 - scikit-learn
 - tensorflow[and-cuda]
+- pandas
 
 Step 7:
 Create a .env.local folder in the frontend folder and add these values. 
