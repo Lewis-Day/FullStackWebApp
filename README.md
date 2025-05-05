@@ -35,6 +35,7 @@ helperFiles - CSV files used</br>
   -  gameGenres.csv</br>
  MLModels - trained machine learning model</br>
   - evaluateModel2lessbatch.keras </br>
+  - training.py (training code for the model) </br>
 
 Executable file of this project cannot be generated so it will need to be run locally. 
 
