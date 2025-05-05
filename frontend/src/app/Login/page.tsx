@@ -5,6 +5,9 @@ import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
 import Cookies from "js-cookie";
 
+// Uses modified components from DaisyUI
+// DaisyUI, “Components — Tailwind CSS Components,” daisyui.com. https://daisyui.com/components/ (accessed Feb. 18, 2025).
+
 const Login = () => {
 
     // State variables for managing username and passowrd

@@ -38,9 +38,8 @@ export async function GET() {
 
     const token = await fetchToken();
 
-    // TEMP
     if (!token) {
-        return NextResponse.json({ error: "Failed to fetch access token" });
+        return NextResponse.json({ error: "Failed to fetch IGDB token" });
     }
 
     try{
@@ -48,10 +47,6 @@ export async function GET() {
             method:'GET',
         });
 
-        // TEMP 
-        if (!popGameResponse.ok) {
-            throw new Error("Failed to fetch popularity score");
-        }
         const gameData = await popGameResponse.json();
 
         console.log(gameData);
@@ -90,14 +85,11 @@ export async function GET() {
 
         console.log(imgURL);
 
-
         return NextResponse.json({imgURL});
     }
 
     catch(error){
         console.error("Error: ", error);
-
-        // TEMP
-        return NextResponse.json({ error: "Internal server error" });
+        return NextResponse.json({ error: "Server error" });
     }
 };

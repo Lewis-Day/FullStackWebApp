@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { redirect } from "next/navigation";
 
+// Uses modified components from DaisyUI
+// DaisyUI, “Components — Tailwind CSS Components,” daisyui.com. https://daisyui.com/components/ (accessed Feb. 18, 2025).
+
 // Interface for managing JSON response
 interface friendInfo{
     username: string,
