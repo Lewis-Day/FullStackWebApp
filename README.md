@@ -2,9 +2,11 @@
  FYP Recommendation Web App for VGR.
  VGR is a video games recommendation app.
 
- Supporting Documents Source Code
+ Supporting Documents Source Code Files
  - backend - all backend Django files
- - database - recommendation system database 
+    -    
+ - database - recommendation system database
+   - dataset.db 
  - frontend - all Next.js pages and route files
  - helperFiles - CSV files used
  - MLModels - trained machine learning model
